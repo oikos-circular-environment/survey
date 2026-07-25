@@ -26,14 +26,24 @@ bun install
 
 This project uses MySQL with Drizzle ORM.
 
-1. Make sure you have a MySQL database set up.
-2. Update your `apps/web/.env` file with your MySQL connection details.
-
-3. Apply the schema to your database:
+1. Start the local MySQL container:
 
 ```bash
-bun run db:push
+bun run db:start
 ```
+
+2. Make sure `apps/web/.env` has your `DATABASE_URL`.
+
+3. Apply the versioned migrations:
+
+```bash
+bun run db:migrate
+```
+
+Schema changes go through generated migration files, not `db:push`. After editing
+anything under `packages/db/src/schema`, run `bun run db:generate` and commit the
+resulting file in `packages/db/src/migrations` — that file is what runs in production,
+and it is reviewed in the pull request like any other code.
 
 Then, run the development server:
 
@@ -42,6 +52,27 @@ bun run dev
 ```
 
 Open [http://localhost:3001](http://localhost:3001) in your browser to see the fullstack application.
+
+## Testing
+
+```bash
+bun run test
+```
+
+Each test suite creates its own throwaway database (`survey_test_<uuid>`), applies the
+migrations to it, and drops it when the suite ends. That is why a broken migration fails
+every test instead of hiding until deploy.
+
+Creating those databases needs a privilege the application user does not get by default,
+so `docker/mysql/init` grants it on the `survey_test_%` prefix. Init scripts only run when
+the MySQL volume is first created — if the grant is missing, recreate it:
+
+```bash
+docker compose down -v && bun run db:start
+```
+
+In CI, point `TEST_DATABASE_URL` at a user allowed to create and drop databases. Without
+it the harness falls back to `DATABASE_URL`.
 
 ## UI Customization
 
@@ -106,9 +137,10 @@ survey/
 - `bun run build`: Build all applications
 - `bun run dev:web`: Start only the web application
 - `bun run check-types`: Check TypeScript types across all apps
-- `bun run db:push`: Push schema changes to database
-- `bun run db:generate`: Generate database client/types
-- `bun run db:migrate`: Run database migrations
+- `bun run test`: Run the test suites (needs the MySQL container running)
+- `bun run db:generate`: Generate a migration file from the current schema
+- `bun run db:migrate`: Apply pending migrations
+- `bun run db:push`: Apply the schema without a migration file — scratch databases only
 - `bun run db:studio`: Open database studio UI
 - `bun run check`: Run Biome formatting and linting
 - `bun run docker:build`: Build the Docker Compose images
