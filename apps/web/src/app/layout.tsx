@@ -1,40 +1,45 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Raleway, Roboto_Slab } from "next/font/google";
 
 import "../index.css";
+import { cn } from "@survey/ui/lib/utils";
 import Header from "@/components/header";
 import Providers from "@/components/providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const raleway = Raleway({
+	variable: "--font-sans",
+	subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const robotoSlab = Roboto_Slab({
+	variable: "--font-heading",
+	subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "survey",
-  description: "survey",
+	title: "Oikos Survey",
+	description: "Pesquisa de usabilidade do Oikos",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>
-          <div className="grid grid-rows-[auto_1fr] h-svh">
-            <Header />
-            {children}
-          </div>
-        </Providers>
-      </body>
-    </html>
-  );
+	return (
+		<html
+			lang="pt-BR"
+			suppressHydrationWarning
+			className={cn("font-sans", raleway.variable, robotoSlab.variable)}
+		>
+			<body className="antialiased">
+				<Providers>
+					<div className="grid h-svh grid-rows-[auto_1fr]">
+						<Header />
+						{children}
+					</div>
+				</Providers>
+			</body>
+		</html>
+	);
 }
