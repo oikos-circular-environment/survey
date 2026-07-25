@@ -1,0 +1,21 @@
+{
+  "version": "2.14",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "Frame",
+      "clip": true,
+      "width": 800,
+      "height": 600,
+      "fill": "#FFFFFF",
+      "layout": "none"
+    }
+  ],
+  "imports": {
+    "W": "pencil:shadcn.lib.pen"
+  },
+  "fileToken": "a2415007-0d55-4da9-bdc8-43ef6fdedb18"
+}
