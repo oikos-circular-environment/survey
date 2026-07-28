@@ -27,7 +27,8 @@
 			"!**/wrangler.jsonc",
 			"!**/.source",
 			"!**/convex/_generated",
-			"!packages/ui/src/components"
+			"!packages/ui/src/components",
+			"!pencil/scripts"
 		]
 	},
 	"formatter": {
