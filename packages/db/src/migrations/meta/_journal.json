@@ -8,6 +8,13 @@
 			"when": 1785000779814,
 			"tag": "0000_usability_foundation",
 			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "5",
+			"when": 1785249404147,
+			"tag": "0001_protocol_dependency_and_remote_options",
+			"breakpoints": true
 		}
 	]
 }

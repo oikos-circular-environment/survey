@@ -2,18 +2,19 @@
  * Tipos do protocolo do Modo Pesquisa de Usabilidade.
  *
  * A camada de tipos vive separada da de dados porque o schema Drizzle depende dela:
- * `success_rule` e `options` são colunas JSON e precisam de `$type<...>` para que o
- * compilador verifique o que entra e o que sai do banco. O conjunto de dados — as 17
- * tarefas, as 6 suítes, as personas e as perguntas — chega em S02, no mesmo diretório.
+ * `success_rule`, `options`, `options_source` e `depends_on` são colunas JSON e precisam de
+ * `$type<...>` para que o compilador verifique o que entra e o que sai do banco. O conjunto
+ * de dados — as 17 tarefas, as 6 suítes, as 5 personas e as perguntas — vive em `./data.ts`,
+ * no mesmo diretório.
  *
  * Regras que valem para o protocolo inteiro:
  *  - Publicar uma versão nova NUNCA altera o que participantes anteriores viram.
  *    Cada sessão aponta para a versão que executou; versões antigas ficam congeladas.
  *  - Alterar qualquer conteúdo do protocolo exige incrementar `version`.
  *  - Integridade referencial (toda tarefa referenciada existe, nenhum código repetido)
- *    é verificada pelo validador de forma, que quebra a integração contínua antes do
- *    seed rodar. Os `path_pattern` são conferidos contra as rotas reais pelo teste de
- *    contrato, que roda no repositório da API principal.
+ *    é verificada pelo validador de forma (`./validate.ts`), que quebra a integração
+ *    contínua antes do seed rodar. Os `path_pattern` são conferidos contra as rotas reais
+ *    pelo teste de contrato, que roda no repositório da API principal.
  *
  * Referência do instrumento: mestrado/plans/oikos-walkthrough.md (§4, §6.6, §7) e os
  * cinco formulários aplicados no Google Forms.
@@ -121,6 +122,27 @@ export interface Persona {
  */
 export type QuestionScope = "SCREENER" | "PER_SUITE" | "FINAL";
 
+/**
+ * Condição de exibição de uma pergunta.
+ *
+ * Existe para o par de erro: perguntar a qualidade da mensagem de erro a quem não passou
+ * por erro nenhum produz dado sujo, e tornar o item opcional não distingue "não houve
+ * erro" de "não quis responder". O portão resolve os dois de uma vez, e a resposta dele
+ * é dado por si só — a taxa de etapas com erro.
+ *
+ * `equals` referencia o `key` da opção da pergunta controladora — nunca o `value` ordinal,
+ * que pode mudar se as opções forem reordenadas. É genérico de propósito: qualquer
+ * pergunta pode depender de qualquer outra do mesmo escopo. O validador de forma recusa
+ * dependência para pergunta inexistente, para valor fora das opções dela, e ciclo entre
+ * dependências.
+ */
+export interface QuestionDependency {
+	/** Chave da pergunta que controla a exibição. */
+	question_key: string;
+	/** `key` da opção que a controladora precisa ter para que esta pergunta apareça. */
+	equals: string;
+}
+
 interface BaseQuestion {
 	key: string;
 	scope: QuestionScope;
@@ -128,65 +150,78 @@ interface BaseQuestion {
 	label: string;
 	/** Instrução auxiliar exibida abaixo do enunciado. */
 	helper_text?: string;
+	/**
+	 * Obrigatória quando exibida. Uma pergunta com `depends_on` que não satisfaz a
+	 * condição não é exibida e, portanto, não é cobrada.
+	 */
 	required: boolean;
+	/** Ausente = sempre exibida. */
+	depends_on?: QuestionDependency;
 }
 
-/** Ponto de uma escala ordinal. `label` ausente quando só as âncoras rotulam. */
-export interface ScaleOption {
+/**
+ * Alternativa de uma pergunta de escala (`SCALE`) ou de escolha (`CHOICE`) embutida.
+ *
+ * Um único tipo para os dois papéis, e não `ScaleOption`/`ChoiceOption` separados: a
+ * distinção anterior fazia `value` ser `number` numa e `string` na outra, dois tipos para
+ * o mesmo papel. Aqui `value` é sempre a posição ordinal (útil para pontuação/ordenação),
+ * `key` é o identificador estável usado por `depends_on.equals` e por quem lê a resposta
+ * (era o que `ChoiceOption.value` fazia antes), e `label` é o texto de exibição — sempre
+ * obrigatório: sem pesquisador ao lado, uma opção sem nome obriga a pessoa a adivinhar o
+ * que ela significa, e o público inclui participantes com pouca ou nenhuma escolaridade
+ * formal.
+ */
+export interface Option {
 	value: number;
-	label?: string;
-}
-
-/** Escala ordinal numérica. As opções vivem na própria pergunta. */
-export interface ScaleQuestion extends BaseQuestion {
-	type: "SCALE";
-	options: ScaleOption[];
-	anchor_min?: string;
-	anchor_max?: string;
-	/**
-	 * Repete as âncoras em cada item, e não só no topo do bloco.
-	 * Exigência do SUS na forma mista: reduz marcação em coluna reta.
-	 */
-	repeat_anchors?: boolean;
-	/** Apenas itens do SUS. Define se o valor é invertido no cálculo. */
-	polarity?: "POSITIVE" | "NEGATIVE";
-	/**
-	 * Entra na pontuação 0–100 do SUS. Só os dez itens canônicos podem ser `true` —
-	 * um décimo primeiro item quebraria a comparabilidade com o benchmark.
-	 */
-	in_sus_score?: boolean;
-}
-
-/** Escolha única entre valores nomeados, sem ordem implícita de intensidade. */
-export interface ChoiceOption {
-	value: string;
+	key: string;
 	label: string;
 }
 
-export interface ChoiceQuestion extends BaseQuestion {
-	type: "CHOICE";
-	options: ChoiceOption[];
+/** Escala ordinal. As opções vivem na própria pergunta. */
+export interface ScaleQuestion extends BaseQuestion {
+	type: "SCALE";
+	options: Option[];
 }
+
+/**
+ * Catálogo externo que alimenta as opções de uma pergunta de escolha.
+ *
+ * Existe para estado e município: são milhares de valores, mudam fora do nosso controle
+ * e o aplicativo já consome a listagem oficial. Embutir isso no protocolo significaria
+ * versionar o IBGE junto com o instrumento. Em runtime, cada opção resolvida a partir do
+ * catálogo também tem a forma `Option` (`value` = código IBGE, `key` = código ou UF,
+ * `label` = nome) — não existe um tipo `LOCATION` à parte: estado e cidade são apenas duas
+ * perguntas `CHOICE`, cada uma com sua própria fonte.
+ *
+ * A alternativa — campo de texto livre — está descartada: é ela que produz "São Paulo",
+ * "Sao Paulo", "SP" e "são paulo" na mesma coluna, e transforma análise por região em
+ * trabalho de normalização.
+ */
+export interface RemoteOptions {
+	/** Catálogo consultado pelo aplicativo. */
+	source: "STATES" | "CITIES";
+	/**
+	 * Chave da pergunta cujo valor filtra o catálogo. Município depende da unidade
+	 * federativa escolhida; estado não depende de nada.
+	 */
+	filtered_by?: string;
+}
+
+/**
+ * Escolha única. As opções vêm de `options`, quando são poucas e estáveis, ou de
+ * `options_source`, quando vivem num catálogo externo. Exatamente um dos dois.
+ */
+export type ChoiceQuestion = BaseQuestion & { type: "CHOICE" } & (
+		| { options: Option[]; options_source?: never }
+		| { options?: never; options_source: RemoteOptions }
+	);
 
 export interface TextQuestion extends BaseQuestion {
 	type: "TEXT";
 	max_length: number;
 }
 
-/**
- * Seletor de unidade federativa e município, alimentado pela listagem oficial que o
- * aplicativo já consome. Produz dois valores, `state_uf` e `city_name`, sempre
- * escolhidos em lista — nunca digitados — o que elimina erro ortográfico.
- */
-export interface LocationQuestion extends BaseQuestion {
-	type: "LOCATION";
-}
-
-export type Question =
-	| ScaleQuestion
-	| ChoiceQuestion
-	| TextQuestion
-	| LocationQuestion;
+export type Question = ScaleQuestion | ChoiceQuestion | TextQuestion;
 
 export interface Protocol {
 	key: string;

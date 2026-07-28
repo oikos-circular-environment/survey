@@ -10,12 +10,7 @@
  * logo abaixo impede que a tupla deixe de cobrir o tipo inteiro.
  */
 
-import type {
-	PersonaKey,
-	Question,
-	QuestionScope,
-	ScaleQuestion,
-} from "../protocol/types";
+import type { PersonaKey, Question, QuestionScope } from "../protocol/types";
 
 /**
  * Falha a compilação quando `T` não é `never`.
@@ -61,20 +56,10 @@ export const questionTypes = [
 	"SCALE",
 	"CHOICE",
 	"TEXT",
-	"LOCATION",
 ] as const satisfies readonly Question["type"][];
 
 export type UncoveredQuestionType = AssertNever<
 	Exclude<Question["type"], (typeof questionTypes)[number]>
->;
-
-export const polarities = [
-	"POSITIVE",
-	"NEGATIVE",
-] as const satisfies readonly NonNullable<ScaleQuestion["polarity"]>[];
-
-export type UncoveredPolarity = AssertNever<
-	Exclude<NonNullable<ScaleQuestion["polarity"]>, (typeof polarities)[number]>
 >;
 
 export const screenSizes = ["SMALL", "MEDIUM", "LARGE"] as const;

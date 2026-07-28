@@ -27,14 +27,14 @@ import {
 	varchar,
 } from "drizzle-orm/mysql-core";
 
-import type { ChoiceOption, ScaleOption, SuccessRule } from "../protocol/types";
+import type {
+	Option,
+	QuestionDependency,
+	RemoteOptions,
+	SuccessRule,
+} from "../protocol/types";
 import { nowMs, timestampMs } from "./columns";
-import {
-	personaKeys,
-	polarities,
-	questionScopes,
-	questionTypes,
-} from "./enums";
+import { personaKeys, questionScopes, questionTypes } from "./enums";
 
 export const protocolVersions = mysqlTable(
 	"usability_protocol_versions",
@@ -155,12 +155,12 @@ export const questions = mysqlTable(
 		helperText: varchar("helper_text", { length: 512 }),
 		required: boolean("required").notNull().default(true),
 		// opções — a pergunta carrega as próprias, não referencia escala externa
-		options: json("options").$type<ScaleOption[] | ChoiceOption[]>(),
-		anchorMin: varchar("anchor_min", { length: 128 }),
-		anchorMax: varchar("anchor_max", { length: 128 }),
-		repeatAnchors: boolean("repeat_anchors").notNull().default(false),
+		options: json("options").$type<Option[]>(),
+		// catálogo externo, quando as opções não cabem no protocolo (estado, município)
+		optionsSource: json("options_source").$type<RemoteOptions>(),
 		maxLength: int("max_length"), // apenas TEXT
-		polarity: mysqlEnum("polarity", polarities), // apenas itens do questionário final
+		// condição de exibição; nulo = sempre exibida
+		dependsOn: json("depends_on").$type<QuestionDependency>(),
 	},
 	(t) => [
 		uniqueIndex("questions_version_key").on(t.protocolVersionId, t.key),

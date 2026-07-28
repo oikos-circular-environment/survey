@@ -89,14 +89,12 @@ export async function insertProtocolFixture(
 		position: 1,
 		label: "O quanto você ficou satisfeito com esta etapa?",
 		options: [
-			{ value: 1 },
-			{ value: 2 },
-			{ value: 3 },
-			{ value: 4 },
-			{ value: 5 },
+			{ value: 1, key: "TERRIBLE", label: "Nada satisfeito" },
+			{ value: 2, key: "BAD", label: "Pouco satisfeito" },
+			{ value: 3, key: "REGULAR", label: "Neutro" },
+			{ value: 4, key: "GOOD", label: "Satisfeito" },
+			{ value: 5, key: "EXCELLENT", label: "Muito satisfeito" },
 		],
-		anchorMin: "Nada satisfeito",
-		anchorMax: "Muito satisfeito",
 	});
 
 	return { protocolVersionId, personaId, suiteId, taskId, questionId };
