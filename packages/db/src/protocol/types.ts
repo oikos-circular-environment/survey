@@ -150,6 +150,8 @@ interface BaseQuestion {
 	label: string;
 	/** Instrução auxiliar exibida abaixo do enunciado. */
 	helper_text?: string;
+	/** Texto explicativo mais longo, exibido sob demanda (ícone de informação). */
+	info_text?: string;
 	/**
 	 * Obrigatória quando exibida. Uma pergunta com `depends_on` que não satisfaz a
 	 * condição não é exibida e, portanto, não é cobrada.

@@ -15,6 +15,13 @@
 			"when": 1785249404147,
 			"tag": "0001_protocol_dependency_and_remote_options",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "5",
+			"when": 1785250837763,
+			"tag": "0002_question_info_text",
+			"breakpoints": true
 		}
 	]
 }

@@ -1,47 +1,4 @@
-/**
- * Protocolo do Modo Pesquisa de Usabilidade — FONTE DA VERDADE.
- *
- * Define o experimento inteiro: personas, suítes, tarefas e perguntas. É versionado no
- * git, revisado em pull request e materializado nas tabelas `usability_*` pelo seed
- * (`../seed/seed.ts`). O endpoint público serve o protocolo lendo dessas tabelas, e o
- * aplicativo renderiza tudo a partir dele — nenhuma pergunta é embutida no código do
- * aplicativo.
- *
- * Regras:
- *  - Publicar uma versão nova NUNCA altera o que participantes anteriores viram.
- *    Cada sessão aponta para a versão que executou; versões antigas ficam congeladas.
- *  - Alterar qualquer conteúdo aqui exige incrementar `version`.
- *  - Integridade referencial (toda tarefa referenciada existe, nenhum código repetido)
- *    e os `path_pattern` de detecção são verificados pelo validador de forma
- *    (`./validate.ts`), que quebra a integração contínua antes do seed rodar.
- *
- * Referência do instrumento: mestrado/plans/oikos-walkthrough.md (§4, §6.6, §7) e os
- * cinco formulários aplicados no Google Forms. A leitura humana do conjunto de perguntas
- * está em plans/survey-usability-in-app/05-questionario.md.
- *
- * ── Versão 2 ────────────────────────────────────────────────────────────────
- *
- * As cinco perguntas abertas de fim de etapa viraram itens de escala. O formato dentro
- * do aplicativo é autoaplicado, e campo de texto obrigatório sem ninguém ao lado produz
- * abandono ou resposta de duas palavras dada só para passar da tela.
- *
- * O SUS saiu do encerramento. Perde-se a comparação com a média da indústria; ganha-se
- * densidade, porque as dimensões passam a ser medidas a cada etapa em vez de uma vez só
- * no fim.
- *
- * A cobertura das heurísticas de Nielsen subiu de quatro perguntas para sete. As três
- * restantes têm destino explícito: H5 e H7 são medidas objetivamente — taxa de erro e
- * tempo ativo por tarefa —, e H10 está fora de escopo porque o aplicativo não oferece
- * ajuda ao participante nesta versão. A justificativa anterior, de que o avaliador
- * registraria essas dimensões nas observações qualitativas, não vale mais: não há
- * avaliador.
- */
-
 import type { Option, Persona, Protocol, Question, Suite, Task } from "./types";
-
-// ═══════════════════════════════════════════════════════════════════════════
-// Tarefas
-// ═══════════════════════════════════════════════════════════════════════════
 
 const tasks: Task[] = [
 	{
@@ -83,7 +40,6 @@ const tasks: Task[] = [
 		title: "Preencher o perfil completo",
 		instruction:
 			"Acesse a área de perfil e preencha seus dados: nome completo, telefone, endereço (CEP, rua, número, bairro, cidade e estado) e adicione uma foto de perfil.",
-		// Duas ações distintas: salvar os dados e enviar a foto.
 		success: {
 			mode: "all",
 			signals: [
@@ -158,7 +114,6 @@ const tasks: Task[] = [
 		title: "Adicionar resíduos e serviços",
 		instruction:
 			"Adicione pelo menos um resíduo que você aceita para coleta (por exemplo papelão ou plástico), informando o preço por unidade de medida. Depois, adicione pelo menos um serviço oferecido, como coleta sob demanda.",
-		// A tarefa só está completa com as duas coisas cadastradas.
 		success: {
 			mode: "all",
 			signals: [
@@ -194,7 +149,6 @@ const tasks: Task[] = [
 		title: "Filtrar por tipo de resíduo",
 		instruction:
 			"Na lista de pontos de coleta, use o filtro para encontrar empresas que aceitem um tipo específico de resíduo.",
-		// Mesmo endpoint da T8 — só o parâmetro de filtro as distingue.
 		success: {
 			mode: "any",
 			signals: [
@@ -213,8 +167,6 @@ const tasks: Task[] = [
 		title: "Visualizar os detalhes de uma empresa",
 		instruction:
 			"Selecione uma empresa da lista e veja todos os seus dados: endereço, horários, resíduos aceitos, serviços oferecidos e contato.",
-		// Tarefa de leitura: os dados já vieram na busca, então nenhuma requisição nova
-		// acontece. A chegada à tela é o único sinal disponível.
 		success: {
 			mode: "any",
 			signals: [{ kind: "screen", route: "/market/[companyId]" }],
@@ -296,7 +248,6 @@ const tasks: Task[] = [
 		title: "Criar uma denúncia",
 		instruction:
 			"Registre uma denúncia de descarte irregular: informe o local, adicione uma foto ou vídeo, escreva suas observações e selecione as categorias de resíduo que você identificou.",
-		// A denúncia sem mídia não cumpre o enunciado, então ambos os sinais são exigidos.
 		success: {
 			mode: "all",
 			signals: [
@@ -350,10 +301,6 @@ const tasks: Task[] = [
 		},
 	},
 ];
-
-// ═══════════════════════════════════════════════════════════════════════════
-// Suítes
-// ═══════════════════════════════════════════════════════════════════════════
 
 const suites: Suite[] = [
 	{
@@ -411,10 +358,6 @@ const suites: Suite[] = [
 	},
 ];
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Personas — só definem o roteiro. Nenhuma pergunta é específica de persona.
-// ═══════════════════════════════════════════════════════════════════════════
-
 const personas: Persona[] = [
 	{
 		key: "COLLECTOR",
@@ -452,15 +395,6 @@ const personas: Persona[] = [
 		suite_codes: ["S1", "S2", "S5"],
 	},
 ];
-
-// ═══════════════════════════════════════════════════════════════════════════
-// Perguntas de caracterização (SCREENER)
-//
-// Respondidas uma vez, antes de começar. Diferente das demais, estas respostas são
-// gravadas em colunas próprias da sessão, e não na tabela de respostas: desde que
-// caracterizar quem se encaixa como usuário virou pergunta de pesquisa, elas passaram
-// a ser dimensão primária de análise.
-// ═══════════════════════════════════════════════════════════════════════════
 
 const ageRangeOptions: Option[] = [
 	{ value: 1, key: "UNDER_18", label: "Menos de 18 anos" },
@@ -574,12 +508,6 @@ const appExperienceOptions: Option[] = [
 ];
 
 const screenerQuestions: Question[] = [
-	// Estado e município são duas perguntas, e não um seletor único que devolve dois
-	// valores: são dois dados distintos na análise — recorte por unidade federativa é
-	// uma consulta, recorte por município é outra — e guardá-los assim mantém o valor
-	// gravado igual ao valor escolhido, sem desmembramento no meio do caminho. Em
-	// runtime, cada opção resolvida a partir do catálogo também tem a forma `Option`
-	// (value = código IBGE, key = UF/código, label = nome).
 	{
 		key: "state",
 		scope: "SCREENER",
@@ -596,8 +524,6 @@ const screenerQuestions: Question[] = [
 		type: "CHOICE",
 		required: true,
 		label: "Selecione a sua cidade",
-		// A lista sai do estado escolhido acima. Sem o filtro seriam 5.570 municípios
-		// numa lista só, com nomes repetidos entre estados.
 		options_source: { source: "CITIES", filtered_by: "state" },
 	},
 	{
@@ -651,11 +577,6 @@ const screenerQuestions: Question[] = [
 	},
 ];
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Perguntas de fim de etapa (PER_SUITE)
-// ═══════════════════════════════════════════════════════════════════════════
-
-/** Escala de satisfação da etapa, conforme Lima, Oliveira & Santana (2013). */
 const satisfactionOptions: Option[] = [
 	{ value: 1, key: "TERRIBLE", label: "Péssimo" },
 	{ value: 2, key: "BAD", label: "Ruim" },
@@ -664,13 +585,6 @@ const satisfactionOptions: Option[] = [
 	{ value: 5, key: "EXCELLENT", label: "Ótimo" },
 ];
 
-/**
- * Escala de concordância, compartilhada por referência por todos os itens de heurística
- * e de domínio, para que os rótulos não possam divergir entre eles.
- *
- * Os cinco pontos são nomeados, e não só as pontas. A forma com âncoras isoladas vinha
- * da apresentação canônica do SUS, que saiu do instrumento na versão 2.
- */
 const agreementOptions: Option[] = [
 	{ value: 1, key: "STRONGLY_DISAGREE", label: "Discordo totalmente" },
 	{ value: 2, key: "DISAGREE", label: "Discordo" },
@@ -687,18 +601,20 @@ const perSuiteQuestions: Question[] = [
 		type: "SCALE",
 		required: true,
 		label: "Como você avalia sua satisfação com esta etapa?",
+		info_text:
+			"Pense no conjunto da etapa: se foi fácil, agradável e sem complicação usar o aplicativo até aqui. Não é sobre o assunto da reciclagem, é sobre a experiência de usar o aplicativo em si.",
 		options: satisfactionOptions,
 	},
-	// ── Itens de heurística (Nielsen, 1994) ──────────────────────────────────
 	{
 		key: "terms_clarity",
 		scope: "PER_SUITE",
 		position: 2,
 		type: "SCALE",
 		required: true,
-		// H2 — Correspondência entre o sistema e o mundo real. Vem da P1 da versão 1.
 		label:
 			"Os termos e as categorias usados nesta etapa fizeram sentido para mim.",
+		info_text:
+			"Pense nos nomes e palavras usados nas telas: nomes de botões, categorias de resíduo, títulos de seção. Eles fizeram sentido pra você ou pareceram estranhos, técnicos demais ou confusos?",
 		options: agreementOptions,
 	},
 	{
@@ -707,8 +623,9 @@ const perSuiteQuestions: Question[] = [
 		position: 3,
 		type: "SCALE",
 		required: true,
-		// H3 — Controle e liberdade do usuário. Metade da P1 da versão 1.
 		label: "Sempre soube onde eu estava e como seguir para o próximo passo.",
+		info_text:
+			"Pense se, durante a etapa, você sempre soube em que parte do aplicativo estava e o que fazer para continuar, sem se sentir perdido ou sem saber para onde ir.",
 		options: agreementOptions,
 	},
 	{
@@ -717,9 +634,10 @@ const perSuiteQuestions: Question[] = [
 		position: 4,
 		type: "SCALE",
 		required: true,
-		// H6 — Reconhecimento em vez de memorização. A outra metade da P2.
 		label:
 			"Consegui concluir as tarefas sem precisar guardar na cabeça informações de uma tela para usar em outra.",
+		info_text:
+			"Pense se você precisou lembrar de números, nomes ou dados de uma tela para usar em outra tela mais à frente, ou se o aplicativo sempre mostrou o que você precisava na hora certa.",
 		options: agreementOptions,
 	},
 	{
@@ -728,8 +646,9 @@ const perSuiteQuestions: Question[] = [
 		position: 5,
 		type: "SCALE",
 		required: true,
-		// H1 — Visibilidade do status do sistema. Metade da P3 da versão 1.
 		label: "O aplicativo deixou claro o que estava acontecendo a cada passo.",
+		info_text:
+			"Pense se o aplicativo sempre avisou o que estava acontecendo: se uma ação deu certo, se algo estava carregando, ou se faltava alguma informação para continuar.",
 		options: agreementOptions,
 	},
 	{
@@ -738,9 +657,9 @@ const perSuiteQuestions: Question[] = [
 		position: 6,
 		type: "SCALE",
 		required: true,
-		// H4 — Consistência e padrões. Sem equivalente na versão 1: a heurística ficava
-		// a cargo do avaliador, que não existe no formato dentro do aplicativo.
 		label: "As telas desta etapa seguiram um padrão parecido entre si.",
+		info_text:
+			"Pense se os botões, cores, textos e formas de navegar se repetiram do mesmo jeito nas telas desta etapa, ou se cada tela parecia funcionar de um jeito diferente.",
 		options: agreementOptions,
 	},
 	{
@@ -749,18 +668,11 @@ const perSuiteQuestions: Question[] = [
 		position: 7,
 		type: "SCALE",
 		required: true,
-		// H8 — Design estético e minimalista. Também sem equivalente na versão 1.
 		label: "As telas mostraram o necessário, sem excesso de informação.",
+		info_text:
+			"Pense se as telas mostraram só o que você precisava para fazer a tarefa, ou se pareciam cheias de informação, botões ou textos que não ajudavam em nada.",
 		options: agreementOptions,
 	},
-
-	// ── H9, par condicional ──────────────────────────────────────────────────
-	//
-	// Perguntar a qualidade da mensagem de erro a quem não passou por erro nenhum
-	// produz dado sujo, e um item opcional não distinguiria "não houve erro" de "não
-	// quis responder". O portão resolve os dois, e a resposta dele é medida por si só:
-	// a taxa de etapas com erro é o que cobre H5 — prevenção de erros — que ninguém
-	// consegue auto-relatar, porque não se percebe o erro que não aconteceu.
 	{
 		key: "error_occurred",
 		scope: "PER_SUITE",
@@ -768,6 +680,8 @@ const perSuiteQuestions: Question[] = [
 		type: "CHOICE",
 		required: true,
 		label: "Aconteceu algum erro nesta etapa?",
+		info_text:
+			"Considere erro qualquer coisa que não funcionou como devia: uma mensagem de erro, uma tela que travou, um botão que não fez nada, ou uma ação que você tentou e não deu certo.",
 		options: [
 			{ value: 1, key: "YES", label: "Sim" },
 			{ value: 2, key: "NO", label: "Não" },
@@ -779,26 +693,23 @@ const perSuiteQuestions: Question[] = [
 		position: 9,
 		type: "SCALE",
 		required: true,
-		// H9 — Ajudar a reconhecer, diagnosticar e recuperar-se de erros. Metade da P3.
 		label:
 			"Quando algo deu errado, a mensagem me ajudou a entender o problema.",
+		info_text:
+			"Pense na mensagem ou aviso que apareceu quando algo deu errado: ela explicou o que aconteceu e o que fazer para resolver, ou só mostrou um erro sem explicação?",
 		options: agreementOptions,
 		depends_on: { question_key: "error_occurred", equals: "YES" },
 	},
-
-	// ── Itens de domínio ─────────────────────────────────────────────────────
-	//
-	// Não correspondem a heurísticas: medem utilidade no ecossistema da reciclagem,
-	// não usabilidade.
 	{
 		key: "personal_value",
 		scope: "PER_SUITE",
 		position: 10,
 		type: "SCALE",
 		required: true,
-		// Metade da P4 da versão 1.
 		label:
 			"O que eu fiz nesta etapa resolveria um problema real do meu dia a dia.",
+		info_text:
+			"Pense se as tarefas que você fez nesta etapa seriam realmente úteis para você fora deste teste, resolvendo algo que você precisaria fazer de verdade no seu dia a dia.",
 		options: agreementOptions,
 	},
 	{
@@ -807,9 +718,10 @@ const perSuiteQuestions: Question[] = [
 		position: 11,
 		type: "SCALE",
 		required: true,
-		// A outra metade da P4.
 		label:
 			"Esta etapa ajudaria a conectar melhor as pessoas e as empresas da reciclagem.",
+		info_text:
+			"Pense se o que você fez nesta etapa ajudaria a aproximar quem coleta, quem recicla, quem gera resíduo e quem fiscaliza — facilitando que essas pessoas e empresas se encontrem e resolvam problemas juntas.",
 		options: agreementOptions,
 	},
 	{
@@ -818,22 +730,12 @@ const perSuiteQuestions: Question[] = [
 		position: 12,
 		type: "SCALE",
 		required: true,
-		// Substitui a P5, que pedia sugestões por escrito. A escala mede a distância
-		// entre o que a etapa entrega e o que a pessoa esperava dela — diz que falta
-		// algo, nunca o quê. O comentário livre do encerramento é o que restou dessa
-		// porta.
 		label: "Esta etapa tem as funções que eu esperaria encontrar nela.",
+		info_text:
+			"Pense no que essa etapa deveria fazer: o aplicativo já tem tudo o que você esperava encontrar, ou sentiu falta de alguma função que faria sentido existir aqui?",
 		options: agreementOptions,
 	},
 ];
-
-// ═══════════════════════════════════════════════════════════════════════════
-// Perguntas de encerramento (FINAL)
-//
-// O SUS saiu na versão 2. Com ele foram embora a alternância de polaridade, a
-// pontuação 0–100 e a comparação com a média da indústria (≈ 68). O que sobra é a
-// única entrada aberta do instrumento — e, por ser a única, merece destaque na tela.
-// ═══════════════════════════════════════════════════════════════════════════
 
 const finalQuestions: Question[] = [
 	{
@@ -848,10 +750,6 @@ const finalQuestions: Question[] = [
 			"Opcional. Fale do que quiser: o que você adicionaria, removeria ou mudaria.",
 	},
 ];
-
-// ═══════════════════════════════════════════════════════════════════════════
-// Protocolo
-// ═══════════════════════════════════════════════════════════════════════════
 
 export const protocol: Protocol = {
 	key: "oikos-walkthrough",

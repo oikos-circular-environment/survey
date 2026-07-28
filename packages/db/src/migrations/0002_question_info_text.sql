@@ -1,0 +1,1 @@
+ALTER TABLE `usability_questions` ADD `info_text` varchar(1024);
