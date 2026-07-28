@@ -28,7 +28,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-    restart: unless-stopped
+    restart: "no"
 
   mysql:
     image: mysql:8.4
@@ -48,7 +48,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
+    restart: "no"
 
 volumes:
   survey_mysql_data:
