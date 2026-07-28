@@ -153,6 +153,7 @@ export const questions = mysqlTable(
 		position: int("position").notNull(),
 		label: varchar("label", { length: 512 }).notNull(),
 		helperText: varchar("helper_text", { length: 512 }),
+		infoText: varchar("info_text", { length: 1024 }),
 		required: boolean("required").notNull().default(true),
 		// opções — a pergunta carrega as próprias, não referencia escala externa
 		options: json("options").$type<Option[]>(),
