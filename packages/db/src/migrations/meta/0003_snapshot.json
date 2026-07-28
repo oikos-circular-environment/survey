@@ -1,0 +1,1132 @@
+{
+	"version": "5",
+	"dialect": "mysql",
+	"id": "8a7ec556-a33e-4a74-856c-8aec241d7154",
+	"prevId": "f4e1bc2c-72d1-42e0-b9f7-a4b5f148730a",
+	"tables": {
+		"usability_answers": {
+			"name": "usability_answers",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"session_id": {
+					"name": "session_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"suite_run_id": {
+					"name": "suite_run_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"question_id": {
+					"name": "question_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"value_text": {
+					"name": "value_text",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"value_number": {
+					"name": "value_number",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(now(3))"
+				}
+			},
+			"indexes": {
+				"answers_session_run_question": {
+					"name": "answers_session_run_question",
+					"columns": ["session_id", "suite_run_id", "question_id"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"fk_answers_session": {
+					"name": "fk_answers_session",
+					"tableFrom": "usability_answers",
+					"tableTo": "usability_sessions",
+					"columnsFrom": ["session_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"fk_answers_suite_run": {
+					"name": "fk_answers_suite_run",
+					"tableFrom": "usability_answers",
+					"tableTo": "usability_suite_runs",
+					"columnsFrom": ["suite_run_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"fk_answers_question": {
+					"name": "fk_answers_question",
+					"tableFrom": "usability_answers",
+					"tableTo": "usability_questions",
+					"columnsFrom": ["question_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"usability_answers_id": {
+					"name": "usability_answers_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"checkConstraint": {}
+		},
+		"usability_events": {
+			"name": "usability_events",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"session_id": {
+					"name": "session_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"client_event_id": {
+					"name": "client_event_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"seq": {
+					"name": "seq",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"type": {
+					"name": "type",
+					"type": "varchar(48)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"suite_code": {
+					"name": "suite_code",
+					"type": "varchar(8)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"task_code": {
+					"name": "task_code",
+					"type": "varchar(8)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"occurred_at": {
+					"name": "occurred_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"received_at": {
+					"name": "received_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(now(3))"
+				},
+				"payload": {
+					"name": "payload",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"events_session_client_event": {
+					"name": "events_session_client_event",
+					"columns": ["session_id", "client_event_id"],
+					"isUnique": true
+				},
+				"events_session_seq": {
+					"name": "events_session_seq",
+					"columns": ["session_id", "seq"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"fk_events_session": {
+					"name": "fk_events_session",
+					"tableFrom": "usability_events",
+					"tableTo": "usability_sessions",
+					"columnsFrom": ["session_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"usability_events_id": {
+					"name": "usability_events_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"checkConstraint": {}
+		},
+		"usability_sessions": {
+			"name": "usability_sessions",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"protocol_version_id": {
+					"name": "protocol_version_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"participant_code": {
+					"name": "participant_code",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"persona": {
+					"name": "persona",
+					"type": "enum('COLLECTOR','RECYCLING_COMPANY','GENERAL_COMPANY','CITIZEN','GOVERNMENT')",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"status": {
+					"name": "status",
+					"type": "enum('IN_PROGRESS','COMPLETED','ABANDONED','DISCARDED')",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "'IN_PROGRESS'"
+				},
+				"state_uf": {
+					"name": "state_uf",
+					"type": "char(2)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"city_name": {
+					"name": "city_name",
+					"type": "varchar(128)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"age_range": {
+					"name": "age_range",
+					"type": "enum('UNDER_18','AGE_18_24','AGE_25_34','AGE_35_44','AGE_45_54','AGE_55_64','OVER_64')",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"education_level": {
+					"name": "education_level",
+					"type": "enum('NONE','ELEMENTARY_INCOMPLETE','ELEMENTARY_COMPLETE','HIGHSCHOOL_INCOMPLETE','HIGHSCHOOL_COMPLETE','HIGHER_INCOMPLETE','HIGHER_COMPLETE','POSTGRADUATE')",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"chain_role": {
+					"name": "chain_role",
+					"type": "enum('INDEPENDENT_COLLECTOR','COOPERATIVE_MEMBER','RECYCLING_BUSINESS','GENERAL_BUSINESS','PUBLIC_SERVANT','RESEARCHER','NONE','OTHER')",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"waste_contact_frequency": {
+					"name": "waste_contact_frequency",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"app_experience": {
+					"name": "app_experience",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"consent_version": {
+					"name": "consent_version",
+					"type": "varchar(32)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"consent_at": {
+					"name": "consent_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"device_os": {
+					"name": "device_os",
+					"type": "varchar(32)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"device_os_version": {
+					"name": "device_os_version",
+					"type": "varchar(32)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"app_version": {
+					"name": "app_version",
+					"type": "varchar(32)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"screen_size": {
+					"name": "screen_size",
+					"type": "enum('SMALL','MEDIUM','LARGE')",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"started_at": {
+					"name": "started_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"finished_at": {
+					"name": "finished_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"active_ms": {
+					"name": "active_ms",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": 0
+				},
+				"wall_ms": {
+					"name": "wall_ms",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": 0
+				},
+				"abandon_reason": {
+					"name": "abandon_reason",
+					"type": "varchar(512)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"superseded_by": {
+					"name": "superseded_by",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(now(3))"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(now(3))"
+				}
+			},
+			"indexes": {
+				"sessions_status_created_at": {
+					"name": "sessions_status_created_at",
+					"columns": ["status", "created_at"],
+					"isUnique": false
+				},
+				"sessions_persona": {
+					"name": "sessions_persona",
+					"columns": ["persona"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"fk_sessions_version": {
+					"name": "fk_sessions_version",
+					"tableFrom": "usability_sessions",
+					"tableTo": "usability_protocol_versions",
+					"columnsFrom": ["protocol_version_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"usability_sessions_id": {
+					"name": "usability_sessions_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {
+				"usability_sessions_participant_code_unique": {
+					"name": "usability_sessions_participant_code_unique",
+					"columns": ["participant_code"]
+				}
+			},
+			"checkConstraint": {}
+		},
+		"usability_suite_runs": {
+			"name": "usability_suite_runs",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"session_id": {
+					"name": "session_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"suite_id": {
+					"name": "suite_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"position": {
+					"name": "position",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"started_at": {
+					"name": "started_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"finished_at": {
+					"name": "finished_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"active_ms": {
+					"name": "active_ms",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": 0
+				},
+				"wall_ms": {
+					"name": "wall_ms",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": 0
+				},
+				"outcome": {
+					"name": "outcome",
+					"type": "enum('YES','PARTIAL','NO')",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(now(3))"
+				}
+			},
+			"indexes": {
+				"suite_runs_session_suite": {
+					"name": "suite_runs_session_suite",
+					"columns": ["session_id", "suite_id"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"fk_suite_runs_session": {
+					"name": "fk_suite_runs_session",
+					"tableFrom": "usability_suite_runs",
+					"tableTo": "usability_sessions",
+					"columnsFrom": ["session_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"fk_suite_runs_suite": {
+					"name": "fk_suite_runs_suite",
+					"tableFrom": "usability_suite_runs",
+					"tableTo": "usability_suite_defs",
+					"columnsFrom": ["suite_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"usability_suite_runs_id": {
+					"name": "usability_suite_runs_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"checkConstraint": {}
+		},
+		"usability_task_runs": {
+			"name": "usability_task_runs",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"suite_run_id": {
+					"name": "suite_run_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"task_id": {
+					"name": "task_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"position": {
+					"name": "position",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"started_at": {
+					"name": "started_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"finished_at": {
+					"name": "finished_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"active_ms": {
+					"name": "active_ms",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": 0
+				},
+				"outcome": {
+					"name": "outcome",
+					"type": "enum('YES','PARTIAL','NO')",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"auto_detected": {
+					"name": "auto_detected",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": false
+				},
+				"self_reported": {
+					"name": "self_reported",
+					"type": "enum('YES','PARTIAL','NO')",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(now(3))"
+				}
+			},
+			"indexes": {
+				"task_runs_suite_run_task": {
+					"name": "task_runs_suite_run_task",
+					"columns": ["suite_run_id", "task_id"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"fk_task_runs_suite_run": {
+					"name": "fk_task_runs_suite_run",
+					"tableFrom": "usability_task_runs",
+					"tableTo": "usability_suite_runs",
+					"columnsFrom": ["suite_run_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"fk_task_runs_task": {
+					"name": "fk_task_runs_task",
+					"tableFrom": "usability_task_runs",
+					"tableTo": "usability_task_defs",
+					"columnsFrom": ["task_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"usability_task_runs_id": {
+					"name": "usability_task_runs_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"checkConstraint": {}
+		},
+		"usability_persona_defs": {
+			"name": "usability_persona_defs",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"protocol_version_id": {
+					"name": "protocol_version_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"key": {
+					"name": "key",
+					"type": "enum('COLLECTOR','RECYCLING_COMPANY','GENERAL_COMPANY','CITIZEN','GOVERNMENT')",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"label": {
+					"name": "label",
+					"type": "varchar(128)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"description": {
+					"name": "description",
+					"type": "varchar(512)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"position": {
+					"name": "position",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"persona_defs_version_key": {
+					"name": "persona_defs_version_key",
+					"columns": ["protocol_version_id", "key"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"fk_persona_defs_version": {
+					"name": "fk_persona_defs_version",
+					"tableFrom": "usability_persona_defs",
+					"tableTo": "usability_protocol_versions",
+					"columnsFrom": ["protocol_version_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"usability_persona_defs_id": {
+					"name": "usability_persona_defs_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"checkConstraint": {}
+		},
+		"usability_persona_suites": {
+			"name": "usability_persona_suites",
+			"columns": {
+				"persona_id": {
+					"name": "persona_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"suite_id": {
+					"name": "suite_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"position": {
+					"name": "position",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"fk_persona_suites_persona": {
+					"name": "fk_persona_suites_persona",
+					"tableFrom": "usability_persona_suites",
+					"tableTo": "usability_persona_defs",
+					"columnsFrom": ["persona_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"fk_persona_suites_suite": {
+					"name": "fk_persona_suites_suite",
+					"tableFrom": "usability_persona_suites",
+					"tableTo": "usability_suite_defs",
+					"columnsFrom": ["suite_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"usability_persona_suites_persona_id_suite_id_pk": {
+					"name": "usability_persona_suites_persona_id_suite_id_pk",
+					"columns": ["persona_id", "suite_id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"checkConstraint": {}
+		},
+		"usability_protocol_versions": {
+			"name": "usability_protocol_versions",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"key": {
+					"name": "key",
+					"type": "varchar(64)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"version": {
+					"name": "version",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"published_at": {
+					"name": "published_at",
+					"type": "timestamp(3)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(now(3))"
+				}
+			},
+			"indexes": {
+				"protocol_versions_key_version": {
+					"name": "protocol_versions_key_version",
+					"columns": ["key", "version"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {
+				"usability_protocol_versions_id": {
+					"name": "usability_protocol_versions_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"checkConstraint": {}
+		},
+		"usability_questions": {
+			"name": "usability_questions",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"protocol_version_id": {
+					"name": "protocol_version_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"key": {
+					"name": "key",
+					"type": "varchar(64)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"scope": {
+					"name": "scope",
+					"type": "enum('SCREENER','PER_SUITE','FINAL')",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"type": {
+					"name": "type",
+					"type": "enum('SCALE','CHOICE','TEXT')",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"position": {
+					"name": "position",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"label": {
+					"name": "label",
+					"type": "varchar(512)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"helper_text": {
+					"name": "helper_text",
+					"type": "varchar(512)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"info_text": {
+					"name": "info_text",
+					"type": "varchar(1024)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"required": {
+					"name": "required",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": true
+				},
+				"options": {
+					"name": "options",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"max_length": {
+					"name": "max_length",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"depends_on": {
+					"name": "depends_on",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"questions_version_key": {
+					"name": "questions_version_key",
+					"columns": ["protocol_version_id", "key"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"fk_questions_version": {
+					"name": "fk_questions_version",
+					"tableFrom": "usability_questions",
+					"tableTo": "usability_protocol_versions",
+					"columnsFrom": ["protocol_version_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"usability_questions_id": {
+					"name": "usability_questions_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"checkConstraint": {}
+		},
+		"usability_suite_defs": {
+			"name": "usability_suite_defs",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"protocol_version_id": {
+					"name": "protocol_version_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"code": {
+					"name": "code",
+					"type": "varchar(8)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"title": {
+					"name": "title",
+					"type": "varchar(128)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"objective": {
+					"name": "objective",
+					"type": "varchar(512)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"suite_defs_version_code": {
+					"name": "suite_defs_version_code",
+					"columns": ["protocol_version_id", "code"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"fk_suite_defs_version": {
+					"name": "fk_suite_defs_version",
+					"tableFrom": "usability_suite_defs",
+					"tableTo": "usability_protocol_versions",
+					"columnsFrom": ["protocol_version_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"usability_suite_defs_id": {
+					"name": "usability_suite_defs_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"checkConstraint": {}
+		},
+		"usability_task_defs": {
+			"name": "usability_task_defs",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"suite_id": {
+					"name": "suite_id",
+					"type": "char(36)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"code": {
+					"name": "code",
+					"type": "varchar(8)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"title": {
+					"name": "title",
+					"type": "varchar(128)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"instruction": {
+					"name": "instruction",
+					"type": "varchar(512)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"position": {
+					"name": "position",
+					"type": "int",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"success_rule": {
+					"name": "success_rule",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"task_defs_suite_code": {
+					"name": "task_defs_suite_code",
+					"columns": ["suite_id", "code"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"fk_task_defs_suite": {
+					"name": "fk_task_defs_suite",
+					"tableFrom": "usability_task_defs",
+					"tableTo": "usability_suite_defs",
+					"columnsFrom": ["suite_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"usability_task_defs_id": {
+					"name": "usability_task_defs_id",
+					"columns": ["id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"checkConstraint": {}
+		}
+	},
+	"views": {},
+	"_meta": {
+		"schemas": {},
+		"tables": {},
+		"columns": {}
+	},
+	"internal": {
+		"tables": {},
+		"indexes": {}
+	}
+}

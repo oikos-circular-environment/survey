@@ -63,19 +63,10 @@ function minimalProtocol(): Protocol {
 				key: "state",
 				scope: "SCREENER",
 				position: 1,
-				type: "CHOICE",
+				type: "TEXT",
 				required: true,
 				label: "Estado",
-				options_source: { source: "STATES" },
-			},
-			{
-				key: "city",
-				scope: "SCREENER",
-				position: 2,
-				type: "CHOICE",
-				required: true,
-				label: "Cidade",
-				options_source: { source: "CITIES", filtered_by: "state" },
+				max_length: 64,
 			},
 			{
 				key: "dependent",
@@ -153,23 +144,6 @@ describe("collectProtocolIssues — referências suíte/tarefa e persona/suíte"
 });
 
 describe("collectProtocolIssues — forma das opções", () => {
-	test("CHOICE_OPTIONS_XOR_VIOLATION — nenhum dos dois", () => {
-		const protocol = minimalProtocol();
-		const question = protocol.questions[0]! as Question & { type: "CHOICE" };
-		delete question.options;
-		expect(codesOf(protocol)).toContain("CHOICE_OPTIONS_XOR_VIOLATION");
-	});
-
-	test("CHOICE_OPTIONS_XOR_VIOLATION — os dois ao mesmo tempo", () => {
-		const protocol = minimalProtocol();
-		const question = protocol.questions[0]! as Question & {
-			type: "CHOICE";
-			options_source?: unknown;
-		};
-		question.options_source = { source: "STATES" };
-		expect(codesOf(protocol)).toContain("CHOICE_OPTIONS_XOR_VIOLATION");
-	});
-
 	test("OPTIONS_EMPTY", () => {
 		const protocol = minimalProtocol();
 		const question = protocol.questions[0]! as Question & {
@@ -218,47 +192,6 @@ describe("collectProtocolIssues — forma das opções", () => {
 		};
 		question.options[1]!.value = question.options[0]!.value;
 		expect(codesOf(protocol)).toContain("DUPLICATE_OPTION_VALUE_IN_QUESTION");
-	});
-});
-
-describe("collectProtocolIssues — options_source.filtered_by", () => {
-	test("OPTIONS_SOURCE_FILTERED_BY_UNDEFINED", () => {
-		const protocol = minimalProtocol();
-		const city = protocol.questions.find(
-			(q) => q.key === "city",
-		)! as Question & {
-			options_source: { filtered_by?: string };
-		};
-		city.options_source.filtered_by = "nao-existe";
-		expect(codesOf(protocol)).toContain("OPTIONS_SOURCE_FILTERED_BY_UNDEFINED");
-	});
-
-	test("OPTIONS_SOURCE_FILTERED_BY_SCOPE_MISMATCH", () => {
-		const protocol = minimalProtocol();
-		const picked = protocol.questions.find((q) => q.key === "picked")!;
-		picked.scope = "PER_SUITE";
-		const city = protocol.questions.find(
-			(q) => q.key === "city",
-		)! as Question & {
-			options_source: { filtered_by?: string };
-		};
-		city.options_source.filtered_by = "picked";
-		expect(codesOf(protocol)).toContain(
-			"OPTIONS_SOURCE_FILTERED_BY_SCOPE_MISMATCH",
-		);
-	});
-
-	test("OPTIONS_SOURCE_FILTERED_BY_NOT_CATALOG", () => {
-		const protocol = minimalProtocol();
-		const city = protocol.questions.find(
-			(q) => q.key === "city",
-		)! as Question & {
-			options_source: { filtered_by?: string };
-		};
-		city.options_source.filtered_by = "picked"; // "picked" tem options inline, não catálogo
-		expect(codesOf(protocol)).toContain(
-			"OPTIONS_SOURCE_FILTERED_BY_NOT_CATALOG",
-		);
 	});
 });
 

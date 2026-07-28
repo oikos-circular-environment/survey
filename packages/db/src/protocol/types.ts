@@ -2,7 +2,7 @@
  * Tipos do protocolo do Modo Pesquisa de Usabilidade.
  *
  * A camada de tipos vive separada da de dados porque o schema Drizzle depende dela:
- * `success_rule`, `options`, `options_source` e `depends_on` são colunas JSON e precisam de
+ * `success_rule`, `options` e `depends_on` são colunas JSON e precisam de
  * `$type<...>` para que o compilador verifique o que entra e o que sai do banco. O conjunto
  * de dados — as 17 tarefas, as 6 suítes, as 5 personas e as perguntas — vive em `./data.ts`,
  * no mesmo diretório.
@@ -185,38 +185,11 @@ export interface ScaleQuestion extends BaseQuestion {
 	options: Option[];
 }
 
-/**
- * Catálogo externo que alimenta as opções de uma pergunta de escolha.
- *
- * Existe para estado e município: são milhares de valores, mudam fora do nosso controle
- * e o aplicativo já consome a listagem oficial. Embutir isso no protocolo significaria
- * versionar o IBGE junto com o instrumento. Em runtime, cada opção resolvida a partir do
- * catálogo também tem a forma `Option` (`value` = código IBGE, `key` = código ou UF,
- * `label` = nome) — não existe um tipo `LOCATION` à parte: estado e cidade são apenas duas
- * perguntas `CHOICE`, cada uma com sua própria fonte.
- *
- * A alternativa — campo de texto livre — está descartada: é ela que produz "São Paulo",
- * "Sao Paulo", "SP" e "são paulo" na mesma coluna, e transforma análise por região em
- * trabalho de normalização.
- */
-export interface RemoteOptions {
-	/** Catálogo consultado pelo aplicativo. */
-	source: "STATES" | "CITIES";
-	/**
-	 * Chave da pergunta cujo valor filtra o catálogo. Município depende da unidade
-	 * federativa escolhida; estado não depende de nada.
-	 */
-	filtered_by?: string;
+/** Escolha única entre as opções embutidas na própria pergunta. */
+export interface ChoiceQuestion extends BaseQuestion {
+	type: "CHOICE";
+	options: Option[];
 }
-
-/**
- * Escolha única. As opções vêm de `options`, quando são poucas e estáveis, ou de
- * `options_source`, quando vivem num catálogo externo. Exatamente um dos dois.
- */
-export type ChoiceQuestion = BaseQuestion & { type: "CHOICE" } & (
-		| { options: Option[]; options_source?: never }
-		| { options?: never; options_source: RemoteOptions }
-	);
 
 export interface TextQuestion extends BaseQuestion {
 	type: "TEXT";

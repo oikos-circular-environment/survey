@@ -124,19 +124,6 @@ function checkOptionsShape(protocol: Protocol): ProtocolIssue[] {
 	const issues: ProtocolIssue[] = [];
 
 	for (const question of protocol.questions) {
-		if (question.type === "CHOICE") {
-			const hasOptions =
-				"options" in question && question.options !== undefined;
-			const hasOptionsSource =
-				"options_source" in question && question.options_source !== undefined;
-			if (hasOptions === hasOptionsSource) {
-				issues.push({
-					code: "CHOICE_OPTIONS_XOR_VIOLATION",
-					message: `Pergunta "${question.key}" precisa ter exatamente um de options/options_source`,
-				});
-			}
-		}
-
 		const options = optionsOf(question);
 		if (options === undefined) continue;
 
@@ -173,50 +160,6 @@ function checkOptionsShape(protocol: Protocol): ProtocolIssue[] {
 			issues.push({
 				code: "DUPLICATE_OPTION_VALUE_IN_QUESTION",
 				message: `Pergunta "${question.key}" tem value de opção repetido: ${value}`,
-			});
-		}
-	}
-
-	return issues;
-}
-
-function checkOptionsSourceFilters(protocol: Protocol): ProtocolIssue[] {
-	const issues: ProtocolIssue[] = [];
-	const questionsByKey = new Map(protocol.questions.map((q) => [q.key, q]));
-
-	for (const question of protocol.questions) {
-		if (
-			question.type !== "CHOICE" ||
-			!("options_source" in question) ||
-			!question.options_source
-		) {
-			continue;
-		}
-		const filteredBy = question.options_source.filtered_by;
-		if (filteredBy === undefined) continue;
-
-		const controller = questionsByKey.get(filteredBy);
-		if (!controller) {
-			issues.push({
-				code: "OPTIONS_SOURCE_FILTERED_BY_UNDEFINED",
-				message: `Pergunta "${question.key}" tem options_source.filtered_by apontando para pergunta inexistente: ${filteredBy}`,
-			});
-			continue;
-		}
-		if (controller.scope !== question.scope) {
-			issues.push({
-				code: "OPTIONS_SOURCE_FILTERED_BY_SCOPE_MISMATCH",
-				message: `Pergunta "${question.key}" tem options_source.filtered_by para "${filteredBy}", de escopo diferente`,
-			});
-		}
-		if (
-			controller.type !== "CHOICE" ||
-			!("options_source" in controller) ||
-			!controller.options_source
-		) {
-			issues.push({
-				code: "OPTIONS_SOURCE_FILTERED_BY_NOT_CATALOG",
-				message: `Pergunta "${question.key}" tem options_source.filtered_by para "${filteredBy}", que não vem de catálogo externo`,
 			});
 		}
 	}
@@ -300,7 +243,6 @@ export function collectProtocolIssues(protocol: Protocol): ProtocolIssue[] {
 		...checkSuiteTaskReferences(protocol),
 		...checkPersonaSuiteReferences(protocol),
 		...checkOptionsShape(protocol),
-		...checkOptionsSourceFilters(protocol),
 		...checkDependsOn(protocol),
 	];
 }

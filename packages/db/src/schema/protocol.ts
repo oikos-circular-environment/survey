@@ -30,7 +30,6 @@ import {
 import type {
 	Option,
 	QuestionDependency,
-	RemoteOptions,
 	SuccessRule,
 } from "../protocol/types";
 import { nowMs, timestampMs } from "./columns";
@@ -157,8 +156,6 @@ export const questions = mysqlTable(
 		required: boolean("required").notNull().default(true),
 		// opções — a pergunta carrega as próprias, não referencia escala externa
 		options: json("options").$type<Option[]>(),
-		// catálogo externo, quando as opções não cabem no protocolo (estado, município)
-		optionsSource: json("options_source").$type<RemoteOptions>(),
 		maxLength: int("max_length"), // apenas TEXT
 		// condição de exibição; nulo = sempre exibida
 		dependsOn: json("depends_on").$type<QuestionDependency>(),
