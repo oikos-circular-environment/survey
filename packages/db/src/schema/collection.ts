@@ -155,10 +155,8 @@ export const taskRuns = mysqlTable(
 		startedAt: timestampMs("started_at").notNull(),
 		finishedAt: timestampMs("finished_at"),
 		activeMs: int("active_ms").notNull().default(0),
-		outcome: mysqlEnum("outcome", outcomes), // consolidado
+		outcome: mysqlEnum("outcome", outcomes),
 		autoDetected: boolean("auto_detected").notNull().default(false),
-		// guardado separado do consolidado: divergir do detectado é dado, não ruído
-		selfReported: mysqlEnum("self_reported", outcomes),
 		createdAt: timestampMs("created_at").notNull().default(nowMs()),
 	},
 	(t) => [

@@ -1,0 +1,1 @@
+ALTER TABLE `usability_task_runs` DROP COLUMN `self_reported`;
