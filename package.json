@@ -35,6 +35,8 @@
 		"db:studio": "turbo run db:studio -F @survey/db",
 		"db:generate": "turbo run db:generate -F @survey/db",
 		"db:migrate": "turbo run db:migrate -F @survey/db",
+		"db:seed": "turbo run db:seed -F @survey/db",
+		"db:seed:demo": "turbo run db:seed:demo -F @survey/db",
 		"db:start": "docker compose up -d mysql",
 		"db:watch": "docker compose up mysql",
 		"db:stop": "docker compose stop mysql",

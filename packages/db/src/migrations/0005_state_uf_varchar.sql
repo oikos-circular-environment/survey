@@ -1,0 +1,1 @@
+ALTER TABLE `usability_sessions` MODIFY COLUMN `state_uf` varchar(64) NOT NULL;
