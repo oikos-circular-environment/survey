@@ -7,7 +7,8 @@
  * uma vez economiza três rodadas de push.
  */
 
-import type { Option, Protocol, Question, SuiteCode, TaskCode } from "./types";
+import type { Protocol, SuiteCode, TaskCode } from "./types";
+import { questionOptions } from "./types";
 
 export interface ProtocolIssue {
 	code: string;
@@ -35,10 +36,6 @@ function findDuplicates<T>(items: T[]): T[] {
 		seen.add(item);
 	}
 	return [...duplicates];
-}
-
-function optionsOf(question: Question): Option[] | undefined {
-	return "options" in question ? question.options : undefined;
 }
 
 function checkDuplicateCodes(protocol: Protocol): ProtocolIssue[] {
@@ -124,7 +121,7 @@ function checkOptionsShape(protocol: Protocol): ProtocolIssue[] {
 	const issues: ProtocolIssue[] = [];
 
 	for (const question of protocol.questions) {
-		const options = optionsOf(question);
+		const options = questionOptions(question);
 		if (options === undefined) continue;
 
 		if (options.length === 0) {
@@ -191,7 +188,7 @@ function checkDependsOn(protocol: Protocol): ProtocolIssue[] {
 			});
 		}
 
-		const controllerOptions = optionsOf(controller);
+		const controllerOptions = questionOptions(controller);
 		if (controllerOptions === undefined) {
 			issues.push({
 				code: "DEPENDS_ON_CONTROLLER_HAS_NO_INLINE_OPTIONS",

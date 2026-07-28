@@ -36,6 +36,13 @@
 			"when": 1785253538272,
 			"tag": "0004_remove_self_reported",
 			"breakpoints": true
+		},
+		{
+			"idx": 5,
+			"version": "5",
+			"when": 1785258051826,
+			"tag": "0005_state_uf_varchar",
+			"breakpoints": true
 		}
 	]
 }

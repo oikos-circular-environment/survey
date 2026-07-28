@@ -66,9 +66,9 @@ export const sessions = mysqlTable(
 			.notNull()
 			.default("IN_PROGRESS"),
 
-		// caracterização — estado e cidade vêm selecionados da listagem oficial de
-		// municípios que o aplicativo já consome, nunca digitados
-		stateUf: char("state_uf", { length: 2 }).notNull(),
+		// estado e cidade: texto resolvido pelo app a partir do catálogo dele, não
+		// controlado pelo survey — sem formato fixo garantido
+		stateUf: varchar("state_uf", { length: 64 }).notNull(),
 		cityName: varchar("city_name", { length: 128 }).notNull(),
 		ageRange: mysqlEnum("age_range", ageRanges).notNull(),
 		educationLevel: mysqlEnum("education_level", educationLevels).notNull(),

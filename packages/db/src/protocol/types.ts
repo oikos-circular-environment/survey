@@ -198,6 +198,11 @@ export interface TextQuestion extends BaseQuestion {
 
 export type Question = ScaleQuestion | ChoiceQuestion | TextQuestion;
 
+/** `undefined` para `TEXT`, que não tem opções. */
+export function questionOptions(question: Question): Option[] | undefined {
+	return "options" in question ? question.options : undefined;
+}
+
 export interface Protocol {
 	key: string;
 	version: number;
