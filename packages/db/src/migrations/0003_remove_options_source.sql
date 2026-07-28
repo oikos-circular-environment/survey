@@ -1,0 +1,1 @@
+ALTER TABLE `usability_questions` DROP COLUMN `options_source`;

@@ -1,8 +1,7 @@
 /**
  * Integra o validador de forma (`./validate.ts`) com os dados reais do instrumento
- * (`./data.ts`), e guarda contra regressão silenciosa nos dois pontos que motivaram a
- * reconciliação de tipos: a pergunta condicional `error_recovery` e o catálogo externo
- * de estado/cidade.
+ * (`./data.ts`), e guarda contra regressão silenciosa no ponto que motivou a
+ * reconciliação de tipos: a pergunta condicional `error_recovery`.
  */
 
 import { describe, expect, test } from "bun:test";
@@ -31,22 +30,11 @@ describe("protocolo real", () => {
 		});
 	});
 
-	test("estado e cidade vêm de catálogo externo, nunca de opções embutidas", () => {
+	test("estado e cidade são perguntas de texto livre, resolvidas pelo app", () => {
 		const state = protocol.questions.find((q) => q.key === "state");
 		const city = protocol.questions.find((q) => q.key === "city");
 
-		expect(state?.type).toBe("CHOICE");
-		expect(city?.type).toBe("CHOICE");
-		expect(
-			state && "options_source" in state ? state.options_source : undefined,
-		).toEqual({
-			source: "STATES",
-		});
-		expect(
-			city && "options_source" in city ? city.options_source : undefined,
-		).toEqual({
-			source: "CITIES",
-			filtered_by: "state",
-		});
+		expect(state?.type).toBe("TEXT");
+		expect(city?.type).toBe("TEXT");
 	});
 });
