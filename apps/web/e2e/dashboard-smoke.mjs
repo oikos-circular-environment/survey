@@ -21,6 +21,7 @@ const PAGES = [
 	{ path: "/dashboard/heuristics", name: "heuristics" },
 	{ path: "/dashboard/domain-items", name: "domain-items" },
 	{ path: "/dashboard/comments", name: "comments" },
+	{ path: "/dashboard/testers", name: "testers" },
 ];
 
 const browser = await chromium.launch();

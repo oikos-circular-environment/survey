@@ -86,4 +86,23 @@ export class AnswersRepository {
 				),
 			);
 	}
+
+	/** O comentário livre (se houver) de UMA sessão específica — painel de testador. */
+	async findFreeCommentBySessionId(
+		protocolVersionId: string,
+		sessionId: string,
+	): Promise<string | null> {
+		const [row] = await this.db
+			.select({ comment: answers.valueText })
+			.from(answers)
+			.innerJoin(questions, eq(answers.questionId, questions.id))
+			.where(
+				and(
+					eq(questions.protocolVersionId, protocolVersionId),
+					eq(questions.key, "free_comment"),
+					eq(answers.sessionId, sessionId),
+				),
+			);
+		return row?.comment?.trim() || null;
+	}
 }

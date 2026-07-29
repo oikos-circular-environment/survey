@@ -18,6 +18,7 @@ import {
 	MessageSquareText,
 	Sparkles,
 	Table2,
+	UserCog,
 	UsersRound,
 } from "lucide-react";
 import type { Route } from "next";
@@ -37,6 +38,10 @@ const RESULTS_ITEMS = [
 		label: "Suíte → personas",
 		icon: UsersRound,
 	},
+];
+
+const MANAGEMENT_ITEMS = [
+	{ href: "/dashboard/testers", label: "Testadores", icon: UserCog },
 ];
 
 const QUALITY_ITEMS = [
@@ -106,6 +111,7 @@ export function DashboardSidebar() {
 			<SidebarContent>
 				<NavGroup items={OVERVIEW_ITEMS} />
 				<NavGroup label="Resultados" items={RESULTS_ITEMS} />
+				<NavGroup label="Gerenciamento" items={MANAGEMENT_ITEMS} />
 				<NavGroup label="Qualidade" items={QUALITY_ITEMS} />
 			</SidebarContent>
 		</Sidebar>

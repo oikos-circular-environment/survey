@@ -15,6 +15,16 @@ export interface SuiteRunRow {
 	activeMs: number;
 }
 
+export interface SuiteRunOfSessionRow {
+	suiteId: string;
+	position: number;
+	outcome: "YES" | "PARTIAL" | "NO" | null;
+	activeMs: number;
+	wallMs: number;
+	startedAt: Date;
+	finishedAt: Date | null;
+}
+
 /** Acesso de leitura a `usability_suite_runs`. */
 export class SuiteRunsRepository {
 	constructor(private readonly db: Db) {}
@@ -32,5 +42,22 @@ export class SuiteRunsRepository {
 			.from(suiteRuns)
 			.innerJoin(sessions, eq(suiteRuns.sessionId, sessions.id))
 			.where(dateRangeFilter(sessions.startedAt, range));
+	}
+
+	/** Execuções de suíte de UMA sessão específica, na ordem em que aconteceram. */
+	async findBySessionId(sessionId: string): Promise<SuiteRunOfSessionRow[]> {
+		return this.db
+			.select({
+				suiteId: suiteRuns.suiteId,
+				position: suiteRuns.position,
+				outcome: suiteRuns.outcome,
+				activeMs: suiteRuns.activeMs,
+				wallMs: suiteRuns.wallMs,
+				startedAt: suiteRuns.startedAt,
+				finishedAt: suiteRuns.finishedAt,
+			})
+			.from(suiteRuns)
+			.where(eq(suiteRuns.sessionId, sessionId))
+			.orderBy(suiteRuns.position);
 	}
 }
