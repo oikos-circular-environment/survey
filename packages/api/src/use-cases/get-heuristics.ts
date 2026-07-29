@@ -1,9 +1,16 @@
 import type {
 	HeuristicDefinition,
 	PrevencaoErros,
-} from "@survey/db/metrics/index";
-import { HEURISTICS, mediaLikert, prevencao } from "@survey/db/metrics/index";
-import type { DateRange, Repositories } from "@survey/db/repositories/index";
+} from "@oikos-circular-environment/survey-db/metrics/index";
+import {
+	HEURISTICS,
+	mediaLikert,
+	prevencao,
+} from "@oikos-circular-environment/survey-db/metrics/index";
+import type {
+	DateRange,
+	Repositories,
+} from "@oikos-circular-environment/survey-db/repositories/index";
 
 export type HeuristicResult =
 	| { id: string; name: string; measured: true; mediaBruta: number; n: number }
@@ -18,7 +25,7 @@ export type HeuristicResult =
 
 /**
  * Alimenta os 10 cards de heurística de Nielsen. A lista e a cobertura vêm de
- * `HEURISTICS` (`@survey/db/metrics`) — este use-case só busca as respostas e aplica
+ * `HEURISTICS` (`@oikos-circular-environment/survey-db/metrics`) — este use-case só busca as respostas e aplica
  * as fórmulas, nunca redefine quais heurísticas existem ou por que faltam duas.
  */
 export async function getHeuristics(

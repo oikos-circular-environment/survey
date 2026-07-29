@@ -1,16 +1,33 @@
 {
-	"name": "@survey/db",
+	"name": "@oikos-circular-environment/survey-db",
+	"version": "0.1.0",
 	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/oikos-circular-environment/survey.git",
+		"directory": "packages/db"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com",
+		"access": "restricted"
+	},
+	"files": [
+		"dist"
+	],
+	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
+			"types": "./dist/index.d.ts",
 			"default": "./src/index.ts"
 		},
 		"./*": {
+			"types": "./dist/*.d.ts",
 			"default": "./src/*.ts"
 		}
 	},
 	"scripts": {
 		"check-types": "tsc --noEmit",
+		"build": "tsc --emitDeclarationOnly --declaration --outDir dist",
 		"test": "bun test",
 		"db:push": "drizzle-kit push",
 		"db:generate": "drizzle-kit generate",

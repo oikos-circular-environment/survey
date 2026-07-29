@@ -1,4 +1,4 @@
-import type { TesterDetail } from "@survey/api/use-cases/get-tester-detail";
+import type { TesterDetail } from "@oikos-circular-environment/survey-api/use-cases/get-tester-detail";
 import { Badge } from "@survey/ui/components/badge";
 import { Card, CardContent, CardHeader } from "@survey/ui/components/card";
 

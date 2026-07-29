@@ -1,6 +1,6 @@
 "use client";
 
-import type { HeuristicResult } from "@survey/api/use-cases/get-heuristics";
+import type { HeuristicResult } from "@oikos-circular-environment/survey-api/use-cases/get-heuristics";
 import { Badge } from "@survey/ui/components/badge";
 import { Card, CardContent, CardHeader } from "@survey/ui/components/card";
 import { Progress } from "@survey/ui/components/progress";

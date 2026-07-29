@@ -2,8 +2,11 @@ import {
 	classificar,
 	nivelDeUsabilidade,
 	satisfacaoTaxa,
-} from "@survey/db/metrics/index";
-import type { DateRange, Repositories } from "@survey/db/repositories/index";
+} from "@oikos-circular-environment/survey-db/metrics/index";
+import type {
+	DateRange,
+	Repositories,
+} from "@oikos-circular-environment/survey-db/repositories/index";
 
 import { getSuites } from "./get-suites";
 import { groupBy, mean } from "./shared/aggregate";
