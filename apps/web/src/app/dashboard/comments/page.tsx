@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent } from "@survey/ui/components/card";
+import { Card, CardContent, CardHeader } from "@survey/ui/components/card";
 import {
 	Empty,
 	EmptyDescription,
@@ -12,6 +12,10 @@ import { MessageSquareText } from "lucide-react";
 import { useDateRange } from "@/components/dashboard/date-range-context";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { trpc } from "@/utils/trpc";
+
+function participantCodeLabel(participantCode: number): string {
+	return `PSQ-${String(participantCode).padStart(4, "0")}`;
+}
 
 export default function CommentsPage() {
 	const { range } = useDateRange();
@@ -36,9 +40,15 @@ export default function CommentsPage() {
 				</Empty>
 			) : (
 				<div className="flex flex-col gap-3">
-					{comments.data?.map((comment, index) => (
-						<Card key={`${index}-${comment.slice(0, 24)}`}>
-							<CardContent className="pt-4 text-sm">{comment}</CardContent>
+					{comments.data?.map((comment) => (
+						<Card key={comment.participantCode}>
+							<CardHeader className="flex flex-row items-center justify-between">
+								<span className="font-semibold text-sm">{comment.persona}</span>
+								<span className="text-muted-foreground text-xs">
+									{participantCodeLabel(comment.participantCode)}
+								</span>
+							</CardHeader>
+							<CardContent className="text-sm">“{comment.comment}”</CardContent>
 						</Card>
 					))}
 				</div>
