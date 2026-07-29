@@ -16,6 +16,12 @@ export interface AnswerRow {
 	valueText: string | null;
 }
 
+export interface CommentRow {
+	persona: string;
+	participantCode: number;
+	comment: string | null;
+}
+
 /** Acesso de leitura a `usability_answers`. */
 export class AnswersRepository {
 	constructor(private readonly db: Db) {}
@@ -47,6 +53,35 @@ export class AnswersRepository {
 				and(
 					eq(questions.protocolVersionId, protocolVersionId),
 					eq(questions.key, key),
+					dateRangeFilter(sessions.startedAt, range),
+				),
+			);
+	}
+
+	/**
+	 * Respostas de `free_comment` (escopo FINAL) com a persona e o código do
+	 * participante da sessão de origem — usado para dar contexto a cada comentário na
+	 * tela "Comentários livres", sem expor nenhum dado identificável (o schema já
+	 * garante isso: `sessions` não guarda nada além do código sequencial e da persona
+	 * autodeclarada).
+	 */
+	async findCommentsWithContext(
+		protocolVersionId: string,
+		range: DateRange,
+	): Promise<CommentRow[]> {
+		return this.db
+			.select({
+				persona: sessions.persona,
+				participantCode: sessions.participantCode,
+				comment: answers.valueText,
+			})
+			.from(answers)
+			.innerJoin(questions, eq(answers.questionId, questions.id))
+			.innerJoin(sessions, eq(answers.sessionId, sessions.id))
+			.where(
+				and(
+					eq(questions.protocolVersionId, protocolVersionId),
+					eq(questions.key, "free_comment"),
 					dateRangeFilter(sessions.startedAt, range),
 				),
 			);

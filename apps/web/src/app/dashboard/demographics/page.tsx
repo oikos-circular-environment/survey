@@ -38,11 +38,11 @@ export default function DemographicsPage() {
 						data={demographics.data.chainRole}
 					/>
 					<DistributionBarChart
-						title="Relação com reciclagem e resíduos (1–5)"
+						title="Relação com reciclagem e resíduos"
 						data={demographics.data.wasteContactFrequency}
 					/>
 					<DistributionBarChart
-						title="Experiência com aplicativos (1–5)"
+						title="Experiência com aplicativos"
 						data={demographics.data.appExperience}
 					/>
 				</div>
