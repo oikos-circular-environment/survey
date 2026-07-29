@@ -1,5 +1,5 @@
-import { createContext } from "@survey/api/context";
-import { appRouter } from "@survey/api/routers/index";
+import { createContext } from "@oikos-circular-environment/survey-api/context";
+import { appRouter } from "@oikos-circular-environment/survey-api/routers/index";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import type { NextRequest } from "next/server";
 

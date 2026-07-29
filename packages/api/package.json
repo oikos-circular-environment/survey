@@ -1,19 +1,36 @@
 {
-	"name": "@survey/api",
+	"name": "@oikos-circular-environment/survey-api",
+	"version": "0.1.0",
 	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/oikos-circular-environment/survey.git",
+		"directory": "packages/api"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com",
+		"access": "restricted"
+	},
+	"files": [
+		"dist"
+	],
+	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
+			"types": "./dist/index.d.ts",
 			"default": "./src/index.ts"
 		},
 		"./*": {
+			"types": "./dist/*.d.ts",
 			"default": "./src/*.ts"
 		}
 	},
 	"scripts": {
-		"check-types": "tsc --noEmit"
+		"check-types": "tsc --noEmit",
+		"build": "tsc --emitDeclarationOnly --declaration --outDir dist"
 	},
 	"dependencies": {
-		"@survey/db": "workspace:*",
+		"@oikos-circular-environment/survey-db": "workspace:*",
 		"@survey/env": "workspace:*",
 		"@trpc/client": "catalog:",
 		"@trpc/server": "catalog:",

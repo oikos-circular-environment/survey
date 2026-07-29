@@ -1,5 +1,11 @@
-import { eficacia, eficiencia } from "@survey/db/metrics/index";
-import type { DateRange, Repositories } from "@survey/db/repositories/index";
+import {
+	eficacia,
+	eficiencia,
+} from "@oikos-circular-environment/survey-db/metrics/index";
+import type {
+	DateRange,
+	Repositories,
+} from "@oikos-circular-environment/survey-db/repositories/index";
 
 import { bounds, groupBy } from "./shared/aggregate";
 

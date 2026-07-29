@@ -1,5 +1,5 @@
-import { db } from "@survey/db";
-import { createRepositories } from "@survey/db/repositories/index";
+import { db } from "@oikos-circular-environment/survey-db";
+import { createRepositories } from "@oikos-circular-environment/survey-db/repositories/index";
 import type { NextRequest } from "next/server";
 
 const repositories = createRepositories(db);
