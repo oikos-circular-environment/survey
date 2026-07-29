@@ -10,8 +10,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@survey/ui/components/table";
+import { cn } from "@survey/ui/lib/utils";
 import { useQuery } from "@tanstack/react-query";
+import * as React from "react";
 
+import { CalculationDetailPanel } from "@/components/dashboard/calculation-detail-panel";
 import { ClassificationBadge } from "@/components/dashboard/classification-badge";
 import { useDateRange } from "@/components/dashboard/date-range-context";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
@@ -37,12 +40,17 @@ export default function SuitesPage() {
 	const suites = useQuery(
 		trpc.dashboard.suites.queryOptions({ from: range.from, to: range.to }),
 	);
+	const [selectedCode, setSelectedCode] = React.useState<string | null>(null);
+
+	const selectedSuite = suites.data?.find(
+		(suite) => suite.code === selectedCode,
+	);
 
 	return (
 		<div className="flex flex-col gap-6">
 			<DashboardPageHeader
 				title="Registro macro — por suíte (ISO 9241-11)"
-				description="Uma linha por etapa. Eficácia conta só outcome YES — PARTIAL entra como não concluído."
+				description="Uma linha por etapa. Eficácia conta só outcome YES — PARTIAL entra como não concluído. Selecione uma linha para ver o detalhamento do cálculo."
 			/>
 
 			<Card>
@@ -64,7 +72,18 @@ export default function SuitesPage() {
 						</TableHeader>
 						<TableBody>
 							{suites.data?.map((suite) => (
-								<TableRow key={suite.code}>
+								<TableRow
+									key={suite.code}
+									onClick={() =>
+										setSelectedCode((current) =>
+											current === suite.code ? null : suite.code,
+										)
+									}
+									className={cn(
+										"cursor-pointer",
+										selectedCode === suite.code && "bg-accent",
+									)}
+								>
 									<TableCell>
 										<Badge variant="outline">{suite.code}</Badge>
 									</TableCell>
@@ -101,6 +120,14 @@ export default function SuitesPage() {
 					</Table>
 				</CardContent>
 			</Card>
+
+			{selectedSuite ? (
+				<CalculationDetailPanel suite={selectedSuite} />
+			) : (
+				<p className="text-muted-foreground text-sm">
+					Selecione uma linha da tabela para ver o detalhamento do cálculo.
+				</p>
+			)}
 		</div>
 	);
 }

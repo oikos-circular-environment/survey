@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@survey/ui/components/badge";
 import {
 	Card,
 	CardContent,
@@ -14,6 +13,7 @@ import { useDateRange } from "@/components/dashboard/date-range-context";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { SessionsAreaChart } from "@/components/dashboard/sessions-area-chart";
 import { StatTile } from "@/components/dashboard/stat-tile";
+import { UsabilityScaleBar } from "@/components/dashboard/usability-scale-bar";
 import { trpc } from "@/utils/trpc";
 
 function formatPercent(value: number): string {
@@ -78,16 +78,52 @@ export default function OverviewPage() {
 						<CardHeader>
 							<CardTitle>Nível de Usabilidade (Us)</CardTitle>
 						</CardHeader>
-						<CardContent className="flex items-center gap-3">
-							<span className="font-semibold text-3xl">
+						<CardContent className="flex flex-col gap-4">
+							<div className="flex items-center gap-3">
+								<span className="font-semibold text-3xl">
+									{formatRate(overview.data.stats.nivelDeUsabilidadeMedio)}
+								</span>
+								<ClassificationBadge
+									classificacao={overview.data.stats.classificacao}
+								/>
+							</div>
+
+							<div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+								<div className="bg-muted p-3">
+									<p className="text-muted-foreground text-xs">Eficácia (Te)</p>
+									<p className="font-semibold text-lg">
+										{formatRate(overview.data.stats.eficaciaMedia)}
+									</p>
+								</div>
+								<div className="bg-muted p-3">
+									<p className="text-muted-foreground text-xs">
+										Eficiência (Tf)
+									</p>
+									<p className="font-semibold text-lg">
+										{formatRate(overview.data.stats.eficienciaMedia)}
+									</p>
+								</div>
+								<div className="bg-muted p-3">
+									<p className="text-muted-foreground text-xs">
+										Satisfação (Ts)
+									</p>
+									<p className="font-semibold text-lg">
+										{formatRate(overview.data.stats.satisfacaoTaxaMedia)}
+									</p>
+								</div>
+							</div>
+
+							<p className="text-muted-foreground text-sm">
+								Nível de Usabilidade = (Te + Tf + Ts) / 3 = (
+								{formatRate(overview.data.stats.eficaciaMedia)} +{" "}
+								{formatRate(overview.data.stats.eficienciaMedia)} +{" "}
+								{formatRate(overview.data.stats.satisfacaoTaxaMedia)}) / 3 ={" "}
 								{formatRate(overview.data.stats.nivelDeUsabilidadeMedio)}
-							</span>
-							<ClassificationBadge
-								classificacao={overview.data.stats.classificacao}
+							</p>
+
+							<UsabilityScaleBar
+								value={overview.data.stats.nivelDeUsabilidadeMedio}
 							/>
-							<Badge variant="secondary" className="ml-auto">
-								Us = (Eficácia + Eficiência + Satisfação) / 3
-							</Badge>
 						</CardContent>
 					</Card>
 

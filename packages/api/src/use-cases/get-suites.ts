@@ -10,21 +10,33 @@ import type { DateRange, Repositories } from "@survey/db/repositories/index";
 
 import { bounds, groupBy, mean } from "./shared/aggregate";
 
+export interface EfficiencyBoundsMs {
+	min: number;
+	max: number;
+}
+
 export interface SuiteMetrics {
 	code: string;
 	title: string;
 	taskCount: number;
 	execucoes: number;
+	execucoesComYes: number;
 	eficacia: number;
 	eficiencia: number;
 	tempoMedioMs: number;
+	/** Bounds usados no Tf desta suíte — mesmos para todas (calculados sobre o período inteiro). */
+	eficienciaBoundsMs: EfficiencyBoundsMs;
 	satisfacaoMedia: number;
 	nivelDeUsabilidade: number;
 	classificacao: string;
 }
 
 /**
- * Alimenta a tabela macro (por suíte) do dashboard.
+ * Alimenta a tabela macro (por suíte) do dashboard, incluindo os números crus
+ * (`execucoesComYes`, `eficienciaBoundsMs`, `satisfacaoMedia`) que o painel de
+ * detalhamento do cálculo (linha selecionada) usa para reproduzir a fórmula com
+ * valores reais — ver `nível-de-usabilidade.ts`/`eficiencia.ts` para o racional de
+ * cada fórmula.
  *
  * Os limites `min`/`max` de eficiência são calculados UMA VEZ sobre todas as execuções
  * de suíte do período (não por suíte individual) — é a mesma granularidade que
@@ -85,9 +97,11 @@ export async function getSuites(
 			title: suite.title,
 			taskCount: suite.taskCount,
 			execucoes: runs.length,
+			execucoesComYes: outcomes.filter((outcome) => outcome === "YES").length,
 			eficacia: te,
 			eficiencia: tf,
 			tempoMedioMs: mean(runs.map((run) => run.activeMs)),
+			eficienciaBoundsMs: efficiencyBounds,
 			satisfacaoMedia: satMedia,
 			nivelDeUsabilidade: nivel,
 			classificacao: classificar(nivel),

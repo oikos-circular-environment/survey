@@ -1,4 +1,8 @@
-import { classificar, nivelDeUsabilidade } from "@survey/db/metrics/index";
+import {
+	classificar,
+	nivelDeUsabilidade,
+	satisfacaoTaxa,
+} from "@survey/db/metrics/index";
 import type { DateRange, Repositories } from "@survey/db/repositories/index";
 
 import { getSuites } from "./get-suites";
@@ -9,6 +13,7 @@ export interface OverviewStats {
 	porStatus: Record<string, number>;
 	eficaciaMedia: number;
 	eficienciaMedia: number;
+	satisfacaoTaxaMedia: number;
 	nivelDeUsabilidadeMedio: number;
 	classificacao: string;
 }
@@ -31,7 +36,8 @@ export interface OverviewResult {
  * As médias de Eficácia/Eficiência/Nível de Usabilidade são a média NÃO PONDERADA das
  * métricas por suíte (`getSuites`) — cada suíte pesa igual independente de quantas
  * execuções teve, mesma convenção usada no card "Nível de Usabilidade" desenhado no
- * Pencil.
+ * Pencil. `satisfacaoTaxaMedia` (Ts) é exposto à parte para permitir montar a fórmula
+ * substituída na UI (Te/Tf/Ts + resultado), como no card do Pencil.
  */
 export async function getOverview(
 	repositories: Repositories,
@@ -49,14 +55,15 @@ export async function getOverview(
 
 	const eficaciaMedia = mean(suites.map((suite) => suite.eficacia));
 	const eficienciaMedia = mean(suites.map((suite) => suite.eficiencia));
+	const satisfacaoTaxaMedia = mean(
+		suites
+			.filter((suite) => suite.satisfacaoMedia > 0)
+			.map((suite) => satisfacaoTaxa(suite.satisfacaoMedia)),
+	);
 	const nivelDeUsabilidadeMedio = nivelDeUsabilidade({
 		te: eficaciaMedia,
 		tf: eficienciaMedia,
-		ts: mean(
-			suites
-				.filter((suite) => suite.satisfacaoMedia > 0)
-				.map((suite) => (suite.satisfacaoMedia - 1) / 4),
-		),
+		ts: satisfacaoTaxaMedia,
 	});
 
 	const sessionsByDay = groupBy(sessions, (session) =>
@@ -78,6 +85,7 @@ export async function getOverview(
 			porStatus,
 			eficaciaMedia,
 			eficienciaMedia,
+			satisfacaoTaxaMedia,
 			nivelDeUsabilidadeMedio,
 			classificacao: classificar(nivelDeUsabilidadeMedio),
 		},
