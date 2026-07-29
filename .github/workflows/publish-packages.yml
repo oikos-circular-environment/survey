@@ -30,6 +30,17 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      # GitHub Packages recusa publicar duas vezes a mesma versão (409 Conflict) — os
+      # package.json ficaram parados em 0.1.0 desde a primeira publicação, o que já quebrou
+      # o segundo deploy real. Em vez de depender de alguém lembrar de dar bump manual a
+      # cada PR, o patch vira o número da run: sempre novo, sempre crescente, sem estado
+      # pra rastrear.
+      - name: Bump package versions for this publish
+        run: |
+          for pkg in packages/db packages/api; do
+            (cd "$pkg" && npm pkg set version="$(node -pe "require('./package.json').version.split('.').slice(0,2).join('.')" ).${{ github.run_number }}" --no-git-tag-version)
+          done
+
       - name: Build declaration output
         run: bunx turbo run build --filter=@oikos-circular-environment/survey-db --filter=@oikos-circular-environment/survey-api
 
