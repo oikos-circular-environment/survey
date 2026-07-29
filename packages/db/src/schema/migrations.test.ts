@@ -72,17 +72,25 @@ describe("migração inicial", () => {
 		expect(tooLong).toEqual([]);
 	});
 
-	test("participant_code é auto-incremento", async () => {
-		const rows = await getDb().execute<{ extra: string }>(sql`
-			SELECT EXTRA AS extra
+	/**
+	 * `participant_code` trocou de `int autoincrement` para `char(26)` (ULID,
+	 * atribuído pela aplicação — ver S05). Este teste substitui o antigo, que
+	 * verificava o auto-incremento; agora verifica exatamente o oposto.
+	 */
+	test("participant_code é char(26) e não é auto-incremento", async () => {
+		const rows = await getDb().execute<{
+			extra: string;
+			columnType: string;
+		}>(sql`
+			SELECT EXTRA AS extra, COLUMN_TYPE AS columnType
 			FROM information_schema.COLUMNS
 			WHERE TABLE_SCHEMA = DATABASE()
 				AND TABLE_NAME = 'usability_sessions'
 				AND COLUMN_NAME = 'participant_code'
 		`);
 
-		expect(firstRow<{ extra: string }>(rows)?.extra).toContain(
-			"auto_increment",
-		);
+		const row = firstRow<{ extra: string; columnType: string }>(rows);
+		expect(row?.extra).not.toContain("auto_increment");
+		expect(row?.columnType).toBe("char(26)");
 	});
 });

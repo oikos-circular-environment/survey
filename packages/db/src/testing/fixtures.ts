@@ -7,6 +7,7 @@
  */
 
 import { randomUUID } from "node:crypto";
+import { ulid } from "ulid";
 import {
 	personaDefs,
 	personaSuites,
@@ -101,8 +102,9 @@ export async function insertProtocolFixture(
 }
 
 /**
- * Insere uma sessão completa. `participantCode` fica de fora de propósito: quem atribui
- * é o banco, e passar valor aqui mascararia exatamente o que os testes verificam.
+ * Insere uma sessão completa. `participantCode` recebe um ULID por padrão — é a
+ * aplicação quem atribui esse valor (não mais o banco, ver `schema/collection.ts`) —,
+ * mas aceita override para os testes que verificam unicidade entre sessões distintas.
  */
 export async function insertSession(
 	db: TestDatabase,
@@ -115,6 +117,7 @@ export async function insertSession(
 	await db.insert(sessions).values({
 		id,
 		protocolVersionId,
+		participantCode: ulid(),
 		persona: "CITIZEN",
 		stateUf: "SP",
 		cityName: "São Paulo",

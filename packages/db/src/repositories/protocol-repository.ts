@@ -1,7 +1,11 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import type { MySql2Database } from "drizzle-orm/mysql2";
 
-import type { Option } from "../protocol/types";
+import type {
+	Option,
+	QuestionDependency,
+	SuccessRule,
+} from "../protocol/types";
 import type * as schema from "../schema/index";
 import {
 	personaDefs,
@@ -39,6 +43,47 @@ export interface PersonaDefRow {
 	key: string;
 	label: string;
 	suiteIds: string[];
+}
+
+export interface ActiveProtocolVersionRow {
+	id: string;
+	key: string;
+	version: number;
+}
+
+export interface ProtocolPersonaRow {
+	key: string;
+	label: string;
+	description: string;
+	suiteCodes: string[];
+}
+
+export interface ProtocolSuiteRow {
+	code: string;
+	title: string;
+	objective: string;
+	taskCodes: string[];
+}
+
+export interface ProtocolTaskRow {
+	code: string;
+	title: string;
+	instruction: string;
+	successRule: SuccessRule;
+}
+
+export interface ProtocolQuestionRow {
+	key: string;
+	scope: string;
+	type: string;
+	position: number;
+	label: string;
+	helperText: string | null;
+	infoText: string | null;
+	required: boolean;
+	options: Option[] | null;
+	maxLength: number | null;
+	dependsOn: QuestionDependency | null;
 }
 
 /**
@@ -178,5 +223,247 @@ export class ProtocolRepository {
 				),
 			);
 		return rows.map((row) => ({ key: row.key, options: row.options ?? [] }));
+	}
+
+	/**
+	 * Igual a `getActiveProtocolVersionId`, mas devolve `key`/`version` junto do id —
+	 * usado pelo endpoint E1 (`usability.protocol`), que precisa dos três no corpo da
+	 * resposta.
+	 */
+	async getActiveProtocolVersion(
+		key = "oikos-walkthrough",
+	): Promise<ActiveProtocolVersionRow> {
+		const [row] = await this.db
+			.select({
+				id: protocolVersions.id,
+				key: protocolVersions.key,
+				version: protocolVersions.version,
+			})
+			.from(protocolVersions)
+			.where(eq(protocolVersions.key, key))
+			.orderBy(desc(protocolVersions.version))
+			.limit(1);
+		if (!row) {
+			throw new Error(
+				`Protocolo "${key}" não está semeado — rode "bun run db:seed".`,
+			);
+		}
+		return row;
+	}
+
+	/**
+	 * Resolve `(key, version)` exatos para o id da versão — ao contrário de
+	 * `getActiveProtocolVersion`, não pega a mais recente: E2 fixa a versão que a
+	 * sessão executou (A2), então uma sessão aberta contra uma versão antiga ainda
+	 * publicada precisa continuar resolvendo para ela. Devolve `undefined`, não lança,
+	 * porque "versão inexistente" é erro de validação de entrada, não falha de seed.
+	 */
+	async getProtocolVersionId(
+		key: string,
+		version: number,
+	): Promise<string | undefined> {
+		const [row] = await this.db
+			.select({ id: protocolVersions.id })
+			.from(protocolVersions)
+			.where(
+				and(
+					eq(protocolVersions.key, key),
+					eq(protocolVersions.version, version),
+				),
+			);
+		return row?.id;
+	}
+
+	/** Personas do protocolo com os códigos de suíte (não os ids) — forma do contrato E1. */
+	async getProtocolPersonas(
+		protocolVersionId: string,
+	): Promise<ProtocolPersonaRow[]> {
+		const personas = await this.db
+			.select({
+				id: personaDefs.id,
+				key: personaDefs.key,
+				label: personaDefs.label,
+				description: personaDefs.description,
+			})
+			.from(personaDefs)
+			.where(eq(personaDefs.protocolVersionId, protocolVersionId))
+			.orderBy(personaDefs.position);
+
+		const personaIds = personas.map((persona) => persona.id);
+		const links =
+			personaIds.length === 0
+				? []
+				: await this.db
+						.select({
+							personaId: personaSuites.personaId,
+							suiteCode: suiteDefs.code,
+						})
+						.from(personaSuites)
+						.innerJoin(suiteDefs, eq(personaSuites.suiteId, suiteDefs.id))
+						.where(inArray(personaSuites.personaId, personaIds))
+						.orderBy(personaSuites.position);
+
+		const suiteCodesByPersonaId = new Map<string, string[]>();
+		for (const link of links) {
+			const list = suiteCodesByPersonaId.get(link.personaId) ?? [];
+			list.push(link.suiteCode);
+			suiteCodesByPersonaId.set(link.personaId, list);
+		}
+
+		return personas.map((persona) => ({
+			key: persona.key,
+			label: persona.label,
+			description: persona.description,
+			suiteCodes: suiteCodesByPersonaId.get(persona.id) ?? [],
+		}));
+	}
+
+	/** Suítes do protocolo com objetivo e códigos de tarefa (não os ids) — forma do contrato E1. */
+	async getProtocolSuites(
+		protocolVersionId: string,
+	): Promise<ProtocolSuiteRow[]> {
+		const suites = await this.db
+			.select({
+				id: suiteDefs.id,
+				code: suiteDefs.code,
+				title: suiteDefs.title,
+				objective: suiteDefs.objective,
+			})
+			.from(suiteDefs)
+			.where(eq(suiteDefs.protocolVersionId, protocolVersionId));
+
+		const suiteIds = suites.map((suite) => suite.id);
+		const tasks =
+			suiteIds.length === 0
+				? []
+				: await this.db
+						.select({ suiteId: taskDefs.suiteId, code: taskDefs.code })
+						.from(taskDefs)
+						.where(inArray(taskDefs.suiteId, suiteIds))
+						.orderBy(taskDefs.position);
+
+		const taskCodesBySuiteId = new Map<string, string[]>();
+		for (const task of tasks) {
+			const list = taskCodesBySuiteId.get(task.suiteId) ?? [];
+			list.push(task.code);
+			taskCodesBySuiteId.set(task.suiteId, list);
+		}
+
+		return suites.map((suite) => ({
+			code: suite.code,
+			title: suite.title,
+			objective: suite.objective,
+			taskCodes: taskCodesBySuiteId.get(suite.id) ?? [],
+		}));
+	}
+
+	/**
+	 * Tarefas do protocolo com a regra de sucesso inteira — forma do contrato E1.
+	 *
+	 * O seed grava uma linha de `task_defs` por par (suíte, tarefa) — uma mesma tarefa
+	 * referenciada por duas suítes (ex.: T8 em S1 e S6) vira duas linhas, com o mesmo
+	 * conteúdo (`seed.ts`). O contrato E1 quer as tarefas únicas, uma vez cada, e as
+	 * suítes se referem a elas por código (`suites[].task_codes`) — daí o `Map` por
+	 * código: mantém só a primeira ocorrência, cujo conteúdo é idêntico às demais.
+	 */
+	async getProtocolTasks(
+		protocolVersionId: string,
+	): Promise<ProtocolTaskRow[]> {
+		const rows = await this.db
+			.select({
+				code: taskDefs.code,
+				title: taskDefs.title,
+				instruction: taskDefs.instruction,
+				successRule: taskDefs.successRule,
+			})
+			.from(taskDefs)
+			.innerJoin(suiteDefs, eq(taskDefs.suiteId, suiteDefs.id))
+			.where(eq(suiteDefs.protocolVersionId, protocolVersionId));
+
+		const uniqueByCode = new Map<string, ProtocolTaskRow>();
+		for (const row of rows) {
+			if (!uniqueByCode.has(row.code)) uniqueByCode.set(row.code, row);
+		}
+		return [...uniqueByCode.values()];
+	}
+
+	/** Todas as perguntas do protocolo, na forma completa do contrato E1. */
+	async getProtocolQuestions(
+		protocolVersionId: string,
+	): Promise<ProtocolQuestionRow[]> {
+		const rows = await this.db
+			.select({
+				key: questions.key,
+				scope: questions.scope,
+				type: questions.type,
+				position: questions.position,
+				label: questions.label,
+				helperText: questions.helperText,
+				infoText: questions.infoText,
+				required: questions.required,
+				options: questions.options,
+				maxLength: questions.maxLength,
+				dependsOn: questions.dependsOn,
+			})
+			.from(questions)
+			.where(eq(questions.protocolVersionId, protocolVersionId))
+			.orderBy(questions.position);
+
+		return rows.map((row) => ({
+			...row,
+			helperText: row.helperText ?? null,
+			infoText: row.infoText ?? null,
+			options: row.options ?? null,
+			maxLength: row.maxLength ?? null,
+			dependsOn: row.dependsOn ?? null,
+		}));
+	}
+
+	/** Id da suíte pelo código, dentro de uma versão — usado por E3 para resolver `suite.code`. */
+	async findSuiteIdByCode(
+		protocolVersionId: string,
+		code: string,
+	): Promise<string | undefined> {
+		const [row] = await this.db
+			.select({ id: suiteDefs.id })
+			.from(suiteDefs)
+			.where(
+				and(
+					eq(suiteDefs.protocolVersionId, protocolVersionId),
+					eq(suiteDefs.code, code),
+				),
+			);
+		return row?.id;
+	}
+
+	/** Ids das tarefas informadas, pelo código, dentro de uma suíte — usado por E3. */
+	async findTaskIdsByCodes(
+		suiteId: string,
+		codes: string[],
+	): Promise<Map<string, string>> {
+		if (codes.length === 0) return new Map();
+		const rows = await this.db
+			.select({ id: taskDefs.id, code: taskDefs.code })
+			.from(taskDefs)
+			.where(and(eq(taskDefs.suiteId, suiteId), inArray(taskDefs.code, codes)));
+		return new Map(rows.map((row) => [row.code, row.id]));
+	}
+
+	/** Ids das perguntas informadas, pela chave — usado por E3/E4 para resolver `question_key`. */
+	async findQuestionIdsByKeys(
+		protocolVersionId: string,
+		keys: string[],
+	): Promise<Map<string, string>> {
+		if (keys.length === 0) return new Map();
+		const rows = await this.db
+			.select({ id: questions.id, key: questions.key })
+			.from(questions)
+			.where(
+				and(
+					eq(questions.protocolVersionId, protocolVersionId),
+					inArray(questions.key, keys),
+				),
+			);
+		return new Map(rows.map((row) => [row.key, row.id]));
 	}
 }

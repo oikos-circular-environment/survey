@@ -37,6 +37,7 @@
 		"db:migrate": "turbo run db:migrate -F @oikos-circular-environment/survey-db",
 		"db:seed": "turbo run db:seed -F @oikos-circular-environment/survey-db",
 		"db:seed:demo": "turbo run db:seed:demo -F @oikos-circular-environment/survey-db",
+		"db:seed:auth": "turbo run db:seed:auth -F @oikos-circular-environment/survey-db",
 		"db:start": "docker compose up -d mysql",
 		"db:watch": "docker compose up mysql",
 		"db:stop": "docker compose stop mysql",

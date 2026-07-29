@@ -1,22 +1,22 @@
 /**
- * Critério de aceite: `participant_code` é auto-incremento e único, e duas sessões
- * criadas em sequência recebem números consecutivos sem que a aplicação atribua valor.
- *
- * Nenhuma inserção aqui passa `participantCode`. Se algum dia o código da aplicação
- * precisar atribuir esse número, é este teste que deixa de fazer sentido.
+ * Critério de aceite: `participant_code` é único por sessão e não é atribuído pelo
+ * banco — é a aplicação quem gera o ULID antes de gravar (ver
+ * `SessionsRepository.upsertHeader`, S05). Este arquivo cobre só a garantia de schema
+ * (unicidade); a atribuição em si é testada em `repositories/sessions-repository.test.ts`.
  */
 
 import { describe, expect, test } from "bun:test";
-import { asc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
+import { ulid } from "ulid";
 
 import { insertProtocolFixture, insertSession } from "../testing/fixtures";
 import { withEphemeralDatabase } from "../testing/suite";
 import { sessions } from "./collection";
 
-describe("numeração do participante", () => {
+describe("unicidade do participant_code", () => {
 	const getDb = withEphemeralDatabase();
 
-	test("duas sessões em sequência recebem números consecutivos", async () => {
+	test("duas sessões distintas recebem participant_code distintos", async () => {
 		const db = getDb();
 		const { protocolVersionId } = await insertProtocolFixture(db);
 
@@ -25,17 +25,28 @@ describe("numeração do participante", () => {
 
 		const rows = await db
 			.select({ id: sessions.id, participantCode: sessions.participantCode })
-			.from(sessions)
-			.orderBy(asc(sessions.participantCode));
+			.from(sessions);
 
 		expect(rows).toHaveLength(2);
+		const first = rows.find((row) => row.id === firstId);
+		const second = rows.find((row) => row.id === secondId);
+		expect(first?.participantCode).toBeDefined();
+		expect(second?.participantCode).toBeDefined();
+		expect(first?.participantCode).not.toBe(second?.participantCode);
+	});
 
-		const [before, after] = rows;
-		if (!before || !after) throw new Error("esperava duas sessões");
+	test("a coluna recusa participant_code repetido entre sessões", async () => {
+		const db = getDb();
+		const { protocolVersionId } = await insertProtocolFixture(db);
 
-		expect(before.id).toBe(firstId);
-		expect(after.id).toBe(secondId);
-		expect(after.participantCode).toBe(before.participantCode + 1);
+		const sharedCode = ulid();
+		await insertSession(db, protocolVersionId, {
+			participantCode: sharedCode,
+		});
+
+		await expect(
+			insertSession(db, protocolVersionId, { participantCode: sharedCode }),
+		).rejects.toThrow();
 	});
 
 	test("o status começa em IN_PROGRESS sem que a inserção o informe", async () => {

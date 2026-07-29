@@ -1,0 +1,96 @@
+import { describe, expect, test } from "bun:test";
+import { protocol } from "@oikos-circular-environment/survey-db/protocol/data";
+
+import { getProtocol } from "./get-protocol";
+import { setupUsabilityTest } from "./usability-test-helpers";
+
+describe("getProtocol", () => {
+	test("a resposta valida contra o formato documentado em E1", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const response = await getProtocol(repositories);
+
+			expect(response.key).toBe(protocol.key);
+			expect(response.version).toBe(protocol.version);
+			expect(response.personas.length).toBe(protocol.personas.length);
+			expect(response.suites.length).toBe(protocol.suites.length);
+			expect(response.tasks.length).toBe(protocol.tasks.length);
+			expect(response.questions.length).toBe(protocol.questions.length);
+
+			for (const persona of response.personas) {
+				expect(typeof persona.key).toBe("string");
+				expect(typeof persona.label).toBe("string");
+				expect(typeof persona.description).toBe("string");
+				expect(Array.isArray(persona.suite_codes)).toBe(true);
+				expect(persona.suite_codes.length).toBeGreaterThan(0);
+			}
+
+			for (const suite of response.suites) {
+				expect(typeof suite.title).toBe("string");
+				expect(typeof suite.objective).toBe("string");
+				expect(Array.isArray(suite.task_codes)).toBe(true);
+				expect(suite.task_codes.length).toBeGreaterThan(0);
+			}
+
+			for (const question of response.questions) {
+				expect(["SCREENER", "PER_SUITE", "FINAL"]).toContain(question.scope);
+				expect(["SCALE", "CHOICE", "TEXT"]).toContain(question.type);
+				expect(typeof question.required).toBe("boolean");
+			}
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("a regra de sucesso sai inteira para uma tarefa com composição `all`", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const response = await getProtocol(repositories);
+
+			const allModeTask = response.tasks.find((task) => task.code === "T3");
+			expect(allModeTask).toBeDefined();
+			expect(allModeTask?.success.mode).toBe("all");
+			expect(allModeTask?.success.signals.length).toBeGreaterThan(1);
+			for (const signal of allModeTask?.success.signals ?? []) {
+				expect(signal.kind).toBe("api");
+			}
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("a regra de sucesso sai inteira para uma tarefa com casamento por parâmetro de busca", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const response = await getProtocol(repositories);
+
+			const queryMatchTask = response.tasks.find((task) => task.code === "T9");
+			expect(queryMatchTask).toBeDefined();
+			expect(queryMatchTask?.success.mode).toBe("any");
+			const [signal] = queryMatchTask?.success.signals ?? [];
+			expect(signal?.kind).toBe("api");
+			if (signal?.kind === "api") {
+				expect(signal.query).toEqual({ category: true });
+			}
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("perguntas condicionais trazem `depends_on` intacto", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const response = await getProtocol(repositories);
+
+			const dependent = response.questions.find(
+				(question) => question.key === "error_recovery",
+			);
+			expect(dependent?.depends_on).toEqual({
+				question_key: "error_occurred",
+				equals: "YES",
+			});
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+});
