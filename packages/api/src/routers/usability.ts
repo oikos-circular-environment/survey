@@ -1,4 +1,4 @@
-import { publicProcedure, router } from "../index";
+import { apiKeyProcedure, router } from "../index";
 import { assertWithinBodyLimit } from "../lib/body-size";
 import { enforceUsabilityGuard } from "../lib/usability-guard";
 import { abandonUsabilitySession } from "../use-cases/abandon-usability-session";
@@ -19,20 +19,22 @@ import {
  * `usability.session.upsert`, `usability.checkpoint.send`, `usability.finish`,
  * `usability.abandon`.
  *
- * Cada resolver chama `enforceUsabilityGuard` explicitamente (chave de cliente + limite
- * de requisições, S08) em vez de um middleware aplicado à `publicProcedure` base — que
- * exigiria lista de exceções para as procedures de `dashboard.*`, e é a lista de
- * exceções que erra. Pelo mesmo motivo, o teto de corpo (256 KB) só é checado em
+ * Constroem a partir de `apiKeyProcedure` (a chave de cliente vira middleware, não mais
+ * checagem manual — ver `index.ts`), e não de `dashboardProcedure`: são "públicas" no
+ * sentido de A5 — sem conta de pesquisador nem de participante, então nunca exigem
+ * sessão. Cada resolver ainda chama `enforceUsabilityGuard` explicitamente, mas só pelo
+ * limite de requisições agora (S08/R3) — dimensionado para o tráfego destas cinco rotas,
+ * não estendido a `dashboard.*`. O teto de corpo (256 KB) só é checado em
  * `checkpoint.send`, a única das cinco cujo payload cresce com o uso.
  */
 export const usabilityRouter = router({
-	protocol: publicProcedure.query(({ ctx }) => {
+	protocol: apiKeyProcedure.query(({ ctx }) => {
 		enforceUsabilityGuard(ctx);
 		return getProtocol(ctx.repositories);
 	}),
 
 	session: router({
-		upsert: publicProcedure
+		upsert: apiKeyProcedure
 			.input(usabilitySessionUpsertInput)
 			.mutation(({ ctx, input }) => {
 				enforceUsabilityGuard(ctx);
@@ -41,7 +43,7 @@ export const usabilityRouter = router({
 	}),
 
 	checkpoint: router({
-		send: publicProcedure
+		send: apiKeyProcedure
 			.input(usabilityCheckpointInput)
 			.mutation(({ ctx, input }) => {
 				enforceUsabilityGuard(ctx);
@@ -50,14 +52,14 @@ export const usabilityRouter = router({
 			}),
 	}),
 
-	finish: publicProcedure
+	finish: apiKeyProcedure
 		.input(usabilityFinishInput)
 		.mutation(({ ctx, input }) => {
 			enforceUsabilityGuard(ctx);
 			return finishUsabilitySession(ctx.repositories, input);
 		}),
 
-	abandon: publicProcedure
+	abandon: apiKeyProcedure
 		.input(usabilityAbandonInput)
 		.mutation(({ ctx, input }) => {
 			enforceUsabilityGuard(ctx);

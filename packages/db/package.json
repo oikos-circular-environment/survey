@@ -34,10 +34,13 @@
 		"db:studio": "drizzle-kit studio",
 		"db:migrate": "drizzle-kit migrate",
 		"db:seed": "bun run src/seed/run.ts",
-		"db:seed:demo": "bun run src/factories/demo-seed.ts"
+		"db:seed:demo": "bun run src/factories/demo-seed.ts",
+		"db:seed:auth": "bun run src/seed/auth-run.ts",
+		"db:auth:generate": "better-auth generate --config src/auth/config.ts --output src/schema/auth.ts -y"
 	},
 	"dependencies": {
 		"@survey/env": "workspace:*",
+		"better-auth": "^1.6.25",
 		"dotenv": "catalog:",
 		"drizzle-orm": "^0.45.2",
 		"mysql2": "^3.22.5",
@@ -45,6 +48,7 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@better-auth/cli": "^1.4.21",
 		"@faker-js/faker": "^10.5.0",
 		"@survey/config": "workspace:*",
 		"@types/bun": "^1.3.14",

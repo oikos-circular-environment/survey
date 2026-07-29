@@ -1,4 +1,5 @@
 import type { AppRouter } from "@oikos-circular-environment/survey-api/routers/index";
+import { env } from "@survey/env/web";
 import { QueryCache, QueryClient } from "@tanstack/react-query";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
@@ -19,10 +20,21 @@ export const queryClient = new QueryClient({
 	}),
 });
 
+/**
+ * O próprio `web` é cliente do próprio backend (S08 estendido, ver `apiKeyProcedure` em
+ * `packages/api`): toda procedure tRPC exige esta chave, sem exceção para chamadas de
+ * dentro do app. Extraída à parte para `trpc.test.ts` verificar sem montar o cliente
+ * inteiro.
+ */
+export function clientHeaders(): Record<string, string> {
+	return { "x-client-key": env.NEXT_PUBLIC_CLIENT_API_KEY };
+}
+
 const trpcClient = createTRPCClient<AppRouter>({
 	links: [
 		httpBatchLink({
 			url: "/api/trpc",
+			headers: clientHeaders,
 		}),
 	],
 });
