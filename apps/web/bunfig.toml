@@ -1,0 +1,5 @@
+[test]
+# Mesmo motivo do bunfig.toml de packages/api e packages/db: publica as variáveis de
+# ambiente antes de qualquer import — proxy.test.ts sobe um banco efêmero e precisa da
+# mesma credencial.
+preload = ["@oikos-circular-environment/survey-db/load-env"]

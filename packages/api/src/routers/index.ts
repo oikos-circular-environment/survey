@@ -1,9 +1,9 @@
-import { publicProcedure, router } from "../index";
+import { apiKeyProcedure, router } from "../index";
 import { dashboardRouter } from "./dashboard";
 import { usabilityRouter } from "./usability";
 
 export const appRouter = router({
-	healthCheck: publicProcedure.query(() => {
+	healthCheck: apiKeyProcedure.query(() => {
 		return "OK";
 	}),
 	dashboard: dashboardRouter,

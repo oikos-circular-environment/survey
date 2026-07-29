@@ -7,7 +7,7 @@ import { assertClientKey } from "./client-key";
 describe("assertClientKey", () => {
 	test("aceita a chave correta", () => {
 		const headers = new Headers({
-			"x-client-key": env.USABILITY_CLIENT_KEY,
+			"x-client-key": env.CLIENT_API_KEY,
 		});
 		expect(() => assertClientKey(headers)).not.toThrow();
 	});

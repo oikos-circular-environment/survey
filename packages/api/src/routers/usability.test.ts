@@ -24,7 +24,7 @@ function nextIp(): string {
 
 function headersFor(ip: string, withKey = true): Headers {
 	const headers = new Headers({ "x-forwarded-for": ip });
-	if (withKey) headers.set("x-client-key", env.USABILITY_CLIENT_KEY);
+	if (withKey) headers.set("x-client-key", env.CLIENT_API_KEY);
 	return headers;
 }
 

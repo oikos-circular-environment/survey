@@ -3,6 +3,7 @@
 import {
 	Sidebar,
 	SidebarContent,
+	SidebarFooter,
 	SidebarGroup,
 	SidebarGroupContent,
 	SidebarGroupLabel,
@@ -13,6 +14,7 @@ import {
 } from "@survey/ui/components/sidebar";
 import {
 	ClipboardList,
+	KeyRound,
 	LayoutDashboard,
 	ListChecks,
 	MessageSquareText,
@@ -24,6 +26,8 @@ import {
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+import { LogoutButton } from "@/components/auth/logout-button";
 
 const OVERVIEW_ITEMS = [
 	{ href: "/dashboard", label: "Visão geral", icon: LayoutDashboard },
@@ -42,6 +46,10 @@ const RESULTS_ITEMS = [
 
 const MANAGEMENT_ITEMS = [
 	{ href: "/dashboard/testers", label: "Testadores", icon: UserCog },
+];
+
+const ACCOUNT_ITEMS = [
+	{ href: "/dashboard/account", label: "Conta", icon: KeyRound },
 ];
 
 const QUALITY_ITEMS = [
@@ -114,6 +122,14 @@ export function DashboardSidebar() {
 				<NavGroup label="Gerenciamento" items={MANAGEMENT_ITEMS} />
 				<NavGroup label="Qualidade" items={QUALITY_ITEMS} />
 			</SidebarContent>
+			<SidebarFooter>
+				<NavGroup items={ACCOUNT_ITEMS} />
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<LogoutButton />
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarFooter>
 		</Sidebar>
 	);
 }

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { publicProcedure, router } from "../index";
+import { dashboardProcedure, router } from "../index";
 import { getComments } from "../use-cases/get-comments";
 import { getDemographics } from "../use-cases/get-demographics";
 import { getDomainItems } from "../use-cases/get-domain-items";
@@ -18,17 +18,21 @@ import { dateRangeInput, paginationInput } from "./schemas";
  * Um procedure por tela do dashboard (Pencil `survey-pencil.pen`). Cada procedure é só
  * validação de input + delegação para o use-case correspondente — nenhuma consulta ou
  * fórmula vive aqui, ver `use-cases/` e `@oikos-circular-environment/survey-db/{repositories,metrics}`.
+ *
+ * Construído a partir de `dashboardProcedure` (`index.ts`): chave de cliente **e**
+ * sessão de administrador do Better Auth, as duas sempre exigidas juntas (S09/S10/A9) —
+ * ver `lib/dashboard-guard.ts`.
  */
 export const dashboardRouter = router({
-	overview: publicProcedure
+	overview: dashboardProcedure
 		.input(dateRangeInput)
 		.query(({ ctx, input }) => getOverview(ctx.repositories, input)),
 
-	suites: publicProcedure
+	suites: dashboardProcedure
 		.input(dateRangeInput)
 		.query(({ ctx, input }) => getSuites(ctx.repositories, input)),
 
-	tasks: publicProcedure
+	tasks: dashboardProcedure
 		.input(dateRangeInput.merge(paginationInput))
 		.query(({ ctx, input }) =>
 			getTasks(ctx.repositories, {
@@ -38,35 +42,35 @@ export const dashboardRouter = router({
 			}),
 		),
 
-	personas: publicProcedure
+	personas: dashboardProcedure
 		.input(dateRangeInput)
 		.query(({ ctx, input }) => getPersonas(ctx.repositories, input)),
 
-	suitePersonas: publicProcedure
+	suitePersonas: dashboardProcedure
 		.input(dateRangeInput)
 		.query(({ ctx, input }) => getSuitePersonas(ctx.repositories, input)),
 
-	demographics: publicProcedure
+	demographics: dashboardProcedure
 		.input(dateRangeInput)
 		.query(({ ctx, input }) => getDemographics(ctx.repositories, input)),
 
-	heuristics: publicProcedure
+	heuristics: dashboardProcedure
 		.input(dateRangeInput)
 		.query(({ ctx, input }) => getHeuristics(ctx.repositories, input)),
 
-	domainItems: publicProcedure
+	domainItems: dashboardProcedure
 		.input(dateRangeInput)
 		.query(({ ctx, input }) => getDomainItems(ctx.repositories, input)),
 
-	comments: publicProcedure
+	comments: dashboardProcedure
 		.input(dateRangeInput)
 		.query(({ ctx, input }) => getComments(ctx.repositories, input)),
 
-	testers: publicProcedure
+	testers: dashboardProcedure
 		.input(dateRangeInput)
 		.query(({ ctx, input }) => getTesters(ctx.repositories, input)),
 
-	testerDetail: publicProcedure
+	testerDetail: dashboardProcedure
 		.input(z.object({ sessionId: z.string() }))
 		.query(({ ctx, input }) =>
 			getTesterDetail(ctx.repositories, input.sessionId),

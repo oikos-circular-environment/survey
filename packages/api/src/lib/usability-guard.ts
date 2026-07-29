@@ -1,16 +1,14 @@
-import { assertClientKey } from "./client-key";
 import { clientIpFrom, usabilityRateLimiter } from "./rate-limit";
 
 /**
- * Chave de cliente + limite de requisições (S08), na ordem que a mesma ticket exige:
- * chave primeiro — requisição sem chave ou com chave errada é recusada antes de
- * qualquer outro processamento, incluindo a contagem do rate limit.
+ * Limite de requisições por IP (S08/R3), só nas cinco procedures de `usability.*`.
  *
- * Chamado no início do resolver de cada uma das cinco procedures públicas de
- * `usability.*`, nunca como middleware da `publicProcedure` base — ver a nota em
- * `client-key.ts`.
+ * A chave de cliente já é checada por `apiKeyProcedure` (middleware, `index.ts`) antes
+ * de qualquer resolver rodar — não repetida aqui. O rate limit continua chamado
+ * manualmente no início de cada resolver, e não estendido a `dashboard.*`: é dimensionado
+ * para o padrão de tráfego das cinco rotas públicas (poucos checkpoints grandes por
+ * sessão, R3), que nada tem a ver com o volume de uma sessão de painel autenticada.
  */
 export function enforceUsabilityGuard(ctx: { headers: Headers }): void {
-	assertClientKey(ctx.headers);
 	usabilityRateLimiter.check(clientIpFrom(ctx.headers));
 }

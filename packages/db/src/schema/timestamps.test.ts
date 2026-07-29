@@ -17,6 +17,9 @@ import { sessions } from "./collection";
 describe("precisão de tempo", () => {
 	const getDb = withEphemeralDatabase();
 
+	// Só usability_*: as tabelas do Better Auth (`schema/auth.ts`) são geradas pelo CLI
+	// dele e usam `defaultNow()` sem precisão — não é uma convenção deste pacote para
+	// tunar, é regenerada a cada `db:auth:generate` (ver a nota no topo do arquivo).
 	test("os padrões usam now(3), e não now()", async () => {
 		const rows = await getDb().execute<{
 			column_name: string;
@@ -25,6 +28,7 @@ describe("precisão de tempo", () => {
 			SELECT COLUMN_NAME AS column_name, COLUMN_DEFAULT AS column_default
 			FROM information_schema.COLUMNS
 			WHERE TABLE_SCHEMA = DATABASE()
+				AND TABLE_NAME LIKE 'usability\\_%'
 				AND DATA_TYPE = 'timestamp'
 				AND COLUMN_DEFAULT IS NOT NULL
 		`);
