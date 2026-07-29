@@ -30,6 +30,10 @@
 	--chart-3: oklch(0.681 0.162 75.834);
 	--chart-4: oklch(0.554 0.135 66.442);
 	--chart-5: oklch(0.476 0.114 61.907);
+	--status-good: #0ca30c;
+	--status-warning: #fab219;
+	--status-serious: #ec835a;
+	--status-critical: #d03b3b;
 	--radius: 0.625rem;
 	--sidebar: oklch(0.985 0 0);
 	--sidebar-foreground: oklch(0.145 0 0);
@@ -90,6 +94,10 @@
 	--color-chart-3: var(--chart-3);
 	--color-chart-2: var(--chart-2);
 	--color-chart-1: var(--chart-1);
+	--color-status-good: var(--status-good);
+	--color-status-warning: var(--status-warning);
+	--color-status-serious: var(--status-serious);
+	--color-status-critical: var(--status-critical);
 	--color-ring: var(--ring);
 	--color-input: var(--input);
 	--color-border: var(--border);
