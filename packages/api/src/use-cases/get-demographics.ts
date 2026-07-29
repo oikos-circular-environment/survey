@@ -1,4 +1,7 @@
-import type { DateRange, Repositories } from "@survey/db/repositories/index";
+import type {
+	DateRange,
+	Repositories,
+} from "@oikos-circular-environment/survey-db/repositories/index";
 
 export interface DistributionBucket {
 	key: string;

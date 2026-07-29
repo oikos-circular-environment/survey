@@ -5,8 +5,11 @@ import {
 	nivelDeUsabilidade,
 	satisfacaoMedia,
 	satisfacaoTaxa,
-} from "@survey/db/metrics/index";
-import type { DateRange, Repositories } from "@survey/db/repositories/index";
+} from "@oikos-circular-environment/survey-db/metrics/index";
+import type {
+	DateRange,
+	Repositories,
+} from "@oikos-circular-environment/survey-db/repositories/index";
 
 import { bounds, groupBy } from "./shared/aggregate";
 

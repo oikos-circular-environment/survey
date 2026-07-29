@@ -10,7 +10,7 @@
 		"test:e2e": "bun run e2e/dashboard-smoke.mjs"
 	},
 	"dependencies": {
-		"@survey/api": "workspace:*",
+		"@oikos-circular-environment/survey-api": "workspace:*",
 		"@survey/env": "workspace:*",
 		"@survey/ui": "workspace:*",
 		"@swc/helpers": "^0.5.23",

@@ -1,5 +1,8 @@
-import { mediaLikert } from "@survey/db/metrics/index";
-import type { DateRange, Repositories } from "@survey/db/repositories/index";
+import { mediaLikert } from "@oikos-circular-environment/survey-db/metrics/index";
+import type {
+	DateRange,
+	Repositories,
+} from "@oikos-circular-environment/survey-db/repositories/index";
 
 export interface DomainItemResult {
 	key: string;

@@ -1,4 +1,4 @@
-import type { Repositories } from "@survey/db/repositories/index";
+import type { Repositories } from "@oikos-circular-environment/survey-db/repositories/index";
 
 export interface TesterSuiteRun {
 	suiteCode: string;

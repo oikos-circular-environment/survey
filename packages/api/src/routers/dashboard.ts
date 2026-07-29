@@ -17,7 +17,7 @@ import { dateRangeInput, paginationInput } from "./schemas";
 /**
  * Um procedure por tela do dashboard (Pencil `survey-pencil.pen`). Cada procedure é só
  * validação de input + delegação para o use-case correspondente — nenhuma consulta ou
- * fórmula vive aqui, ver `use-cases/` e `@survey/db/{repositories,metrics}`.
+ * fórmula vive aqui, ver `use-cases/` e `@oikos-circular-environment/survey-db/{repositories,metrics}`.
  */
 export const dashboardRouter = router({
 	overview: publicProcedure
