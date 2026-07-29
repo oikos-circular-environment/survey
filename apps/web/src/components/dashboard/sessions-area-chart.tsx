@@ -19,17 +19,21 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
-import { PERSONA_LABELS, PERSONA_ORDER } from "./persona-labels";
+import {
+	PERSONA_COLORS,
+	PERSONA_LABELS,
+	PERSONA_ORDER,
+} from "./persona-labels";
 
 interface SessionsPerDay {
 	date: string;
 	porPersona: Record<string, number>;
 }
 
-const chartConfig = PERSONA_ORDER.reduce((config, key, index) => {
+const chartConfig = PERSONA_ORDER.reduce((config, key) => {
 	config[key] = {
 		label: PERSONA_LABELS[key],
-		color: `var(--chart-${index + 1})`,
+		color: PERSONA_COLORS[key],
 	};
 	return config;
 }, {} as ChartConfig) satisfies ChartConfig;

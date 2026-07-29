@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ClassificationBadge } from "@/components/dashboard/classification-badge";
 import { useDateRange } from "@/components/dashboard/date-range-context";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
+import { PersonaSwatch } from "@/components/dashboard/persona-swatch";
 import { trpc } from "@/utils/trpc";
 
 function formatPercent(value: number): string {
@@ -54,7 +55,12 @@ export default function PersonasPage() {
 						<TableBody>
 							{personas.data?.map((persona) => (
 								<TableRow key={persona.key}>
-									<TableCell className="font-medium">{persona.label}</TableCell>
+									<TableCell className="font-medium">
+										<PersonaSwatch
+											personaKey={persona.key}
+											label={persona.label}
+										/>
+									</TableCell>
 									<TableCell className="text-right">
 										{persona.participantes}
 									</TableCell>
