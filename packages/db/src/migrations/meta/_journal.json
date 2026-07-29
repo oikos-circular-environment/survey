@@ -43,6 +43,13 @@
 			"when": 1785258051826,
 			"tag": "0005_state_uf_varchar",
 			"breakpoints": true
+		},
+		{
+			"idx": 6,
+			"version": "5",
+			"when": 1785352387186,
+			"tag": "0006_participant_code_ulid",
+			"breakpoints": true
 		}
 	]
 }

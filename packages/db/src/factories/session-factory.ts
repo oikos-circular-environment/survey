@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 import { faker } from "@faker-js/faker";
+import { ulid } from "ulid";
 
 import type { HttpMethod, Option, PersonaKey } from "../protocol/types";
 import type {
@@ -275,6 +276,7 @@ export function buildFactorySession(
 	const session: SessionInsert = {
 		id: sessionId,
 		protocolVersionId: seeded.protocolVersionId,
+		participantCode: ulid(),
 		persona: persona.key,
 		status,
 		stateUf: location.uf,

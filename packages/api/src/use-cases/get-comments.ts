@@ -5,7 +5,7 @@ import type {
 
 export interface CommentResult {
 	persona: string;
-	participantCode: number;
+	participantCode: string;
 	comment: string;
 }
 

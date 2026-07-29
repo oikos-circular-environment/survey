@@ -26,8 +26,8 @@ function formatDuration(ms: number): string {
 	return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
-function participantCodeLabel(participantCode: number): string {
-	return `PSQ-${String(participantCode).padStart(4, "0")}`;
+function participantCodeLabel(participantCode: string): string {
+	return `PSQ-${participantCode}`;
 }
 
 const OUTCOME_LABELS: Record<string, string> = {

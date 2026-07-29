@@ -1,0 +1,1 @@
+ALTER TABLE `usability_sessions` MODIFY COLUMN `participant_code` char(26) NOT NULL;

@@ -1,8 +1,17 @@
 import { eq } from "drizzle-orm";
 import type { MySql2Database } from "drizzle-orm/mysql2";
+import { ulid } from "ulid";
 
 import { sessions } from "../schema/collection";
+import type {
+	ageRanges,
+	chainRoles,
+	educationLevels,
+	personaKeys,
+	screenSizes,
+} from "../schema/enums";
 import type * as schema from "../schema/index";
+import { protocolVersions } from "../schema/protocol";
 import { type DateRange, dateRangeFilter } from "./date-range";
 
 type Db = MySql2Database<typeof schema>;
@@ -21,7 +30,7 @@ export interface SessionRow {
 
 export interface SessionDetailRow {
 	id: string;
-	participantCode: number;
+	participantCode: string;
 	persona: string;
 	status: string;
 	stateUf: string;
@@ -69,7 +78,55 @@ const detailColumns = {
 	abandonReason: sessions.abandonReason,
 } as const;
 
-/** Acesso de leitura a `usability_sessions`. */
+export interface SessionStateRow {
+	id: string;
+	status: string;
+	protocolVersionId: string;
+	participantCode: string;
+	supersededBy: string | null;
+}
+
+export interface UpsertSessionHeaderInput {
+	id: string;
+	protocolVersionId: string;
+	protocolVersion: number;
+	persona: (typeof personaKeys)[number];
+	stateUf: string;
+	cityName: string;
+	ageRange: (typeof ageRanges)[number];
+	educationLevel: (typeof educationLevels)[number];
+	chainRole: (typeof chainRoles)[number];
+	wasteContactFrequency: number;
+	appExperience: number;
+	consentVersion: string;
+	consentAt: Date;
+	deviceOs: string;
+	deviceOsVersion: string;
+	appVersion: string;
+	screenSize: (typeof screenSizes)[number];
+	startedAt: Date;
+}
+
+export interface UpsertSessionHeaderResult {
+	id: string;
+	participantCode: string;
+	protocolVersion: number;
+}
+
+export interface FinishSessionInput {
+	activeMs: number;
+	wallMs: number;
+	finishedAt: Date;
+}
+
+export interface AbandonSessionInput {
+	reason?: string;
+	activeMs: number;
+	wallMs: number;
+	finishedAt: Date;
+}
+
+/** Acesso a `usability_sessions` — leitura para o painel, escrita para E2/E4/E5. */
 export class SessionsRepository {
 	constructor(private readonly db: Db) {}
 
@@ -112,5 +169,143 @@ export class SessionsRepository {
 			.from(sessions)
 			.where(eq(sessions.id, sessionId));
 		return row;
+	}
+
+	/**
+	 * Estado mínimo de uma sessão — usado por E3/E4/E5 para checar existência (404 se
+	 * ausente) sem carregar todas as colunas de `findDetailById`.
+	 */
+	async findStateById(sessionId: string): Promise<SessionStateRow | undefined> {
+		const [row] = await this.db
+			.select({
+				id: sessions.id,
+				status: sessions.status,
+				protocolVersionId: sessions.protocolVersionId,
+				participantCode: sessions.participantCode,
+				supersededBy: sessions.supersededBy,
+			})
+			.from(sessions)
+			.where(eq(sessions.id, sessionId));
+		return row;
+	}
+
+	/**
+	 * Cria ou atualiza o cabeçalho da sessão (E2). Na primeira gravação atribui
+	 * `participantCode` (ULID) e fixa `protocolVersionId` — nenhuma chamada posterior
+	 * muda esses dois, mesmo que o corpo enviado traga uma versão de protocolo
+	 * diferente (A2): o `protocolVersionId`/`protocolVersion` resolvidos aqui são
+	 * sempre os da sessão já existente, nunca os do `input`, quando ela já existe.
+	 */
+	async upsertHeader(
+		input: UpsertSessionHeaderInput,
+	): Promise<UpsertSessionHeaderResult> {
+		const [existing] = await this.db
+			.select({
+				participantCode: sessions.participantCode,
+				protocolVersion: protocolVersions.version,
+			})
+			.from(sessions)
+			.innerJoin(
+				protocolVersions,
+				eq(sessions.protocolVersionId, protocolVersions.id),
+			)
+			.where(eq(sessions.id, input.id));
+
+		const headerFields = {
+			persona: input.persona,
+			stateUf: input.stateUf,
+			cityName: input.cityName,
+			ageRange: input.ageRange,
+			educationLevel: input.educationLevel,
+			chainRole: input.chainRole,
+			wasteContactFrequency: input.wasteContactFrequency,
+			appExperience: input.appExperience,
+			consentVersion: input.consentVersion,
+			consentAt: input.consentAt,
+			deviceOs: input.deviceOs,
+			deviceOsVersion: input.deviceOsVersion,
+			appVersion: input.appVersion,
+			screenSize: input.screenSize,
+			startedAt: input.startedAt,
+		} as const;
+
+		if (existing) {
+			await this.db
+				.update(sessions)
+				.set(headerFields)
+				.where(eq(sessions.id, input.id));
+
+			return {
+				id: input.id,
+				participantCode: existing.participantCode,
+				protocolVersion: existing.protocolVersion,
+			};
+		}
+
+		const participantCode = ulid();
+		await this.db.insert(sessions).values({
+			id: input.id,
+			protocolVersionId: input.protocolVersionId,
+			participantCode,
+			...headerFields,
+		});
+
+		return {
+			id: input.id,
+			participantCode,
+			protocolVersion: input.protocolVersion,
+		};
+	}
+
+	/**
+	 * Marca `COMPLETED` (E4). Idempotente por natureza: reenviar grava os mesmos
+	 * totais informados pelo aparelho, sem somar com o que já estava salvo — quem soma
+	 * é o próprio aparelho, que envia o acumulado inteiro a cada chamada.
+	 */
+	async markCompleted(
+		sessionId: string,
+		input: FinishSessionInput,
+	): Promise<void> {
+		await this.db
+			.update(sessions)
+			.set({
+				status: "COMPLETED",
+				activeMs: input.activeMs,
+				wallMs: input.wallMs,
+				finishedAt: input.finishedAt,
+			})
+			.where(eq(sessions.id, sessionId));
+	}
+
+	/** Marca `ABANDONED` (E5), com o motivo opcional e o ponto em que a pessoa parou. */
+	async markAbandoned(
+		sessionId: string,
+		input: AbandonSessionInput,
+	): Promise<void> {
+		await this.db
+			.update(sessions)
+			.set({
+				status: "ABANDONED",
+				abandonReason: input.reason,
+				activeMs: input.activeMs,
+				wallMs: input.wallMs,
+				finishedAt: input.finishedAt,
+			})
+			.where(eq(sessions.id, sessionId));
+	}
+
+	/**
+	 * Fecha a cadeia de reinício: aponta a sessão antiga para a nova. Nenhuma das cinco
+	 * procedures chama isto — existe para o reinício (S07), cujo gatilho/chamador não
+	 * faz parte deste conjunto (ver `02-tech-plan.md`).
+	 */
+	async setSupersededBy(
+		oldSessionId: string,
+		newSessionId: string,
+	): Promise<void> {
+		await this.db
+			.update(sessions)
+			.set({ supersededBy: newSessionId })
+			.where(eq(sessions.id, oldSessionId));
 	}
 }

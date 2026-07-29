@@ -13,8 +13,8 @@ import { useDateRange } from "@/components/dashboard/date-range-context";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { trpc } from "@/utils/trpc";
 
-function participantCodeLabel(participantCode: number): string {
-	return `PSQ-${String(participantCode).padStart(4, "0")}`;
+function participantCodeLabel(participantCode: string): string {
+	return `PSQ-${participantCode}`;
 }
 
 export default function CommentsPage() {

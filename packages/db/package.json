@@ -41,6 +41,7 @@
 		"dotenv": "catalog:",
 		"drizzle-orm": "^0.45.2",
 		"mysql2": "^3.22.5",
+		"ulid": "^2.4.0",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
