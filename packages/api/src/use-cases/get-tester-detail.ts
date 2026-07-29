@@ -13,7 +13,7 @@ export interface TesterSuiteRun {
 
 export interface TesterDetail {
 	sessionId: string;
-	participantCode: number;
+	participantCode: string;
 	persona: string;
 	status: string;
 	stateUf: string;

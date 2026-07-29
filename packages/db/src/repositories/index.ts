@@ -2,12 +2,14 @@ import type { MySql2Database } from "drizzle-orm/mysql2";
 
 import type * as schema from "../schema/index";
 import { AnswersRepository } from "./answers-repository";
+import { CheckpointsRepository } from "./checkpoints-repository";
 import { ProtocolRepository } from "./protocol-repository";
 import { SessionsRepository } from "./sessions-repository";
 import { SuiteRunsRepository } from "./suite-runs-repository";
 import { TaskRunsRepository } from "./task-runs-repository";
 
 export * from "./answers-repository";
+export * from "./checkpoints-repository";
 export * from "./date-range";
 export * from "./protocol-repository";
 export * from "./sessions-repository";
@@ -27,6 +29,7 @@ export interface Repositories {
 	taskRuns: TaskRunsRepository;
 	answers: AnswersRepository;
 	sessions: SessionsRepository;
+	checkpoints: CheckpointsRepository;
 }
 
 export function createRepositories(db: Db): Repositories {
@@ -36,5 +39,6 @@ export function createRepositories(db: Db): Repositories {
 		taskRuns: new TaskRunsRepository(db),
 		answers: new AnswersRepository(db),
 		sessions: new SessionsRepository(db),
+		checkpoints: new CheckpointsRepository(db),
 	};
 }

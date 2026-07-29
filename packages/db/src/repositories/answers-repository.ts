@@ -1,4 +1,6 @@
-import { and, eq } from "drizzle-orm";
+import { randomUUID } from "node:crypto";
+
+import { and, eq, isNull } from "drizzle-orm";
 import type { MySql2Database } from "drizzle-orm/mysql2";
 
 import { answers, sessions, suiteRuns } from "../schema/collection";
@@ -7,6 +9,12 @@ import { questions } from "../schema/protocol";
 import { type DateRange, dateRangeFilter } from "./date-range";
 
 type Db = MySql2Database<typeof schema>;
+
+export interface FinalAnswerInput {
+	questionId: string;
+	valueText?: string;
+	valueNumber?: number;
+}
 
 export interface AnswerRow {
 	sessionId: string;
@@ -18,11 +26,11 @@ export interface AnswerRow {
 
 export interface CommentRow {
 	persona: string;
-	participantCode: number;
+	participantCode: string;
 	comment: string | null;
 }
 
-/** Acesso de leitura a `usability_answers`. */
+/** Acesso a `usability_answers` — leitura para o painel, escrita para E4 (fim de sessão). */
 export class AnswersRepository {
 	constructor(private readonly db: Db) {}
 
@@ -104,5 +112,38 @@ export class AnswersRepository {
 				),
 			);
 		return row?.comment?.trim() || null;
+	}
+
+	/**
+	 * Substitui as respostas de fim de sessão (`suite_run_id` nulo) de uma sessão (E4).
+	 *
+	 * Delete-then-insert, não upsert linha a linha: o índice único
+	 * `answers_session_run_question` não protege esse caso, porque em MySQL nulos não
+	 * colidem entre si — duas gravações de fim de sessão passariam pela constraint sem
+	 * conflito nenhum (ver a nota em `schema/collection.ts`). Apagar as respostas finais
+	 * antigas antes de gravar as novas é o que garante que reenviar E4 não duplica.
+	 */
+	async replaceFinalAnswers(
+		sessionId: string,
+		rows: FinalAnswerInput[],
+	): Promise<void> {
+		await this.db.transaction(async (tx) => {
+			await tx
+				.delete(answers)
+				.where(
+					and(eq(answers.sessionId, sessionId), isNull(answers.suiteRunId)),
+				);
+
+			if (rows.length === 0) return;
+
+			await tx.insert(answers).values(
+				rows.map((row) => ({
+					id: randomUUID(),
+					sessionId,
+					suiteRunId: null,
+					...row,
+				})),
+			);
+		});
 	}
 }

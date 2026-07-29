@@ -55,12 +55,18 @@ export const sessions = mysqlTable(
 		id: char("id", { length: 36 }).primaryKey(), // uuid gerado no aparelho
 		protocolVersionId: char("protocol_version_id", { length: 36 }).notNull(),
 		/**
-		 * Numeração sequencial resolvida pelo banco. Em MySQL o auto-incremento vale
-		 * em coluna que não é a chave primária desde que ela seja a primeira coluna de
-		 * algum índice — `unique()` satisfaz isso. Sem sequência à mão, sem colisão e
-		 * sem ida ao servidor no início da sessão.
+		 * ULID (26 caracteres) atribuído pela aplicação na primeira gravação (E2,
+		 * `SessionsRepository.upsertHeader`). Único por construção — sem lógica de
+		 * colisão para escrever — e a coluna `unique()` é só a garantia final, não o
+		 * mecanismo de geração.
+		 *
+		 * Era `int autoincrement`: um número que sobe 1, 2, 3... é adivinhável, e é
+		 * exatamente esse valor que a exclusão por código de participante (A5) aceita
+		 * sem exigir mais nenhuma credencial.
 		 */
-		participantCode: int("participant_code").notNull().autoincrement().unique(),
+		participantCode: char("participant_code", { length: 26 })
+			.notNull()
+			.unique(),
 		persona: mysqlEnum("persona", personaKeys).notNull(),
 		status: mysqlEnum("status", sessionStatuses)
 			.notNull()
