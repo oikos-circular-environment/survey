@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { useDateRange } from "@/components/dashboard/date-range-context";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
+import { PersonaSwatch } from "@/components/dashboard/persona-swatch";
 import { trpc } from "@/utils/trpc";
 
 function formatMs(ms: number): string {
@@ -57,7 +58,12 @@ export default function SuitePersonasPage() {
 									key={persona.personaKey}
 									className="flex items-center justify-between rounded-md border px-3 py-2 text-sm"
 								>
-									<span className="font-medium">{persona.personaLabel}</span>
+									<span className="font-medium">
+										<PersonaSwatch
+											personaKey={persona.personaKey}
+											label={persona.personaLabel}
+										/>
+									</span>
 									<span className="text-muted-foreground">
 										{persona.testadores} testador
 										{persona.testadores === 1 ? "" : "es"} ·{" "}

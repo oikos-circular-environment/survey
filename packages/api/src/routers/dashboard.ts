@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import { publicProcedure, router } from "../index";
 import { getComments } from "../use-cases/get-comments";
 import { getDemographics } from "../use-cases/get-demographics";
@@ -8,6 +10,8 @@ import { getPersonas } from "../use-cases/get-personas";
 import { getSuitePersonas } from "../use-cases/get-suite-personas";
 import { getSuites } from "../use-cases/get-suites";
 import { getTasks } from "../use-cases/get-tasks";
+import { getTesterDetail } from "../use-cases/get-tester-detail";
+import { getTesters } from "../use-cases/get-testers";
 import { dateRangeInput, paginationInput } from "./schemas";
 
 /**
@@ -57,4 +61,14 @@ export const dashboardRouter = router({
 	comments: publicProcedure
 		.input(dateRangeInput)
 		.query(({ ctx, input }) => getComments(ctx.repositories, input)),
+
+	testers: publicProcedure
+		.input(dateRangeInput)
+		.query(({ ctx, input }) => getTesters(ctx.repositories, input)),
+
+	testerDetail: publicProcedure
+		.input(z.object({ sessionId: z.string() }))
+		.query(({ ctx, input }) =>
+			getTesterDetail(ctx.repositories, input.sessionId),
+		),
 });
