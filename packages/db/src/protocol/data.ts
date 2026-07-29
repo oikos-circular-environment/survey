@@ -724,17 +724,6 @@ const perSuiteQuestions: Question[] = [
 			"Pense se o que você fez nesta etapa ajudaria a aproximar quem coleta, quem recicla, quem gera resíduo e quem fiscaliza — facilitando que essas pessoas e empresas se encontrem e resolvam problemas juntas.",
 		options: agreementOptions,
 	},
-	{
-		key: "expected_features",
-		scope: "PER_SUITE",
-		position: 12,
-		type: "SCALE",
-		required: true,
-		label: "Esta etapa tem as funções que eu esperaria encontrar nela.",
-		info_text:
-			"Pense no que essa etapa deveria fazer: o aplicativo já tem tudo o que você esperava encontrar, ou sentiu falta de alguma função que faria sentido existir aqui?",
-		options: agreementOptions,
-	},
 ];
 
 const finalQuestions: Question[] = [
