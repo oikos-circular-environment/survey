@@ -53,6 +53,18 @@ bun run dev
 
 Open [http://localhost:3001](http://localhost:3001) in your browser to see the fullstack application.
 
+To make the local server reachable from the mobile app (physical devices, emulators, and
+the `development` EAS build all fail to resolve `localhost` consistently across OSes), run
+the Cloudflare tunnel that exposes it at `survey.oikos.company`:
+
+```bash
+bun run tunnel
+```
+
+Requires `cloudflared` installed and authenticated (`cloudflared tunnel login`) with access
+to the `oikos.company` zone. The tunnel (`oikos-local-dev`) and DNS record already exist —
+this command only connects.
+
 ## Testing
 
 ```bash
@@ -143,6 +155,7 @@ survey/
 - `bun run db:push`: Apply the schema without a migration file — scratch databases only
 - `bun run db:studio`: Open database studio UI
 - `bun run check`: Run Biome formatting and linting
+- `bun run tunnel`: Expose the local dev server at `survey.oikos.company` via Cloudflare
 - `bun run docker:build`: Build the Docker Compose images
 - `bun run docker:up`: Build and start the Docker Compose stack
 - `bun run docker:logs`: Tail logs from the Docker Compose stack
