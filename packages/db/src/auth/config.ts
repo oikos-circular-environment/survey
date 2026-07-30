@@ -58,6 +58,7 @@ export function createAuth(
 				},
 			},
 		},
+		trustedOrigins: ["http://localhost:3001"],
 		secret: env.BETTER_AUTH_SECRET,
 	});
 }
