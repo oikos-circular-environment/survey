@@ -46,7 +46,8 @@
 		"docker:up": "docker compose up -d --build",
 		"docker:down": "docker compose down",
 		"docker:logs": "docker compose logs -f",
-		"check": "biome check --write ."
+		"check": "biome check --write .",
+		"tunnel": "cloudflared tunnel run oikos-local-dev"
 	},
 	"dependencies": {
 		"@survey/env": "workspace:*",
