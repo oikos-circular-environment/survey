@@ -15,12 +15,12 @@ import routeSignalsOnDisk from "./route-signals.generated.json";
 describe("extractRouteSignals", () => {
 	const signals = extractRouteSignals(protocol);
 
-	test("ignora sinais kind: screen (T10 não gera entrada)", () => {
-		expect(signals.some((s) => s.taskCode === "T10")).toBe(false);
+	test("ignora sinais kind: screen (T11 não gera entrada)", () => {
+		expect(signals.some((s) => s.taskCode === "T11")).toBe(false);
 	});
 
-	test("tarefas com composição all geram um sinal por api (T3, T7, T15)", () => {
-		for (const taskCode of ["T3", "T7", "T15"] as const) {
+	test("tarefas com composição all geram um sinal por api (T3, T7, T16)", () => {
+		for (const taskCode of ["T3", "T7", "T16"] as const) {
 			expect(signals.filter((s) => s.taskCode === taskCode)).toHaveLength(2);
 		}
 	});
