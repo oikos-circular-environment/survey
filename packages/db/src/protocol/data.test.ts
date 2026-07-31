@@ -14,8 +14,8 @@ describe("protocolo real", () => {
 		expect(() => validateProtocol(protocol)).not.toThrow();
 	});
 
-	test("tem as 17 tarefas, 6 suítes e 5 personas do instrumento", () => {
-		expect(protocol.tasks).toHaveLength(17);
+	test("tem as 18 tarefas, 6 suítes e 5 personas do instrumento", () => {
+		expect(protocol.tasks).toHaveLength(18);
 		expect(protocol.suites).toHaveLength(6);
 		expect(protocol.personas).toHaveLength(5);
 	});

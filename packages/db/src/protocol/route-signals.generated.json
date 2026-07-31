@@ -1,7 +1,7 @@
 {
 	"formatVersion": 1,
 	"protocolKey": "oikos-walkthrough",
-	"protocolVersion": 4,
+	"protocolVersion": 5,
 	"signals": [
 		{
 			"taskCode": "T1",
@@ -59,9 +59,9 @@
 			"pathPattern": "/v1/market"
 		},
 		{
-			"taskCode": "T11",
+			"taskCode": "T10",
 			"method": "GET",
-			"pathPattern": "/v1/complaints/map"
+			"pathPattern": "/v1/market"
 		},
 		{
 			"taskCode": "T12",
@@ -80,21 +80,26 @@
 		},
 		{
 			"taskCode": "T15",
-			"method": "POST",
-			"pathPattern": "/v1/complaints"
-		},
-		{
-			"taskCode": "T15",
-			"method": "POST",
-			"pathPattern": "/v1/complaints/:id/attachments"
+			"method": "GET",
+			"pathPattern": "/v1/complaints/map"
 		},
 		{
 			"taskCode": "T16",
 			"method": "POST",
-			"pathPattern": "/v1/complaints/:id/votes"
+			"pathPattern": "/v1/complaints"
+		},
+		{
+			"taskCode": "T16",
+			"method": "POST",
+			"pathPattern": "/v1/complaints/:id/attachments"
 		},
 		{
 			"taskCode": "T17",
+			"method": "POST",
+			"pathPattern": "/v1/complaints/:id/votes"
+		},
+		{
+			"taskCode": "T18",
 			"method": "POST",
 			"pathPattern": "/v1/complaints/:id/resolutions"
 		}

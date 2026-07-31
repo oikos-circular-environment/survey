@@ -134,13 +134,19 @@ const tasks: Task[] = [
 	},
 	{
 		code: "T8",
-		title: "Buscar pontos de coleta próximos",
+		title: "Aumentar o raio de busca",
 		instruction:
-			"Acesse a seção de pontos de coleta e busque empresas ou coletores próximos à sua localização atual.",
+			"Na seção de pontos de coleta, aumente o raio de busca — o padrão é 2 km — para um valor maior, como 5 km ou 10 km.",
 		success: {
 			mode: "any",
 			signals: [
-				{ kind: "api", method: "GET", path_pattern: "/v1/market", status: 200 },
+				{
+					kind: "api",
+					method: "GET",
+					path_pattern: "/v1/market",
+					status: 200,
+					query: { radius: { not: "2000" } },
+				},
 			],
 		},
 	},
@@ -164,6 +170,24 @@ const tasks: Task[] = [
 	},
 	{
 		code: "T10",
+		title: "Pesquisar por texto",
+		instruction:
+			"Faça uma pesquisa textual: procure por uma empresa, um serviço ou um resíduo pelo nome.",
+		success: {
+			mode: "any",
+			signals: [
+				{
+					kind: "api",
+					method: "GET",
+					path_pattern: "/v1/market",
+					status: 200,
+					query: { q: true },
+				},
+			],
+		},
+	},
+	{
+		code: "T11",
 		title: "Visualizar os detalhes de uma empresa",
 		instruction:
 			"Selecione uma empresa da lista e veja todos os seus dados: endereço, horários, resíduos aceitos, serviços oferecidos e contato.",
@@ -173,7 +197,7 @@ const tasks: Task[] = [
 		},
 	},
 	{
-		code: "T11",
+		code: "T12",
 		title: "Visualizar o mapa de denúncias",
 		instruction:
 			"Acesse a seção de denúncias e veja no mapa as denúncias de descarte irregular existentes na sua região.",
@@ -190,7 +214,7 @@ const tasks: Task[] = [
 		},
 	},
 	{
-		code: "T12",
+		code: "T13",
 		title: "Filtrar denúncias por status",
 		instruction:
 			"No mapa de denúncias, use o filtro para exibir apenas as denúncias abertas. Depois, alterne para exibir apenas as resolvidas.",
@@ -208,7 +232,7 @@ const tasks: Task[] = [
 		},
 	},
 	{
-		code: "T13",
+		code: "T14",
 		title: "Filtrar denúncias por categoria de resíduo",
 		instruction:
 			"No mapa de denúncias, use o filtro para exibir apenas denúncias relacionadas a um tipo específico de resíduo.",
@@ -226,7 +250,7 @@ const tasks: Task[] = [
 		},
 	},
 	{
-		code: "T14",
+		code: "T15",
 		title: "Filtrar denúncias por nível de periculosidade",
 		instruction:
 			"No mapa de denúncias, use o filtro de nível de perigo para exibir apenas denúncias de alta ou muito alta periculosidade.",
@@ -244,7 +268,7 @@ const tasks: Task[] = [
 		},
 	},
 	{
-		code: "T15",
+		code: "T16",
 		title: "Criar uma denúncia",
 		instruction:
 			"Registre uma denúncia de descarte irregular: informe o local, adicione uma foto ou vídeo, escreva suas observações e selecione as categorias de resíduo que você identificou.",
@@ -267,7 +291,7 @@ const tasks: Task[] = [
 		},
 	},
 	{
-		code: "T16",
+		code: "T17",
 		title: "Votar em uma denúncia",
 		instruction:
 			"Escolha uma denúncia existente e vote indicando se o problema já foi resolvido ou não.",
@@ -284,7 +308,7 @@ const tasks: Task[] = [
 		},
 	},
 	{
-		code: "T17",
+		code: "T18",
 		title: "Postar uma resolução",
 		instruction:
 			"Escolha uma denúncia e poste uma resolução descrevendo a ação tomada para resolver o problema. Se você cadastrou uma empresa, vincule a resolução a ela.",
@@ -308,7 +332,7 @@ const suites: Suite[] = [
 		title: "Exploração livre",
 		objective:
 			"Antes de criar uma conta, explore o aplicativo livremente. Pesquise pontos de coleta e veja o que é possível visualizar nas denúncias sem estar logado.",
-		task_codes: ["T8", "T9", "T10", "T11", "T12", "T13", "T14"],
+		task_codes: ["T8", "T9", "T10", "T11", "T12", "T13", "T14", "T15"],
 	},
 	{
 		code: "S2",
@@ -329,14 +353,14 @@ const suites: Suite[] = [
 		title: "Busca de parceiros comerciais",
 		objective:
 			"Imagine que você quer encontrar parceiros para o seu negócio: quem compre os resíduos que você coleta, quem forneça material reciclável, ou coletores cujo serviço você possa contratar.",
-		task_codes: ["T8", "T9", "T10"],
+		task_codes: ["T8", "T9", "T11"],
 	},
 	{
 		code: "S5",
 		title: "Fiscalização e atuação pública",
 		objective:
 			"Imagine que você representa um órgão público. Cadastre o órgão para expor os serviços que oferece à população. Depois, use os filtros de denúncia para definir prioridades de atendimento e registre uma resolução.",
-		task_codes: ["T4", "T5", "T6", "T7", "T11", "T12", "T13", "T14", "T17"],
+		task_codes: ["T4", "T5", "T6", "T7", "T12", "T13", "T14", "T15", "T18"],
 	},
 	{
 		code: "S6",
@@ -346,14 +370,14 @@ const suites: Suite[] = [
 		task_codes: [
 			"T8",
 			"T9",
-			"T10",
-			"T15",
 			"T11",
+			"T16",
 			"T12",
 			"T13",
 			"T14",
-			"T16",
+			"T15",
 			"T17",
+			"T18",
 		],
 	},
 ];
@@ -742,7 +766,7 @@ const finalQuestions: Question[] = [
 
 export const protocol: Protocol = {
 	key: "oikos-walkthrough",
-	version: 4,
+	version: 5,
 	tasks,
 	suites,
 	personas,

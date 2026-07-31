@@ -4,7 +4,7 @@
  * A camada de tipos vive separada da de dados porque o schema Drizzle depende dela:
  * `success_rule`, `options` e `depends_on` são colunas JSON e precisam de
  * `$type<...>` para que o compilador verifique o que entra e o que sai do banco. O conjunto
- * de dados — as 17 tarefas, as 6 suítes, as 5 personas e as perguntas — vive em `./data.ts`,
+ * de dados — as 18 tarefas, as 6 suítes, as 5 personas e as perguntas — vive em `./data.ts`,
  * no mesmo diretório.
  *
  * Regras que valem para o protocolo inteiro:
@@ -46,7 +46,8 @@ export type TaskCode =
 	| "T14"
 	| "T15"
 	| "T16"
-	| "T17";
+	| "T17"
+	| "T18";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -56,20 +57,28 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
  * `api`    — uma requisição casou método, padrão de rota e status.
  *            `query` distingue tarefas que compartilham o mesmo endpoint: filtrar por
  *            resíduo e filtrar por periculosidade são ambos GET no mapa de denúncias,
- *            e só os parâmetros os separam. Valor `true` significa "o parâmetro precisa
- *            estar presente, com qualquer valor".
+ *            e só os parâmetros os separam. Um valor de `query` pode ser:
+ *              - `true` — o parâmetro precisa estar presente, com qualquer valor;
+ *              - uma `string` — o parâmetro precisa ter exatamente esse valor;
+ *              - `{ not: string }` — o parâmetro precisa estar presente com um valor
+ *                diferente do informado. Existe para filtros que sempre viajam na
+ *                query com um valor padrão (como o raio de busca, que nunca é
+ *                omitido) — `true` casaria já na primeira carga, sem o participante
+ *                ter alterado nada.
  *
  * `screen` — o participante chegou a uma tela. Necessário para tarefas puramente de
  *            leitura, em que os dados já foram carregados antes e nenhuma requisição
  *            nova acontece.
  */
+export type QueryMatcher = string | true | { not: string };
+
 export type SuccessSignal =
 	| {
 			kind: "api";
 			method: HttpMethod;
 			path_pattern: string;
 			status: number;
-			query?: Record<string, string | true>;
+			query?: Record<string, QueryMatcher>;
 	  }
 	| {
 			kind: "screen";
