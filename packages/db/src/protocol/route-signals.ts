@@ -5,7 +5,7 @@
  * detecção acompanhe, é aqui que a quebra aparece, antes de contaminar dado de pesquisa
  * em silêncio.
  *
- * Só sinais `kind: "api"` entram — um sinal `kind: "screen"` (como o da T10) não
+ * Só sinais `kind: "api"` entram — um sinal `kind: "screen"` (como o da T11) não
  * corresponde a nenhuma rota e não gera entrada.
  */
 
