@@ -152,7 +152,7 @@ const tasks: Task[] = [
 	},
 	{
 		code: "T9",
-		title: "Filtrar por tipo de resíduo",
+		title: "Filtrar por categoria de resíduo ou serviço apenas",
 		instruction:
 			"Na lista de pontos de coleta, use o filtro para encontrar empresas que aceitem um tipo específico de resíduo.",
 		success: {
@@ -226,7 +226,7 @@ const tasks: Task[] = [
 					method: "GET",
 					path_pattern: "/v1/complaints/map",
 					status: 200,
-					query: { status: "RESOLVED" },
+					query: { status: { not: "OPEN" } },
 				},
 			],
 		},
@@ -766,7 +766,7 @@ const finalQuestions: Question[] = [
 
 export const protocol: Protocol = {
 	key: "oikos-walkthrough",
-	version: 5,
+	version: 6,
 	tasks,
 	suites,
 	personas,
