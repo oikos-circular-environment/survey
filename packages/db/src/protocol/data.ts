@@ -202,7 +202,7 @@ const tasks: Task[] = [
 					method: "GET",
 					path_pattern: "/v1/complaints/map",
 					status: 200,
-					query: { status: true },
+					query: { status: "RESOLVED" },
 				},
 			],
 		},
@@ -742,7 +742,7 @@ const finalQuestions: Question[] = [
 
 export const protocol: Protocol = {
 	key: "oikos-walkthrough",
-	version: 3,
+	version: 4,
 	tasks,
 	suites,
 	personas,
