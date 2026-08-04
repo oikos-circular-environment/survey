@@ -29,7 +29,7 @@ export async function getSuitePersonas(
 	range: DateRange,
 ): Promise<SuitePersonasRow[]> {
 	const protocolVersionId =
-		await repositories.protocol.getActiveProtocolVersionId();
+		await repositories.protocol.getLatestProtocolVersionId();
 	const [suiteDefs, personaDefs, suiteRuns] = await Promise.all([
 		repositories.protocol.getSuiteDefs(protocolVersionId),
 		repositories.protocol.getPersonaDefs(protocolVersionId),

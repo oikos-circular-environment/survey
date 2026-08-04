@@ -54,12 +54,16 @@ export interface ProtocolResponse {
  * seed (não do arquivo `protocol/data.ts`, que é a fonte só até o seed rodar). É a
  * única leitura do módulo de usabilidade; as chamadas seguintes (E2–E5) já não
  * consultam mais o protocolo, salvo para resolver código→id internamente.
+ *
+ * Devolve `null` quando a `key` existe mas nenhuma versão está `is_active` — desligado
+ * de propósito pelo painel do pesquisador, distinto do erro de seed ausente.
  */
 export async function getProtocol(
 	repositories: Repositories,
 	key = "oikos-walkthrough",
-): Promise<ProtocolResponse> {
+): Promise<ProtocolResponse | null> {
 	const version = await repositories.protocol.getActiveProtocolVersion(key);
+	if (!version) return null;
 
 	const [personas, suites, tasks, questions] = await Promise.all([
 		repositories.protocol.getProtocolPersonas(version.id),

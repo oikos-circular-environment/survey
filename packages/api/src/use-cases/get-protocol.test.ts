@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { protocol } from "@oikos-circular-environment/survey-db/protocol/data";
+import { protocolVersions } from "@oikos-circular-environment/survey-db/schema/protocol";
+import { eq } from "drizzle-orm";
 
 import { getProtocol } from "./get-protocol";
 import { setupUsabilityTest } from "./usability-test-helpers";
@@ -9,6 +11,8 @@ describe("getProtocol", () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
 			const response = await getProtocol(repositories);
+			if (!response)
+				throw new Error("protocolo deveria estar ativo por padrão");
 
 			expect(response.key).toBe(protocol.key);
 			expect(response.version).toBe(protocol.version);
@@ -46,6 +50,8 @@ describe("getProtocol", () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
 			const response = await getProtocol(repositories);
+			if (!response)
+				throw new Error("protocolo deveria estar ativo por padrão");
 
 			const allModeTask = response.tasks.find((task) => task.code === "T3");
 			expect(allModeTask).toBeDefined();
@@ -63,6 +69,8 @@ describe("getProtocol", () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
 			const response = await getProtocol(repositories);
+			if (!response)
+				throw new Error("protocolo deveria estar ativo por padrão");
 
 			const queryMatchTask = response.tasks.find((task) => task.code === "T9");
 			expect(queryMatchTask).toBeDefined();
@@ -81,6 +89,8 @@ describe("getProtocol", () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
 			const response = await getProtocol(repositories);
+			if (!response)
+				throw new Error("protocolo deveria estar ativo por padrão");
 
 			const dependent = response.questions.find(
 				(question) => question.key === "error_recovery",
@@ -89,6 +99,22 @@ describe("getProtocol", () => {
 				question_key: "error_occurred",
 				equals: "YES",
 			});
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("devolve null quando nenhuma versão da key está ativa", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			await ephemeral.db
+				.update(protocolVersions)
+				.set({ isActive: false })
+				.where(eq(protocolVersions.key, protocol.key));
+
+			const response = await getProtocol(repositories, protocol.key);
+
+			expect(response).toBeNull();
 		} finally {
 			await ephemeral.destroy();
 		}

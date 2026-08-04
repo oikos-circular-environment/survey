@@ -20,6 +20,7 @@ import {
 	MessageSquareText,
 	Sparkles,
 	Table2,
+	ToggleLeft,
 	UserCog,
 	UsersRound,
 } from "lucide-react";
@@ -46,6 +47,11 @@ const RESULTS_ITEMS = [
 
 const MANAGEMENT_ITEMS = [
 	{ href: "/dashboard/testers", label: "Testadores", icon: UserCog },
+	{
+		href: "/dashboard/protocol-versions",
+		label: "Versões do protocolo",
+		icon: ToggleLeft,
+	},
 ];
 
 const ACCOUNT_ITEMS = [

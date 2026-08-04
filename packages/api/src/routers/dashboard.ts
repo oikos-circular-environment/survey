@@ -12,6 +12,8 @@ import { getSuites } from "../use-cases/get-suites";
 import { getTasks } from "../use-cases/get-tasks";
 import { getTesterDetail } from "../use-cases/get-tester-detail";
 import { getTesters } from "../use-cases/get-testers";
+import { listProtocolVersions } from "../use-cases/list-protocol-versions";
+import { setProtocolVersionActive } from "../use-cases/set-protocol-version-active";
 import { dateRangeInput, paginationInput } from "./schemas";
 
 /**
@@ -75,4 +77,16 @@ export const dashboardRouter = router({
 		.query(({ ctx, input }) =>
 			getTesterDetail(ctx.repositories, input.sessionId),
 		),
+
+	protocolVersions: router({
+		list: dashboardProcedure.query(({ ctx }) =>
+			listProtocolVersions(ctx.repositories),
+		),
+
+		setActive: dashboardProcedure
+			.input(z.object({ id: z.string(), isActive: z.boolean() }))
+			.mutation(({ ctx, input }) =>
+				setProtocolVersionActive(ctx.repositories, input),
+			),
+	}),
 });

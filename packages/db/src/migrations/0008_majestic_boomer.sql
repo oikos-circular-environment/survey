@@ -1,0 +1,1 @@
+ALTER TABLE `usability_protocol_versions` ADD `is_active` boolean DEFAULT true NOT NULL;

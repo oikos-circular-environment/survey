@@ -1,6 +1,9 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { randomUUID } from "node:crypto";
+import { protocol } from "@oikos-circular-environment/survey-db/protocol/data";
+import { protocolVersions } from "@oikos-circular-environment/survey-db/schema/protocol";
 import { env } from "@survey/env/server";
+import { eq } from "drizzle-orm";
 
 import type { Context } from "../context";
 import { createCallerFactory } from "../index";
@@ -154,6 +157,8 @@ describe("router usability — borda pública (S08)", () => {
 		const caller = callerFor(headersFor(nextIp()));
 
 		const protocolResponse = await caller.usability.protocol();
+		if (!protocolResponse)
+			throw new Error("protocolo deveria estar ativo por padrão");
 		expect(protocolResponse.key).toBe("oikos-walkthrough");
 
 		const session = buildSessionUpsertInput();
@@ -195,5 +200,29 @@ describe("router usability — borda pública (S08)", () => {
 			finished_at: new Date(),
 		});
 		expect(abandoned.status).toBe("ABANDONED");
+	});
+});
+
+describe("router usability — protocol() com versão inativa (S15)", () => {
+	test("usability.protocol() devolve null quando nenhuma versão da key está ativa", async () => {
+		const inactiveSetup = await setupUsabilityTest();
+		try {
+			await inactiveSetup.ephemeral.db
+				.update(protocolVersions)
+				.set({ isActive: false })
+				.where(eq(protocolVersions.key, protocol.key));
+
+			const ctx: Context = {
+				auth: null,
+				session: null,
+				repositories: inactiveSetup.repositories,
+				headers: headersFor(nextIp()),
+			};
+			const response = await createCaller(ctx).usability.protocol();
+
+			expect(response).toBeNull();
+		} finally {
+			await inactiveSetup.ephemeral.destroy();
+		}
 	});
 });
