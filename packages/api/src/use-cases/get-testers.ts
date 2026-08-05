@@ -33,7 +33,7 @@ export async function getTesters(
 	range: DateRange,
 ): Promise<TesterListRow[]> {
 	const protocolVersionId =
-		await repositories.protocol.getActiveProtocolVersionId();
+		await repositories.protocol.getLatestProtocolVersionId();
 	const [sessions, personaDefs, questionOptions] = await Promise.all([
 		repositories.sessions.findAllDetailedInRange(range),
 		repositories.protocol.getPersonaDefs(protocolVersionId),

@@ -33,7 +33,7 @@ export async function getHeuristics(
 	range: DateRange,
 ): Promise<HeuristicResult[]> {
 	const protocolVersionId =
-		await repositories.protocol.getActiveProtocolVersionId();
+		await repositories.protocol.getLatestProtocolVersionId();
 
 	// H5 e H9 dependem das mesmas duas perguntas (error_occurred/error_recovery); as
 	// demais heurísticas medidas têm cada uma sua própria pergunta direta.

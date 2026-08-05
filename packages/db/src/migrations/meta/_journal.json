@@ -57,6 +57,13 @@
 			"when": 1785362176403,
 			"tag": "0007_motionless_lyja",
 			"breakpoints": true
+		},
+		{
+			"idx": 8,
+			"version": "5",
+			"when": 1785883124473,
+			"tag": "0008_majestic_boomer",
+			"breakpoints": true
 		}
 	]
 }

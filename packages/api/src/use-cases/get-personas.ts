@@ -37,7 +37,7 @@ export async function getPersonas(
 	range: DateRange,
 ): Promise<PersonaMetrics[]> {
 	const protocolVersionId =
-		await repositories.protocol.getActiveProtocolVersionId();
+		await repositories.protocol.getLatestProtocolVersionId();
 	const [personaDefs, sessions, suiteRuns, satisfactionAnswers] =
 		await Promise.all([
 			repositories.protocol.getPersonaDefs(protocolVersionId),

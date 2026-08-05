@@ -10,7 +10,7 @@ CREATE TABLE `account` (
 	`refresh_token_expires_at` timestamp(3),
 	`scope` text,
 	`password` text,
-	`created_at` timestamp(3) NOT NULL DEFAULT (now()),
+	`created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 	`updated_at` timestamp(3) NOT NULL,
 	CONSTRAINT `account_id` PRIMARY KEY(`id`)
 );
@@ -19,7 +19,7 @@ CREATE TABLE `session` (
 	`id` varchar(36) NOT NULL,
 	`expires_at` timestamp(3) NOT NULL,
 	`token` varchar(255) NOT NULL,
-	`created_at` timestamp(3) NOT NULL DEFAULT (now()),
+	`created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 	`updated_at` timestamp(3) NOT NULL,
 	`ip_address` text,
 	`user_agent` text,
@@ -34,8 +34,8 @@ CREATE TABLE `user` (
 	`email` varchar(255) NOT NULL,
 	`email_verified` boolean NOT NULL DEFAULT false,
 	`image` text,
-	`created_at` timestamp(3) NOT NULL DEFAULT (now()),
-	`updated_at` timestamp(3) NOT NULL DEFAULT (now()),
+	`created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+	`updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 	`role` text NOT NULL,
 	CONSTRAINT `user_id` PRIMARY KEY(`id`),
 	CONSTRAINT `user_email_unique` UNIQUE(`email`)
@@ -46,8 +46,8 @@ CREATE TABLE `verification` (
 	`identifier` varchar(255) NOT NULL,
 	`value` text NOT NULL,
 	`expires_at` timestamp(3) NOT NULL,
-	`created_at` timestamp(3) NOT NULL DEFAULT (now()),
-	`updated_at` timestamp(3) NOT NULL DEFAULT (now()),
+	`created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+	`updated_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 	CONSTRAINT `verification_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint

@@ -36,7 +36,7 @@ export async function getDemographics(
 	range: DateRange,
 ): Promise<DemographicsResult> {
 	const protocolVersionId =
-		await repositories.protocol.getActiveProtocolVersionId();
+		await repositories.protocol.getLatestProtocolVersionId();
 	const [sessions, questionOptions] = await Promise.all([
 		repositories.sessions.findInRange(range),
 		repositories.protocol.getQuestionOptions(protocolVersionId, [

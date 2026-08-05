@@ -42,6 +42,9 @@ export const protocolVersions = mysqlTable(
 		key: varchar("key", { length: 64 }).notNull(), // "oikos-walkthrough"
 		version: int("version").notNull(),
 		publishedAt: timestampMs("published_at").notNull().default(nowMs()),
+		// Exceção deliberada ao "nada aqui é atualizado no lugar" acima: é metadado
+		// operacional ("isso pode ser servido?"), não conteúdo do protocolo.
+		isActive: boolean("is_active").notNull().default(true),
 	},
 	(t) => [uniqueIndex("protocol_versions_key_version").on(t.key, t.version)],
 );

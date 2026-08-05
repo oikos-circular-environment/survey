@@ -22,7 +22,7 @@ export async function getComments(
 	range: DateRange,
 ): Promise<CommentResult[]> {
 	const protocolVersionId =
-		await repositories.protocol.getActiveProtocolVersionId();
+		await repositories.protocol.getLatestProtocolVersionId();
 	const [rows, personaDefs] = await Promise.all([
 		repositories.answers.findCommentsWithContext(protocolVersionId, range),
 		repositories.protocol.getPersonaDefs(protocolVersionId),
