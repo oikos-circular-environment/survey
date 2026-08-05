@@ -42,7 +42,7 @@ function baseUrl(): URL {
 	if (!raw) {
 		throw new Error(
 			"Harness de teste sem banco: defina TEST_DATABASE_URL ou DATABASE_URL. " +
-				"Em desenvolvimento, `bun db:start` sobe o MySQL e apps/web/.env traz a credencial.",
+				"Em desenvolvimento, `bun db:start` sobe o MySQL e apps/web/.env.local traz a credencial.",
 		);
 	}
 

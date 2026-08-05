@@ -32,7 +32,7 @@ This project uses MySQL with Drizzle ORM.
 bun run db:start
 ```
 
-2. Make sure `apps/web/.env` has your `DATABASE_URL`.
+2. Make sure `apps/web/.env.local` has your `DATABASE_URL`.
 
 3. Apply the versioned migrations:
 
