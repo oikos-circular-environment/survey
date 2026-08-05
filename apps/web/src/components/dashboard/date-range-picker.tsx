@@ -25,9 +25,6 @@ const PRESET_LABELS: Record<Exclude<DateRangePreset, "custom">, string> = {
 export function DateRangePicker() {
 	const { range, setPreset, setCustomRange } = useDateRange();
 	const [open, setOpen] = React.useState(false);
-	// Fechado por padrão a cada abertura do popover — só aparece ao clicar em
-	// "Personalizado" (senão o calendário some junto com os presets, confundindo
-	// qual dos dois está de fato selecionado).
 	const [showCalendar, setShowCalendar] = React.useState(false);
 	const [draft, setDraft] = React.useState<DateRange | undefined>({
 		from: new Date(range.from),
@@ -97,6 +94,7 @@ export function DateRangePicker() {
 							<Calendar
 								mode="range"
 								numberOfMonths={2}
+								showOutsideDays={false}
 								selected={draft}
 								onSelect={setDraft}
 								defaultMonth={draft?.from}
