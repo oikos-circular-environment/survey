@@ -4,7 +4,7 @@
  * A camada de tipos vive separada da de dados porque o schema Drizzle depende dela:
  * `success_rule`, `options` e `depends_on` são colunas JSON e precisam de
  * `$type<...>` para que o compilador verifique o que entra e o que sai do banco. O conjunto
- * de dados — as 18 tarefas, as 6 suítes, as 5 personas e as perguntas — vive em `./data.ts`,
+ * de dados — as 19 tarefas, as 6 suítes, as 5 personas e as perguntas — vive em `./data.ts`,
  * no mesmo diretório.
  *
  * Regras que valem para o protocolo inteiro:
@@ -47,7 +47,8 @@ export type TaskCode =
 	| "T15"
 	| "T16"
 	| "T17"
-	| "T18";
+	| "T18"
+	| "T19";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -69,6 +70,9 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
  * `screen` — o participante chegou a uma tela. Necessário para tarefas puramente de
  *            leitura, em que os dados já foram carregados antes e nenhuma requisição
  *            nova acontece.
+ *
+ * `event`  — evento de UI emitido pelo app (ex.: abriu um bottom sheet), sem rota nem
+ *            requisição nova associada. `payload` usa a mesma semântica de `query`.
  */
 export type QueryMatcher = string | true | { not: string };
 
@@ -83,6 +87,11 @@ export type SuccessSignal =
 	| {
 			kind: "screen";
 			route: string;
+	  }
+	| {
+			kind: "event";
+			name: string;
+			payload?: Record<string, QueryMatcher>;
 	  };
 
 /**

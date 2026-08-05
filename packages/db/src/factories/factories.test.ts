@@ -14,7 +14,7 @@ import {
 import { buildFactorySession } from "./session-factory";
 
 /**
- * O mesmo código de tarefa aparece em mais de uma suíte (ex.: T8 em S1 e S6), então
+ * O mesmo código de tarefa aparece em mais de uma suíte (ex.: T8 em S1 e S3), então
  * localizar por `taskId` (a linha real de `taskDefs`, uma por suíte) é o que garante não
  * confundir a ocorrência de uma suíte com a de outra.
  */
@@ -50,9 +50,9 @@ describe("factories", () => {
 		});
 		const { sessionId } = await insertFactorySession(db, factory);
 
-		// CITIZEN: S1 (7) + S2 (3) + S6 (10) = 20 tarefas, em 3 suítes.
+		// CITIZEN: S1 (8) + S2 (3) + S6 (4) = 15 tarefas, em 3 suítes.
 		expect(factory.suiteRuns).toHaveLength(3);
-		expect(factory.taskRuns).toHaveLength(20);
+		expect(factory.taskRuns).toHaveLength(15);
 		expect(factory.suiteRuns.every((run) => run.finishedAt !== undefined)).toBe(
 			true,
 		);
@@ -62,7 +62,7 @@ describe("factories", () => {
 			.from(taskRuns)
 			.innerJoin(suiteRuns, eq(taskRuns.suiteRunId, suiteRuns.id))
 			.where(eq(suiteRuns.sessionId, sessionId));
-		expect(insertedTaskRuns).toHaveLength(20);
+		expect(insertedTaskRuns).toHaveLength(15);
 	});
 
 	test("outcome de cada tarefa é coerente com os eventos gravados", async () => {
