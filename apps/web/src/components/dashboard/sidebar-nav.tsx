@@ -29,6 +29,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { LogoutButton } from "@/components/auth/logout-button";
+import { Logo } from "@/components/logo";
 
 const OVERVIEW_ITEMS = [
 	{ href: "/dashboard", label: "Visão geral", icon: LayoutDashboard },
@@ -115,9 +116,7 @@ export function DashboardSidebar() {
 	return (
 		<Sidebar>
 			<SidebarHeader className="px-4 py-3">
-				<span className="font-heading font-semibold text-sm">
-					Oikos — Métricas
-				</span>
+				<Logo />
 				<span className="text-muted-foreground text-xs">
 					Pesquisa de usabilidade
 				</span>
