@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-export type DateRangePreset = "7d" | "4w" | "1m" | "custom";
+export type DateRangePreset = "1w" | "2w" | "3w" | "1m" | "custom";
 
 export interface DateRangeValue {
 	preset: DateRangePreset;
@@ -40,21 +40,22 @@ function rangeForPreset(
 	const now = new Date();
 	const to = endOfDay(now);
 	const from = new Date(now);
-	if (preset === "7d") from.setDate(from.getDate() - 6);
-	if (preset === "4w") from.setDate(from.getDate() - 27);
+	if (preset === "1w") from.setDate(from.getDate() - 6);
+	if (preset === "2w") from.setDate(from.getDate() - 13);
+	if (preset === "3w") from.setDate(from.getDate() - 20);
 	if (preset === "1m") from.setMonth(from.getMonth() - 1);
 	return { preset, from: startOfDay(from).getTime(), to: to.getTime() };
 }
 
 /**
- * Filtro de período global do dashboard. Presets ("Últimos 7 dias", "Últimas 4
- * semanas", "Último mês") e o intervalo customizado são resolvidos aqui, no cliente,
- * para `from`/`to` absolutos em epoch ms — a API (`dateRangeInput`) só entende
- * intervalo absoluto, nunca preset.
+ * Filtro de período global do dashboard. Presets ("Última semana", "Últimas 2
+ * semanas", "Últimas 3 semanas", "Último mês") e o intervalo customizado são
+ * resolvidos aqui, no cliente, para `from`/`to` absolutos em epoch ms — a API
+ * (`dateRangeInput`) só entende intervalo absoluto, nunca preset.
  */
 export function DateRangeProvider({ children }: { children: React.ReactNode }) {
 	const [range, setRange] = React.useState<DateRangeValue>(() =>
-		rangeForPreset("7d"),
+		rangeForPreset("1w"),
 	);
 
 	const setPreset = React.useCallback(

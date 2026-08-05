@@ -16,14 +16,19 @@ import type { DateRange } from "react-day-picker";
 import { type DateRangePreset, useDateRange } from "./date-range-context";
 
 const PRESET_LABELS: Record<Exclude<DateRangePreset, "custom">, string> = {
-	"7d": "Últimos 7 dias",
-	"4w": "Últimas 4 semanas",
+	"1w": "Última semana",
+	"2w": "Últimas 2 semanas",
+	"3w": "Últimas 3 semanas",
 	"1m": "Último mês",
 };
 
 export function DateRangePicker() {
 	const { range, setPreset, setCustomRange } = useDateRange();
 	const [open, setOpen] = React.useState(false);
+	// Fechado por padrão a cada abertura do popover — só aparece ao clicar em
+	// "Personalizado" (senão o calendário some junto com os presets, confundindo
+	// qual dos dois está de fato selecionado).
+	const [showCalendar, setShowCalendar] = React.useState(false);
 	const [draft, setDraft] = React.useState<DateRange | undefined>({
 		from: new Date(range.from),
 		to: new Date(range.to),
@@ -35,7 +40,13 @@ export function DateRangePicker() {
 			: PRESET_LABELS[range.preset];
 
 	return (
-		<Popover open={open} onOpenChange={setOpen}>
+		<Popover
+			open={open}
+			onOpenChange={(nextOpen) => {
+				setOpen(nextOpen);
+				if (!nextOpen) setShowCalendar(false);
+			}}
+		>
 			<PopoverTrigger
 				render={
 					<Button
@@ -67,31 +78,46 @@ export function DateRangePicker() {
 								{PRESET_LABELS[preset]}
 							</Button>
 						))}
+						<Button
+							variant={range.preset === "custom" ? "secondary" : "ghost"}
+							className="justify-start font-normal"
+							onClick={() => {
+								setDraft({
+									from: new Date(range.from),
+									to: new Date(range.to),
+								});
+								setShowCalendar(true);
+							}}
+						>
+							Personalizado
+						</Button>
 					</div>
-					<div className="p-2">
-						<Calendar
-							mode="range"
-							numberOfMonths={2}
-							selected={draft}
-							onSelect={setDraft}
-							defaultMonth={draft?.from}
-							locale={ptBR}
-						/>
-						<div className="flex justify-end p-2 pt-0">
-							<Button
-								size="sm"
-								disabled={!draft?.from || !draft?.to}
-								onClick={() => {
-									if (draft?.from && draft?.to) {
-										setCustomRange(draft.from, draft.to);
-										setOpen(false);
-									}
-								}}
-							>
-								Aplicar período personalizado
-							</Button>
+					{showCalendar && (
+						<div className="p-2">
+							<Calendar
+								mode="range"
+								numberOfMonths={2}
+								selected={draft}
+								onSelect={setDraft}
+								defaultMonth={draft?.from}
+								locale={ptBR}
+							/>
+							<div className="flex justify-end p-2 pt-0">
+								<Button
+									size="sm"
+									disabled={!draft?.from || !draft?.to}
+									onClick={() => {
+										if (draft?.from && draft?.to) {
+											setCustomRange(draft.from, draft.to);
+											setOpen(false);
+										}
+									}}
+								>
+									Aplicar período personalizado
+								</Button>
+							</div>
 						</div>
-					</div>
+					)}
 				</div>
 			</PopoverContent>
 		</Popover>
