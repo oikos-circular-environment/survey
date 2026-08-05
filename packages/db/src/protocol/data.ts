@@ -324,6 +324,22 @@ const tasks: Task[] = [
 			],
 		},
 	},
+	{
+		code: "T19",
+		title: "Abrir uma denúncia sua na lista",
+		instruction:
+			"Na lista de denúncias, que mostra as que você registrou, toque em uma delas para ver os detalhes completos.",
+		success: {
+			mode: "any",
+			signals: [
+				{
+					kind: "event",
+					name: "complaint.opened",
+					payload: { source: "list" },
+				},
+			],
+		},
+	},
 ];
 
 const suites: Suite[] = [
@@ -366,19 +382,8 @@ const suites: Suite[] = [
 		code: "S6",
 		title: "Participação cidadã",
 		objective:
-			"Imagine que você é morador da cidade e quer participar da gestão de resíduos: encontre onde descartar, registre uma denúncia de descarte irregular, explore as denúncias existentes, vote em uma delas e poste uma resolução.",
-		task_codes: [
-			"T8",
-			"T9",
-			"T11",
-			"T16",
-			"T12",
-			"T13",
-			"T14",
-			"T15",
-			"T17",
-			"T18",
-		],
+			"Imagine que você é morador da cidade e já tem uma conta. Registre uma denúncia de descarte irregular, veja os detalhes de uma denúncia sua na lista, vote em uma denúncia e poste uma resolução.",
+		task_codes: ["T16", "T19", "T17", "T18"],
 	},
 ];
 
@@ -766,7 +771,7 @@ const finalQuestions: Question[] = [
 
 export const protocol: Protocol = {
 	key: "oikos-walkthrough",
-	version: 6,
+	version: 7,
 	tasks,
 	suites,
 	personas,
