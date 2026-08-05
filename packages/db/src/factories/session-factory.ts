@@ -119,7 +119,16 @@ function eventPayloadFor(
 		const method: HttpMethod = signal.method;
 		return { method, path: signal.path_pattern, status: signal.status };
 	}
-	return { route: signal.route };
+	if (signal.kind === "screen") {
+		return { route: signal.route };
+	}
+	return { name: signal.name, ...signal.payload };
+}
+
+function eventTypeFor(signal: SimulatedOutcome["firedSignals"][number]) {
+	if (signal.kind === "api") return "api.call";
+	if (signal.kind === "screen") return "screen.enter";
+	return "ui.event";
 }
 
 /**
@@ -221,7 +230,7 @@ export function buildFactorySession(
 					sessionId,
 					clientEventId: randomUUID(),
 					seq: seq++,
-					type: signal.kind === "api" ? "api.call" : "screen.enter",
+					type: eventTypeFor(signal),
 					suiteCode: suite.code,
 					taskCode: task.code,
 					occurredAt,
