@@ -61,7 +61,7 @@ export async function getTesterDetail(
 	if (!session) return null;
 
 	const protocolVersionId =
-		await repositories.protocol.getActiveProtocolVersionId();
+		await repositories.protocol.getLatestProtocolVersionId();
 	const [personaDefs, questionOptions, suiteDefs, suiteRuns, freeComment] =
 		await Promise.all([
 			repositories.protocol.getPersonaDefs(protocolVersionId),

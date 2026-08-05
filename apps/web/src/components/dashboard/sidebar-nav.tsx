@@ -20,6 +20,7 @@ import {
 	MessageSquareText,
 	Sparkles,
 	Table2,
+	ToggleLeft,
 	UserCog,
 	UsersRound,
 } from "lucide-react";
@@ -28,6 +29,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { LogoutButton } from "@/components/auth/logout-button";
+import { Logo } from "@/components/logo";
 
 const OVERVIEW_ITEMS = [
 	{ href: "/dashboard", label: "Visão geral", icon: LayoutDashboard },
@@ -46,6 +48,11 @@ const RESULTS_ITEMS = [
 
 const MANAGEMENT_ITEMS = [
 	{ href: "/dashboard/testers", label: "Testadores", icon: UserCog },
+	{
+		href: "/dashboard/protocol-versions",
+		label: "Versões do protocolo",
+		icon: ToggleLeft,
+	},
 ];
 
 const ACCOUNT_ITEMS = [
@@ -109,9 +116,7 @@ export function DashboardSidebar() {
 	return (
 		<Sidebar>
 			<SidebarHeader className="px-4 py-3">
-				<span className="font-heading font-semibold text-sm">
-					Oikos — Métricas
-				</span>
+				<Logo />
 				<span className="text-muted-foreground text-xs">
 					Pesquisa de usabilidade
 				</span>

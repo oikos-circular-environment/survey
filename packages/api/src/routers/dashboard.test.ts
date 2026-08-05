@@ -1,5 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { randomUUID } from "node:crypto";
+import { protocolVersions } from "@oikos-circular-environment/survey-db/schema/protocol";
 import { env } from "@survey/env/server";
+import { eq } from "drizzle-orm";
 
 import type { Context } from "../context";
 import { createCallerFactory } from "../index";
@@ -77,5 +80,63 @@ describe("router dashboard — chave de cliente + sessão de admin (S09/S10/A9)"
 		await expect(
 			callerFor(new Headers()).dashboard.overview({}),
 		).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+	});
+});
+
+describe("router dashboard — protocolVersions.list/setActive (S15)", () => {
+	async function adminCaller() {
+		const sessionHeaders = await createAdminSessionHeaders(setup.auth);
+		const headers = new Headers(sessionHeaders);
+		headers.set("x-client-key", env.CLIENT_API_KEY);
+		return callerFor(headers);
+	}
+
+	test("list traz a versão semeada como ativa", async () => {
+		const caller = await adminCaller();
+
+		const versions = await caller.dashboard.protocolVersions.list();
+
+		expect(versions.length).toBeGreaterThan(0);
+		expect(versions.every((version) => version.isActive)).toBe(true);
+	});
+
+	test("setActive(true) numa versão desativa as irmãs da mesma key", async () => {
+		const caller = await adminCaller();
+		const versions = await caller.dashboard.protocolVersions.list();
+		const original = versions[0];
+		if (!original) throw new Error("esperava ao menos uma versão semeada");
+
+		const siblingId = randomUUID();
+		await setup.ephemeral.db.insert(protocolVersions).values({
+			id: siblingId,
+			key: original.key,
+			version: original.version + 1,
+			isActive: false,
+		});
+
+		try {
+			await caller.dashboard.protocolVersions.setActive({
+				id: siblingId,
+				isActive: true,
+			});
+
+			const afterActivatingSibling =
+				await caller.dashboard.protocolVersions.list();
+			expect(
+				afterActivatingSibling.find((v) => v.id === siblingId)?.isActive,
+			).toBe(true);
+			expect(
+				afterActivatingSibling.find((v) => v.id === original.id)?.isActive,
+			).toBe(false);
+		} finally {
+			// Restaura o estado original para não vazar para os outros testes do arquivo.
+			await caller.dashboard.protocolVersions.setActive({
+				id: original.id,
+				isActive: true,
+			});
+			await setup.ephemeral.db
+				.delete(protocolVersions)
+				.where(eq(protocolVersions.id, siblingId));
+		}
 	});
 });

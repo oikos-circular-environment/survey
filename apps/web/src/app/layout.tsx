@@ -3,6 +3,7 @@ import { Raleway, Roboto_Slab } from "next/font/google";
 
 import "../index.css";
 import { cn } from "@survey/ui/lib/utils";
+import { ChartIconProvider } from "@/components/chart-icon-provider";
 import Header from "@/components/header";
 import Providers from "@/components/providers";
 
@@ -33,12 +34,14 @@ export default function RootLayout({
 			className={cn("font-sans", raleway.variable, robotoSlab.variable)}
 		>
 			<body className="antialiased">
-				<Providers>
-					<div className="grid h-svh grid-rows-[auto_1fr]">
-						<Header />
-						{children}
-					</div>
-				</Providers>
+				<ChartIconProvider>
+					<Providers>
+						<div className="grid h-svh grid-rows-[auto_1fr]">
+							<Header />
+							{children}
+						</div>
+					</Providers>
+				</ChartIconProvider>
 			</body>
 		</html>
 	);

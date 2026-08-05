@@ -51,6 +51,14 @@ export interface ActiveProtocolVersionRow {
 	version: number;
 }
 
+export interface ProtocolVersionListRow {
+	id: string;
+	key: string;
+	version: number;
+	publishedAt: Date;
+	isActive: boolean;
+}
+
 export interface ProtocolPersonaRow {
 	key: string;
 	label: string;
@@ -96,13 +104,15 @@ export class ProtocolRepository {
 	constructor(private readonly db: Db) {}
 
 	/**
-	 * Resolve o id da versão de protocolo mais recente publicada sob `key`. Toda
-	 * consulta de métrica escopa por esse id — sessões de versões antigas do
-	 * instrumento não entram no mesmo cálculo que sessões da versão vigente, mesmo com
-	 * texto de pergunta parecido, porque `questions.id` (usado pra juntar respostas)
-	 * muda a cada versão publicada.
+	 * Resolve o id da versão de protocolo mais recente publicada sob `key`, ignorando
+	 * `is_active` — usada pelas métricas do dashboard, onde uma versão desativada para
+	 * novos participantes ainda precisa aparecer nos dados já coletados. Toda consulta
+	 * de métrica escopa por esse id — sessões de versões antigas do instrumento não
+	 * entram no mesmo cálculo que sessões da versão vigente, mesmo com texto de
+	 * pergunta parecido, porque `questions.id` (usado pra juntar respostas) muda a cada
+	 * versão publicada.
 	 */
-	async getActiveProtocolVersionId(key = "oikos-walkthrough"): Promise<string> {
+	async getLatestProtocolVersionId(key = "oikos-walkthrough"): Promise<string> {
 		const [row] = await this.db
 			.select({ id: protocolVersions.id })
 			.from(protocolVersions)
@@ -226,13 +236,15 @@ export class ProtocolRepository {
 	}
 
 	/**
-	 * Igual a `getActiveProtocolVersionId`, mas devolve `key`/`version` junto do id —
-	 * usado pelo endpoint E1 (`usability.protocol`), que precisa dos três no corpo da
-	 * resposta.
+	 * Igual a `getLatestProtocolVersionId`, mas devolve `key`/`version` junto do id e
+	 * respeita `is_active` — usado pelo endpoint E1 (`usability.protocol`), o único
+	 * caminho que o app consome. Devolve `null` quando existem versões para `key` mas
+	 * nenhuma está ativa (desligado de propósito); só lança quando não existe nenhuma
+	 * linha pra `key` (seed ausente).
 	 */
 	async getActiveProtocolVersion(
 		key = "oikos-walkthrough",
-	): Promise<ActiveProtocolVersionRow> {
+	): Promise<ActiveProtocolVersionRow | null> {
 		const [row] = await this.db
 			.select({
 				id: protocolVersions.id,
@@ -240,15 +252,24 @@ export class ProtocolRepository {
 				version: protocolVersions.version,
 			})
 			.from(protocolVersions)
-			.where(eq(protocolVersions.key, key))
+			.where(
+				and(eq(protocolVersions.key, key), eq(protocolVersions.isActive, true)),
+			)
 			.orderBy(desc(protocolVersions.version))
 			.limit(1);
-		if (!row) {
+		if (row) return row;
+
+		const [anyRow] = await this.db
+			.select({ id: protocolVersions.id })
+			.from(protocolVersions)
+			.where(eq(protocolVersions.key, key))
+			.limit(1);
+		if (!anyRow) {
 			throw new Error(
 				`Protocolo "${key}" não está semeado — rode "bun run db:seed".`,
 			);
 		}
-		return row;
+		return null;
 	}
 
 	/**
@@ -417,6 +438,49 @@ export class ProtocolRepository {
 			maxLength: row.maxLength ?? null,
 			dependsOn: row.dependsOn ?? null,
 		}));
+	}
+
+	/** Todas as versões de todas as `key`s, para a tela de administração do painel. */
+	async listProtocolVersions(): Promise<ProtocolVersionListRow[]> {
+		return this.db
+			.select({
+				id: protocolVersions.id,
+				key: protocolVersions.key,
+				version: protocolVersions.version,
+				publishedAt: protocolVersions.publishedAt,
+				isActive: protocolVersions.isActive,
+			})
+			.from(protocolVersions)
+			.orderBy(protocolVersions.key, desc(protocolVersions.version));
+	}
+
+	/**
+	 * Liga/desliga uma versão para novos participantes (E1). Ativar uma versão desativa
+	 * as irmãs da mesma `key` na mesma transação — só uma versão ativa por `key` de cada
+	 * vez. Desativar não exige ativar outra: é o "desligar tudo" para aquela `key`.
+	 */
+	async setProtocolVersionActive(id: string, isActive: boolean): Promise<void> {
+		await this.db.transaction(async (tx) => {
+			const [target] = await tx
+				.select({ key: protocolVersions.key })
+				.from(protocolVersions)
+				.where(eq(protocolVersions.id, id));
+			if (!target) {
+				throw new Error(`Versão de protocolo "${id}" não encontrada.`);
+			}
+
+			if (isActive) {
+				await tx
+					.update(protocolVersions)
+					.set({ isActive: false })
+					.where(eq(protocolVersions.key, target.key));
+			}
+
+			await tx
+				.update(protocolVersions)
+				.set({ isActive })
+				.where(eq(protocolVersions.id, id));
+		});
 	}
 
 	/** Id da suíte pelo código, dentro de uma versão — usado por E3 para resolver `suite.code`. */

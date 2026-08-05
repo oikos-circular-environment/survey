@@ -44,7 +44,7 @@ export async function getTasks(
 	{ range, page, pageSize }: GetTasksInput,
 ): Promise<PaginatedTasks> {
 	const protocolVersionId =
-		await repositories.protocol.getActiveProtocolVersionId();
+		await repositories.protocol.getLatestProtocolVersionId();
 	const [taskDefs, taskRuns] = await Promise.all([
 		repositories.protocol.getTaskDefs(protocolVersionId),
 		repositories.taskRuns.findInRange(range),

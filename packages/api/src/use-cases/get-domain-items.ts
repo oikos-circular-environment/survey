@@ -32,7 +32,7 @@ export async function getDomainItems(
 	range: DateRange,
 ): Promise<DomainItemResult[]> {
 	const protocolVersionId =
-		await repositories.protocol.getActiveProtocolVersionId();
+		await repositories.protocol.getLatestProtocolVersionId();
 
 	const answerSets = await Promise.all(
 		DOMAIN_ITEMS.map((item) =>

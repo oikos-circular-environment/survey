@@ -56,7 +56,7 @@ export async function getSuites(
 	range: DateRange,
 ): Promise<SuiteMetrics[]> {
 	const protocolVersionId =
-		await repositories.protocol.getActiveProtocolVersionId();
+		await repositories.protocol.getLatestProtocolVersionId();
 	const [suiteDefs, suiteRuns, satisfactionAnswers] = await Promise.all([
 		repositories.protocol.getSuiteDefs(protocolVersionId),
 		repositories.suiteRuns.findInRange(range),
