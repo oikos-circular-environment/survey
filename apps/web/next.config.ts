@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
 	typedRoutes: true,
 	reactCompiler: true,
 	output: "standalone",
-	allowedDevOrigins: ["survey.oikos.company"],
+	allowedDevOrigins: ["local-survey.oikos.company"],
 };
 
 export default nextConfig;
