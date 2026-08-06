@@ -48,7 +48,8 @@ export type TaskCode =
 	| "T16"
 	| "T17"
 	| "T18"
-	| "T19";
+	| "T19"
+	| "T20";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -122,13 +123,24 @@ export interface Suite {
 	task_codes: TaskCode[];
 }
 
+/**
+ * Uma suíte no roteiro de uma persona. `specific_objectives` é o texto extra que só essa
+ * persona vê na abertura da etapa — evita ter que criar uma suíte separada (mesmas
+ * tarefas) só para variar a moldura narrativa por persona. Lista vazia = sem objetivo
+ * específico, só o `Suite.objective` geral.
+ */
+export interface PersonaSuite {
+	suite_code: SuiteCode;
+	specific_objectives: string[];
+}
+
 export interface Persona {
 	key: PersonaKey;
 	label: string;
 	/** Frase que ajuda o participante a se reconhecer, reduzindo escolha equivocada. */
 	description: string;
 	/** Roteiro estrito: exatamente estas suítes, nesta ordem. */
-	suite_codes: SuiteCode[];
+	suites: PersonaSuite[];
 }
 
 /**

@@ -5,11 +5,16 @@ import type {
 } from "@oikos-circular-environment/survey-db/protocol/types";
 import type { Repositories } from "@oikos-circular-environment/survey-db/repositories/index";
 
+export interface ProtocolPersonaSuiteResponse {
+	suite_code: string;
+	specific_objectives: string[];
+}
+
 export interface ProtocolPersonaResponse {
 	key: string;
 	label: string;
 	description: string;
-	suite_codes: string[];
+	suites: ProtocolPersonaSuiteResponse[];
 }
 
 export interface ProtocolSuiteResponse {
@@ -79,7 +84,10 @@ export async function getProtocol(
 			key: persona.key,
 			label: persona.label,
 			description: persona.description,
-			suite_codes: persona.suiteCodes,
+			suites: persona.suites.map((suite) => ({
+				suite_code: suite.suiteCode,
+				specific_objectives: suite.specificObjectives,
+			})),
 		})),
 		suites: suites.map((suite) => ({
 			code: suite.code,

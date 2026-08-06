@@ -340,6 +340,16 @@ const tasks: Task[] = [
 			],
 		},
 	},
+	{
+		code: "T20",
+		title: "Encontrar sua própria empresa no Market",
+		instruction:
+			"Volte para a seção de pontos de coleta e encontre a empresa que você acabou de cadastrar, confirmando que as informações aparecem corretamente.",
+		success: {
+			mode: "any",
+			signals: [{ kind: "screen", route: "/market/[companyId]" }],
+		},
+	},
 ];
 
 const suites: Suite[] = [
@@ -362,21 +372,14 @@ const suites: Suite[] = [
 		title: "Exposição ao ecossistema",
 		objective:
 			"Imagine que você quer que pessoas e empresas da região encontrem o seu negócio ou ponto de coleta. Cadastre sua empresa com todas as informações e depois tente encontrá-la nos pontos de coleta.",
-		task_codes: ["T4", "T5", "T6", "T7", "T8"],
-	},
-	{
-		code: "S4",
-		title: "Busca de parceiros comerciais",
-		objective:
-			"Imagine que você quer encontrar parceiros para o seu negócio: quem compre os resíduos que você coleta, quem forneça material reciclável, ou coletores cujo serviço você possa contratar.",
-		task_codes: ["T8", "T9", "T11"],
+		task_codes: ["T4", "T5", "T6", "T7", "T20"],
 	},
 	{
 		code: "S5",
 		title: "Fiscalização e atuação pública",
 		objective:
-			"Imagine que você representa um órgão público. Cadastre o órgão para expor os serviços que oferece à população. Depois, use os filtros de denúncia para definir prioridades de atendimento e registre uma resolução.",
-		task_codes: ["T4", "T5", "T6", "T7", "T12", "T13", "T14", "T15", "T18"],
+			"Imagine que você representa um órgão público. Cadastre o órgão para expor os serviços que oferece à população. Depois, atue sobre denúncias existentes: registre uma ocorrência, vote em uma denúncia de outra pessoa e registre uma resolução.",
+		task_codes: ["T4", "T5", "T6", "T7", "T16", "T17", "T18"],
 	},
 	{
 		code: "S6",
@@ -387,41 +390,128 @@ const suites: Suite[] = [
 	},
 ];
 
+const businessPartnerSearchObjective =
+	"Além de explorar livremente, repare que essa mesma busca serve para encontrar quem compra os resíduos que você coleta, quem fornece material reciclável, ou coletores cujo serviço você possa contratar.";
+
 const personas: Persona[] = [
 	{
 		key: "COLLECTOR",
 		label: "Coletor(a)",
 		description:
 			"Você coleta materiais recicláveis, por conta própria ou em cooperativa.",
-		suite_codes: ["S1", "S2", "S3", "S4"],
+		suites: [
+			{
+				suite_code: "S1",
+				specific_objectives: [businessPartnerSearchObjective],
+			},
+			{
+				suite_code: "S2",
+				specific_objectives: [
+					"Um perfil completo, com foto e contato, ajuda quem for buscar seus serviços de coleta a confiar em você antes de fechar negócio.",
+				],
+			},
+			{
+				suite_code: "S3",
+				specific_objectives: [
+					"Como coletor(a), esse cadastro é o que te torna visível para quem quer entregar resíduo para você ou contratar sua coleta.",
+				],
+			},
+		],
 	},
 	{
 		key: "RECYCLING_COMPANY",
 		label: "Empresa de reciclagem",
 		description:
 			"Sua empresa coleta, tria, processa ou revende materiais recicláveis.",
-		suite_codes: ["S1", "S2", "S3", "S4"],
+		suites: [
+			{
+				suite_code: "S1",
+				specific_objectives: [businessPartnerSearchObjective],
+			},
+			{
+				suite_code: "S2",
+				specific_objectives: [
+					"Esse perfil é o que aparece para quem for encontrar sua empresa depois — capriche nos dados de contato.",
+				],
+			},
+			{
+				suite_code: "S3",
+				specific_objectives: [
+					"Como empresa de reciclagem, esse cadastro mostra quais resíduos você compra e a que preço — é o que atrai fornecedores.",
+				],
+			},
+		],
 	},
 	{
 		key: "GENERAL_COMPANY",
 		label: "Empresa comum",
 		description:
 			"Sua empresa gera resíduos mas não trabalha com reciclagem — comércio, restaurante, escritório, prestadora de serviço.",
-		suite_codes: ["S1", "S2", "S4"],
+		suites: [
+			{
+				suite_code: "S1",
+				specific_objectives: [businessPartnerSearchObjective],
+			},
+			{
+				suite_code: "S2",
+				specific_objectives: [
+					"Como você não vai cadastrar uma empresa nesta pesquisa, esse perfil é o que te identifica quando for buscar coletores e pontos de coleta na próxima etapa.",
+				],
+			},
+		],
 	},
 	{
 		key: "CITIZEN",
 		label: "Cidadão",
 		description:
 			"Você mora na cidade, gera resíduo doméstico e quer saber onde descartar corretamente.",
-		suite_codes: ["S1", "S2", "S6"],
+		suites: [
+			{
+				suite_code: "S1",
+				specific_objectives: [
+					"Repare que dá para ver pontos de coleta perto de você e o mapa de denúncias mesmo sem estar logado — é assim que você decide se vale a pena criar uma conta.",
+				],
+			},
+			{
+				suite_code: "S2",
+				specific_objectives: [
+					"Esse perfil é o que vai te identificar nas denúncias que você registrar e nas resoluções que postar mais adiante.",
+				],
+			},
+			{
+				suite_code: "S6",
+				specific_objectives: [
+					"Essa etapa simula o ciclo completo de um morador: encontrar um problema, denunciar, acompanhar outras denúncias e ajudar a resolver.",
+				],
+			},
+		],
 	},
 	{
 		key: "GOVERNMENT",
 		label: "Órgão público",
 		description:
 			"Você trabalha em uma instituição pública ligada a regulamentação, fiscalização ou gestão ambiental.",
-		suite_codes: ["S1", "S2", "S5"],
+		suites: [
+			{
+				suite_code: "S1",
+				specific_objectives: [
+					"Repare que os filtros de denúncia por status, categoria e periculosidade já funcionam sem login — são os mesmos que você vai usar depois, como órgão cadastrado, para priorizar o atendimento.",
+				],
+			},
+			{
+				suite_code: "S2",
+				specific_objectives: [
+					"Esse é o seu perfil pessoal — o cadastro do órgão público que você representa vem na próxima etapa.",
+				],
+			},
+			{
+				suite_code: "S5",
+				specific_objectives: [
+					"Cadastre o órgão como faria na vida real: os serviços que aparecem aqui (ecopontos, coleta especial, recebimento de material perigoso) são o que a população vai encontrar ao buscar por vocês.",
+					"Depois, aja sobre denúncias como faria no seu trabalho: registre uma ocorrência encontrada em campo, avalie uma denúncia de outra pessoa e documente a resolução tomada.",
+				],
+			},
+		],
 	},
 ];
 
@@ -771,7 +861,7 @@ const finalQuestions: Question[] = [
 
 export const protocol: Protocol = {
 	key: "oikos-walkthrough",
-	version: 7,
+	version: 8,
 	tasks,
 	suites,
 	personas,
