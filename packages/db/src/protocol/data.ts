@@ -5,7 +5,7 @@ const tasks: Task[] = [
 		code: "T1",
 		title: "Criar uma conta",
 		instruction:
-			"Crie uma conta no Oikos utilizando seu e-mail e uma senha de sua escolha.",
+			"Abra a aba HOME e procure a opção de criar conta. Cadastre-se no Oikos usando seu e-mail e uma senha de sua escolha. Guarde essa senha, porque você vai usá-la no próximo passo.",
 		success: {
 			mode: "any",
 			signals: [
@@ -22,7 +22,7 @@ const tasks: Task[] = [
 		code: "T2",
 		title: "Fazer login",
 		instruction:
-			"Entre no aplicativo com o e-mail e a senha que você acabou de cadastrar.",
+			"Entre no aplicativo com o e-mail e a senha que você acabou de cadastrar. Se o aplicativo já tiver entrado sozinho depois do cadastro, saia da conta e faça o login novamente, para percorrer a tela de entrada.",
 		success: {
 			mode: "any",
 			signals: [
@@ -39,7 +39,7 @@ const tasks: Task[] = [
 		code: "T3",
 		title: "Preencher o perfil completo",
 		instruction:
-			"Acesse a área de perfil e preencha seus dados: nome completo, telefone, endereço (CEP, rua, número, bairro, cidade e estado) e adicione uma foto de perfil.",
+			"Abra a aba HOME e acesse PERFIL. Preencha seus dados pessoais (nome completo e telefone), depois o endereço (CEP, rua, número, bairro, cidade e estado) e, por fim, adicione uma foto de perfil. Salve antes de sair da tela.",
 		success: {
 			mode: "all",
 			signals: [
@@ -62,7 +62,7 @@ const tasks: Task[] = [
 		code: "T4",
 		title: "Cadastrar uma empresa ou ponto de coleta",
 		instruction:
-			"Cadastre sua empresa ou ponto de coleta informando nome fantasia, razão social, tipo, número de identificação (CPF ou CNPJ) e telefone de contato.",
+			"Abra a aba HOME e procure a opção de cadastrar uma empresa ou ponto de coleta. Informe o nome fantasia (como as pessoas conhecem o negócio), a razão social, o tipo, o número de identificação (CPF ou CNPJ) e um telefone de contato.",
 		success: {
 			mode: "any",
 			signals: [
@@ -79,7 +79,7 @@ const tasks: Task[] = [
 		code: "T5",
 		title: "Informar o endereço da empresa",
 		instruction:
-			"Na empresa que você cadastrou, preencha o endereço completo: CEP, rua, número, bairro, cidade e estado.",
+			"Abra a empresa que você acabou de cadastrar e preencha o endereço completo: CEP, rua, número, bairro, cidade e estado. É esse endereço que posiciona a empresa no mapa e faz ela aparecer nas buscas por proximidade.",
 		success: {
 			mode: "any",
 			signals: [
@@ -96,7 +96,7 @@ const tasks: Task[] = [
 		code: "T6",
 		title: "Configurar os horários de funcionamento",
 		instruction:
-			"Configure os horários de funcionamento da empresa, indicando os dias da semana em que ela opera e os horários de abertura e fechamento.",
+			"Ainda na empresa que você cadastrou, configure os horários de funcionamento. Marque em quais dias da semana ela atende e informe o horário de abertura e de fechamento de cada um, deixando de fora os dias em que ela não abre.",
 		success: {
 			mode: "any",
 			signals: [
@@ -113,7 +113,7 @@ const tasks: Task[] = [
 		code: "T7",
 		title: "Adicionar resíduos e serviços",
 		instruction:
-			"Adicione pelo menos um resíduo que você aceita para coleta (por exemplo papelão ou plástico), informando o preço por unidade de medida. Depois, adicione pelo menos um serviço oferecido, como coleta sob demanda.",
+			"Ainda na empresa que você cadastrou, adicione pelo menos um resíduo que ela aceita (papelão ou plástico, por exemplo) e informe o preço por unidade de medida. Em seguida, adicione pelo menos um serviço oferecido, como coleta sob demanda. São esses itens que aparecem para quem procura destinar resíduo.",
 		success: {
 			mode: "all",
 			signals: [
@@ -136,7 +136,7 @@ const tasks: Task[] = [
 		code: "T8",
 		title: "Aumentar o raio de busca",
 		instruction:
-			"Na seção de pontos de coleta, aumente o raio de busca — o padrão é 2 km — para um valor maior, como 5 km ou 10 km.",
+			"Abra a aba PONTOS DE COLETA e localize o controle de raio de busca, que vem configurado em 2 km. Aumente esse raio para um valor maior, como 5 km ou 10 km, e repare como a lista de empresas muda.",
 		success: {
 			mode: "any",
 			signals: [
@@ -154,7 +154,7 @@ const tasks: Task[] = [
 		code: "T9",
 		title: "Filtrar por categoria de resíduo ou serviço apenas",
 		instruction:
-			"Na lista de pontos de coleta, use o filtro para encontrar empresas que aceitem um tipo específico de resíduo.",
+			"Na aba PONTOS DE COLETA, abra os filtros e escolha um tipo específico de resíduo ou serviço. Confira se a lista passa a mostrar apenas as empresas que atendem ao que você filtrou.",
 		success: {
 			mode: "any",
 			signals: [
@@ -172,7 +172,7 @@ const tasks: Task[] = [
 		code: "T10",
 		title: "Pesquisar por texto",
 		instruction:
-			"Faça uma pesquisa textual: procure por uma empresa, um serviço ou um resíduo pelo nome.",
+			"Na aba PONTOS DE COLETA, use o campo de busca por texto e procure pelo nome de uma empresa, de um serviço ou de um resíduo. Veja se o resultado corresponde ao que você digitou.",
 		success: {
 			mode: "any",
 			signals: [
@@ -190,7 +190,7 @@ const tasks: Task[] = [
 		code: "T11",
 		title: "Visualizar os detalhes de uma empresa",
 		instruction:
-			"Selecione uma empresa da lista e veja todos os seus dados: endereço, horários, resíduos aceitos, serviços oferecidos e contato.",
+			"Na aba PONTOS DE COLETA, toque em uma empresa da lista para abrir os detalhes dela. Percorra a tela inteira e observe o endereço, os horários de funcionamento, os resíduos aceitos, os serviços oferecidos e as formas de contato.",
 		success: {
 			mode: "any",
 			signals: [{ kind: "screen", route: "/market/[companyId]" }],
@@ -200,7 +200,7 @@ const tasks: Task[] = [
 		code: "T12",
 		title: "Visualizar o mapa de denúncias",
 		instruction:
-			"Acesse a seção de denúncias e veja no mapa as denúncias de descarte irregular existentes na sua região.",
+			"Abra a aba DENÚNCIAS e veja o mapa com as denúncias de descarte irregular já registradas na sua região. Movimente o mapa e toque em alguns marcadores para entender o que cada um representa.",
 		success: {
 			mode: "any",
 			signals: [
@@ -217,7 +217,7 @@ const tasks: Task[] = [
 		code: "T13",
 		title: "Filtrar denúncias por status",
 		instruction:
-			"No mapa de denúncias, use o filtro para exibir apenas as denúncias abertas. Depois, alterne para exibir apenas as resolvidas.",
+			"Na aba DENÚNCIAS, abra os filtros e deixe visíveis apenas as denúncias em aberto. Depois troque o filtro para mostrar somente as resolvidas e compare o que aparece no mapa em cada situação.",
 		success: {
 			mode: "any",
 			signals: [
@@ -235,7 +235,7 @@ const tasks: Task[] = [
 		code: "T14",
 		title: "Filtrar denúncias por categoria de resíduo",
 		instruction:
-			"No mapa de denúncias, use o filtro para exibir apenas denúncias relacionadas a um tipo específico de resíduo.",
+			"Na aba DENÚNCIAS, use os filtros para exibir apenas as denúncias de um tipo específico de resíduo, como entulho ou material eletrônico. Observe quantas denúncias sobram no mapa depois de filtrar.",
 		success: {
 			mode: "any",
 			signals: [
@@ -253,7 +253,7 @@ const tasks: Task[] = [
 		code: "T15",
 		title: "Filtrar denúncias por nível de periculosidade",
 		instruction:
-			"No mapa de denúncias, use o filtro de nível de perigo para exibir apenas denúncias de alta ou muito alta periculosidade.",
+			"Na aba DENÚNCIAS, use o filtro de nível de perigo e deixe visíveis apenas as denúncias de alta ou muito alta periculosidade. É esse recorte que ajuda a decidir o que precisa de atendimento primeiro.",
 		success: {
 			mode: "any",
 			signals: [
@@ -271,7 +271,7 @@ const tasks: Task[] = [
 		code: "T16",
 		title: "Criar uma denúncia",
 		instruction:
-			"Registre uma denúncia de descarte irregular: informe o local, adicione uma foto ou vídeo, escreva suas observações e selecione as categorias de resíduo que você identificou.",
+			"Abra a aba DENÚNCIAS e inicie o registro de uma nova denúncia de descarte irregular. Marque o local no mapa, adicione uma foto ou um vídeo, escreva o que você observou e selecione as categorias de resíduo que identificou. Confira os dados antes de enviar.",
 		success: {
 			mode: "all",
 			signals: [
@@ -294,7 +294,7 @@ const tasks: Task[] = [
 		code: "T17",
 		title: "Votar em uma denúncia",
 		instruction:
-			"Escolha uma denúncia existente e vote indicando se o problema já foi resolvido ou não.",
+			"Na aba DENÚNCIAS, abra uma denúncia registrada por outra pessoa e use a votação para indicar se, na sua avaliação, o problema já foi resolvido ou continua em aberto. É esse voto da comunidade que define quando uma denúncia pode ser encerrada.",
 		success: {
 			mode: "any",
 			signals: [
@@ -311,7 +311,7 @@ const tasks: Task[] = [
 		code: "T18",
 		title: "Postar uma resolução",
 		instruction:
-			"Escolha uma denúncia e poste uma resolução descrevendo a ação tomada para resolver o problema. Se você cadastrou uma empresa, vincule a resolução a ela.",
+			"Na aba DENÚNCIAS, escolha uma denúncia e publique uma resolução descrevendo a ação tomada para resolver o problema, como a retirada do material ou a limpeza do local. Se você cadastrou uma empresa nesta pesquisa, vincule a resolução a ela.",
 		success: {
 			mode: "any",
 			signals: [
@@ -328,7 +328,7 @@ const tasks: Task[] = [
 		code: "T19",
 		title: "Abrir uma denúncia sua na lista",
 		instruction:
-			"Na lista de denúncias, que mostra as que você registrou, toque em uma delas para ver os detalhes completos.",
+			"Na aba DENÚNCIAS, alterne do mapa para a lista, que reúne as denúncias que você mesmo registrou. Toque em uma delas e percorra os detalhes completos: fotos, categorias, situação atual e votos recebidos.",
 		success: {
 			mode: "any",
 			signals: [
@@ -342,9 +342,9 @@ const tasks: Task[] = [
 	},
 	{
 		code: "T20",
-		title: "Encontrar sua própria empresa no Market",
+		title: "Encontrar sua própria empresa em Pontos de Coleta",
 		instruction:
-			"Volte para a seção de pontos de coleta e encontre a empresa que você acabou de cadastrar, confirmando que as informações aparecem corretamente.",
+			"Volte para a aba PONTOS DE COLETA e procure a empresa que você acabou de cadastrar, como faria um cliente à procura dela. Abra o resultado e confirme se o endereço, os horários, os resíduos e os serviços aparecem exatamente como você preencheu.",
 		success: {
 			mode: "any",
 			signals: [{ kind: "screen", route: "/market/[companyId]" }],
@@ -357,41 +357,38 @@ const suites: Suite[] = [
 		code: "S1",
 		title: "Exploração livre",
 		objective:
-			"Antes de criar uma conta, explore o aplicativo livremente. Pesquise pontos de coleta e veja o que é possível visualizar nas denúncias sem estar logado.",
+			"Esta etapa mostra o que o Oikos oferece antes de qualquer cadastro. Você vai percorrer as abas PONTOS DE COLETA e DENÚNCIAS sem estar logado, usando busca, filtros e mapa para ver até onde dá para chegar sem conta. O que queremos entender é se essas funções respondem bem e se a experiência faz sentido para quem ainda está decidindo se vale a pena se cadastrar.",
 		task_codes: ["T8", "T9", "T10", "T11", "T12", "T13", "T14", "T15"],
 	},
 	{
 		code: "S2",
 		title: "Registro e perfil",
 		objective:
-			"Agora que você explorou o aplicativo, crie sua conta, entre nela e preencha seu perfil com seus dados e uma foto.",
+			"Agora que você já explorou o aplicativo, é hora de criar sua identidade dentro dele. Nesta etapa você vai criar uma conta, entrar com ela e preencher o perfil com seus dados, seu endereço e uma foto. O que queremos entender é se esse caminho do cadastro até o perfil completo é claro, se os campos pedidos fazem sentido e se em algum ponto você fica em dúvida sobre o que preencher.",
 		task_codes: ["T1", "T2", "T3"],
 	},
 	{
 		code: "S3",
 		title: "Exposição ao ecossistema",
 		objective:
-			"Imagine que você quer que pessoas e empresas da região encontrem o seu negócio ou ponto de coleta. Cadastre sua empresa com todas as informações e depois tente encontrá-la nos pontos de coleta.",
+			"Imagine que você quer que pessoas e empresas da região encontrem o seu negócio ou ponto de coleta. Nesta etapa você vai cadastrar sua empresa do zero: primeiro os dados de identificação, depois o endereço, os horários de funcionamento e por fim os resíduos e serviços. No final, você vai procurá-la na aba PONTOS DE COLETA, como um cliente faria, para conferir se ela aparece do jeito que você cadastrou.",
 		task_codes: ["T4", "T5", "T6", "T7", "T20"],
 	},
 	{
 		code: "S5",
 		title: "Fiscalização e atuação pública",
 		objective:
-			"Imagine que você representa um órgão público. Cadastre o órgão para expor os serviços que oferece à população. Depois, atue sobre denúncias existentes: registre uma ocorrência, vote em uma denúncia de outra pessoa e registre uma resolução.",
+			"Imagine que você representa um órgão público e precisa tanto divulgar o que a instituição oferece quanto agir sobre problemas ambientais da cidade. Nesta etapa você vai cadastrar o órgão com endereço, horários e serviços prestados à população. Depois vai atuar sobre as denúncias na aba DENÚNCIAS: registrar uma ocorrência de campo, avaliar a denúncia de outra pessoa pelo voto e documentar uma resolução.",
 		task_codes: ["T4", "T5", "T6", "T7", "T16", "T17", "T18"],
 	},
 	{
 		code: "S6",
 		title: "Participação cidadã",
 		objective:
-			"Imagine que você é morador da cidade e já tem uma conta. Registre uma denúncia de descarte irregular, veja os detalhes de uma denúncia sua na lista, vote em uma denúncia e poste uma resolução.",
+			"Imagine que você mora na cidade, já tem conta no Oikos e encontrou lixo descartado no lugar errado perto de casa. Nesta etapa você vai percorrer o ciclo completo de quem participa: registrar a denúncia com foto e localização, reabrir essa denúncia na lista para acompanhar como ela ficou, votar na denúncia de um vizinho e publicar uma resolução. A ideia é sentir se dá para sair do problema até o encerramento sem travar no caminho.",
 		task_codes: ["T16", "T19", "T17", "T18"],
 	},
 ];
-
-const businessPartnerSearchObjective =
-	"Além de explorar livremente, repare que essa mesma busca serve para encontrar quem compra os resíduos que você coleta, quem fornece material reciclável, ou coletores cujo serviço você possa contratar.";
 
 const personas: Persona[] = [
 	{
@@ -402,18 +399,26 @@ const personas: Persona[] = [
 		suites: [
 			{
 				suite_code: "S1",
-				specific_objectives: [businessPartnerSearchObjective],
+				specific_objectives: [
+					"Explore a aba PONTOS DE COLETA pensando em quem compra o material que você recolhe. Use a busca e os filtros para procurar empresas que aceitem papelão, plástico ou metal.",
+					"Repare no raio de busca e nos horários de funcionamento. São eles que dizem se vale a pena percorrer a distância até aquele comprador.",
+					"Passe pela aba DENÚNCIAS e veja os pontos de descarte irregular do mapa. Muitos deles indicam material recolhível que ainda não teve destino.",
+				],
 			},
 			{
 				suite_code: "S2",
 				specific_objectives: [
-					"Um perfil completo, com foto e contato, ajuda quem for buscar seus serviços de coleta a confiar em você antes de fechar negócio.",
+					"Preencha o perfil pensando em quem vai te contratar. Nome e telefone corretos são o que permitem que essa pessoa chegue até você.",
+					"Adicione uma foto de perfil. Em uma negociação feita à distância, é ela que dá rosto ao seu trabalho e ajuda a construir confiança antes do primeiro contato.",
 				],
 			},
 			{
 				suite_code: "S3",
 				specific_objectives: [
-					"Como coletor(a), esse cadastro é o que te torna visível para quem quer entregar resíduo para você ou contratar sua coleta.",
+					"Cadastre seu ponto de coleta com nome, documento e telefone. São esses dados que identificam você para quem procurar por coleta na região.",
+					"Informe o endereço completo. É ele que coloca você no mapa e faz seu serviço aparecer para quem busca por proximidade.",
+					"Configure os horários em que você realmente atende, deixando de fora os dias parados. Horário errado gera viagem perdida dos dois lados.",
+					"Cadastre os resíduos que você aceita e os serviços que oferece, com preço por unidade. Depois procure seu ponto na aba PONTOS DE COLETA e confira se ele aparece como você espera.",
 				],
 			},
 		],
@@ -426,18 +431,26 @@ const personas: Persona[] = [
 		suites: [
 			{
 				suite_code: "S1",
-				specific_objectives: [businessPartnerSearchObjective],
+				specific_objectives: [
+					"Explore a aba PONTOS DE COLETA procurando fornecedores: coletores e empresas que possam levar material reciclável até você. Use a busca por texto e o filtro por tipo de resíduo.",
+					"Aumente o raio de busca e veja como isso muda o volume de fornecedores ao seu alcance. Esse é o raio que define sua área de captação.",
+					"Passe pela aba DENÚNCIAS e observe as ocorrências da região. Elas mostram onde há material sendo descartado sem destino correto.",
+				],
 			},
 			{
 				suite_code: "S2",
 				specific_objectives: [
-					"Esse perfil é o que aparece para quem for encontrar sua empresa depois — capriche nos dados de contato.",
+					"Preencha o perfil com atenção aos dados de contato. É por eles que fornecedores e clientes vão chegar até a sua empresa depois.",
+					"Adicione o endereço e uma foto. Esse perfil pessoal é o que responde por você antes de a empresa entrar em cena, na próxima etapa.",
 				],
 			},
 			{
 				suite_code: "S3",
 				specific_objectives: [
-					"Como empresa de reciclagem, esse cadastro mostra quais resíduos você compra e a que preço — é o que atrai fornecedores.",
+					"Cadastre a empresa com nome fantasia, razão social e CNPJ. É essa identificação que dá credibilidade a quem for negociar com você.",
+					"Informe o endereço completo, que posiciona a empresa no mapa e faz ela aparecer nas buscas por proximidade.",
+					"Configure os horários de recebimento de material, para que ninguém apareça com carga fora do expediente.",
+					"Cadastre os resíduos que você compra e o preço por unidade de medida. É essa tabela que atrai fornecedores. Depois procure sua empresa na aba PONTOS DE COLETA e confira se os preços aparecem corretamente.",
 				],
 			},
 		],
@@ -446,16 +459,21 @@ const personas: Persona[] = [
 		key: "GENERAL_COMPANY",
 		label: "Empresa comum",
 		description:
-			"Sua empresa gera resíduos mas não trabalha com reciclagem — comércio, restaurante, escritório, prestadora de serviço.",
+			"Sua empresa gera resíduos mas não trabalha com reciclagem, como comércio, restaurante, escritório ou prestadora de serviço.",
 		suites: [
 			{
 				suite_code: "S1",
-				specific_objectives: [businessPartnerSearchObjective],
+				specific_objectives: [
+					"Explore a aba PONTOS DE COLETA como quem precisa dar destino ao resíduo do próprio negócio. Procure quem recolhe o que a sua empresa descarta com mais frequência.",
+					"Use o filtro por tipo de resíduo e por serviço para ver quem faz coleta sob demanda, que costuma ser o formato que atende comércio e escritório.",
+					"Confira horários e distância antes de decidir. São eles que dizem se aquele coletor consegue atender sua rotina.",
+				],
 			},
 			{
 				suite_code: "S2",
 				specific_objectives: [
-					"Como você não vai cadastrar uma empresa nesta pesquisa, esse perfil é o que te identifica quando for buscar coletores e pontos de coleta na próxima etapa.",
+					"Preencha seus dados pessoais e o endereço. Como você não vai cadastrar uma empresa nesta pesquisa, é esse perfil que identifica você ao procurar coletores.",
+					"Adicione uma foto de perfil e salve. Um perfil completo dá mais segurança a quem for te atender do outro lado.",
 				],
 			},
 		],
@@ -469,19 +487,25 @@ const personas: Persona[] = [
 			{
 				suite_code: "S1",
 				specific_objectives: [
-					"Repare que dá para ver pontos de coleta perto de você e o mapa de denúncias mesmo sem estar logado — é assim que você decide se vale a pena criar uma conta.",
+					"Explore a aba PONTOS DE COLETA procurando onde descartar o que sai da sua casa, como vidro, óleo de cozinha, pilhas ou eletrônicos.",
+					"Ajuste o raio de busca para o que dá para percorrer a pé ou de carro no dia a dia, e veja quantas opções sobram perto de você.",
+					"Passe pela aba DENÚNCIAS e veja os problemas já registrados no seu bairro. Tudo isso aparece sem login, e é com base nisso que você decide se vale a pena criar uma conta.",
 				],
 			},
 			{
 				suite_code: "S2",
 				specific_objectives: [
-					"Esse perfil é o que vai te identificar nas denúncias que você registrar e nas resoluções que postar mais adiante.",
+					"Preencha seus dados e o endereço. É esse perfil que vai assinar as denúncias que você registrar daqui em diante.",
+					"Adicione uma foto de perfil. Em uma denúncia, ela ajuda os vizinhos a reconhecerem que existe uma pessoa real por trás do relato.",
 				],
 			},
 			{
 				suite_code: "S6",
 				specific_objectives: [
-					"Essa etapa simula o ciclo completo de um morador: encontrar um problema, denunciar, acompanhar outras denúncias e ajudar a resolver.",
+					"Registre uma denúncia de descarte irregular com foto e localização, como se tivesse encontrado o problema na rua onde mora.",
+					"Abra a lista de denúncias e reveja a que você acabou de criar, conferindo se ficou clara para quem for ler depois.",
+					"Vote em uma denúncia registrada por outra pessoa, indicando se o problema ainda existe ou já foi resolvido.",
+					"Publique uma resolução em uma denúncia, descrevendo o que foi feito para resolver. É assim que o ciclo se encerra dentro do aplicativo.",
 				],
 			},
 		],
@@ -495,20 +519,25 @@ const personas: Persona[] = [
 			{
 				suite_code: "S1",
 				specific_objectives: [
-					"Repare que os filtros de denúncia por status, categoria e periculosidade já funcionam sem login — são os mesmos que você vai usar depois, como órgão cadastrado, para priorizar o atendimento.",
+					"Abra a aba DENÚNCIAS e experimente os filtros por situação, por categoria de resíduo e por nível de periculosidade. São exatamente os mesmos que você vai usar depois, já como órgão cadastrado, para decidir o que atender primeiro.",
+					"Repare que todo esse panorama aparece sem login, ou seja, qualquer cidadão enxerga os mesmos problemas que a fiscalização enxerga.",
+					"Passe pela aba PONTOS DE COLETA e veja que estrutura de coleta já existe na região, pública ou privada.",
 				],
 			},
 			{
 				suite_code: "S2",
 				specific_objectives: [
-					"Esse é o seu perfil pessoal — o cadastro do órgão público que você representa vem na próxima etapa.",
+					"Preencha aqui o seu perfil pessoal, como servidor. O cadastro da instituição que você representa vem na etapa seguinte.",
+					"Complete o endereço e adicione uma foto. É esse perfil que responde pelas ações que você registrar em nome do órgão.",
 				],
 			},
 			{
 				suite_code: "S5",
 				specific_objectives: [
-					"Cadastre o órgão como faria na vida real: os serviços que aparecem aqui (ecopontos, coleta especial, recebimento de material perigoso) são o que a população vai encontrar ao buscar por vocês.",
-					"Depois, aja sobre denúncias como faria no seu trabalho: registre uma ocorrência encontrada em campo, avalie uma denúncia de outra pessoa e documente a resolução tomada.",
+					"Cadastre a instituição com nome, CNPJ e contato, como faria na vida real. É esse registro que dá caráter oficial à presença do órgão no aplicativo.",
+					"Informe endereço e horários de atendimento ao público, para que o cidadão saiba quando e onde procurar vocês.",
+					"Cadastre os serviços prestados, como ecopontos, coleta especial e recebimento de material perigoso. É isso que a população encontra ao buscar pelo órgão.",
+					"Na aba DENÚNCIAS, registre uma ocorrência encontrada em campo, avalie pelo voto a denúncia feita por um cidadão e documente a resolução tomada pelo órgão.",
 				],
 			},
 		],
@@ -566,31 +595,31 @@ const wasteContactFrequencyOptions: Option[] = [
 	{
 		value: 1,
 		key: "NEVER",
-		label: "Nunca — não lida com reciclagem ou resíduos em nenhum contexto",
+		label: "Nunca (não lida com reciclagem ou resíduos em nenhum contexto)",
 	},
 	{
 		value: 2,
 		key: "RARELY",
 		label:
-			"Raramente — contato esporádico, sem regularidade, como separar lixo de vez em quando",
+			"Raramente (contato esporádico, sem regularidade, como separar lixo de vez em quando)",
 	},
 	{
 		value: 3,
 		key: "OCCASIONALLY",
 		label:
-			"Ocasionalmente — contato periódico, mas não é parte central da rotina, como descartar reciclável semanalmente",
+			"Ocasionalmente (contato periódico, mas não é parte central da rotina, como descartar reciclável semanalmente)",
 	},
 	{
 		value: 4,
 		key: "FREQUENTLY",
 		label:
-			"Frequentemente — contato regular e recorrente, pessoal ou profissional, várias vezes por semana",
+			"Frequentemente (contato regular e recorrente, pessoal ou profissional, várias vezes por semana)",
 	},
 	{
 		value: 5,
 		key: "DAILY",
 		label:
-			"Diariamente — o tema faz parte da rotina diária, pessoal ou profissionalmente",
+			"Diariamente (o tema faz parte da rotina diária, pessoal ou profissionalmente)",
 	},
 ];
 
@@ -598,31 +627,31 @@ const appExperienceOptions: Option[] = [
 	{
 		value: 1,
 		key: "NONE",
-		label: "Nenhuma — não uso ou raramente uso celular e aplicativos",
+		label: "Nenhuma (não uso ou raramente uso celular e aplicativos)",
 	},
 	{
 		value: 2,
 		key: "BASIC",
 		label:
-			"Básica — uso funções simples como ligações e mensagens, com pouca familiaridade com aplicativos",
+			"Básica (uso funções simples como ligações e mensagens, com pouca familiaridade com aplicativos)",
 	},
 	{
 		value: 3,
 		key: "MODERATE",
 		label:
-			"Moderada — uso aplicativos do dia a dia como redes sociais, mensagens e mapas com certa autonomia",
+			"Moderada (uso aplicativos do dia a dia como redes sociais, mensagens e mapas com certa autonomia)",
 	},
 	{
 		value: 4,
 		key: "ADVANCED",
 		label:
-			"Avançada — uso vários aplicativos com frequência, incluindo cadastros, formulários e pagamentos",
+			"Avançada (uso vários aplicativos com frequência, incluindo cadastros, formulários e pagamentos)",
 	},
 	{
 		value: 5,
 		key: "VERY_ADVANCED",
 		label:
-			"Muito avançada — uso aplicativos diariamente e sem dificuldade, inclusive para tarefas novas",
+			"Muito avançada (uso aplicativos diariamente e sem dificuldade, inclusive para tarefas novas)",
 	},
 ];
 
@@ -840,7 +869,7 @@ const perSuiteQuestions: Question[] = [
 		label:
 			"Esta etapa ajudaria a conectar melhor as pessoas e as empresas da reciclagem.",
 		info_text:
-			"Pense se o que você fez nesta etapa ajudaria a aproximar quem coleta, quem recicla, quem gera resíduo e quem fiscaliza — facilitando que essas pessoas e empresas se encontrem e resolvam problemas juntas.",
+			"Pense se o que você fez nesta etapa ajudaria a aproximar quem coleta, quem recicla, quem gera resíduo e quem fiscaliza, facilitando que essas pessoas e empresas se encontrem e resolvam problemas juntas.",
 		options: agreementOptions,
 	},
 ];
@@ -861,7 +890,7 @@ const finalQuestions: Question[] = [
 
 export const protocol: Protocol = {
 	key: "oikos-walkthrough",
-	version: 8,
+	version: 9,
 	tasks,
 	suites,
 	personas,
