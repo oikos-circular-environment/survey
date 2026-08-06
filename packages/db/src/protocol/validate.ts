@@ -98,13 +98,15 @@ function checkPersonaSuiteReferences(protocol: Protocol): ProtocolIssue[] {
 	const suiteCodes = new Set<SuiteCode>(protocol.suites.map((s) => s.code));
 
 	for (const persona of protocol.personas) {
-		for (const code of findDuplicates(persona.suite_codes)) {
+		const codes = persona.suites.map((s) => s.suite_code);
+
+		for (const code of findDuplicates(codes)) {
 			issues.push({
 				code: "DUPLICATE_SUITE_CODE_IN_PERSONA",
 				message: `Persona ${persona.key} referencia a suíte ${code} mais de uma vez`,
 			});
 		}
-		for (const code of persona.suite_codes) {
+		for (const code of codes) {
 			if (!suiteCodes.has(code)) {
 				issues.push({
 					code: "PERSONA_SUITE_CODE_UNDEFINED",

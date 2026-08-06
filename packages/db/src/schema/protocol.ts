@@ -98,6 +98,12 @@ export const personaSuites = mysqlTable(
 		personaId: char("persona_id", { length: 36 }).notNull(),
 		suiteId: char("suite_id", { length: 36 }).notNull(),
 		position: int("position").notNull(), // ordem de execução para aquela persona
+		// Texto extra por persona, além do `objective` geral em `suiteDefs` — ver
+		// `PersonaSuite` em `../protocol/types`.
+		specificObjectives: json("specific_objectives")
+			.$type<string[]>()
+			.notNull()
+			.default([]),
 	},
 	(t) => [
 		primaryKey({ columns: [t.personaId, t.suiteId] }),

@@ -64,6 +64,13 @@
 			"when": 1785883124473,
 			"tag": "0008_majestic_boomer",
 			"breakpoints": true
+		},
+		{
+			"idx": 9,
+			"version": "5",
+			"when": 1785984540497,
+			"tag": "0009_add_persona_suite_specific_objectives",
+			"breakpoints": true
 		}
 	]
 }

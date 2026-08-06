@@ -43,7 +43,7 @@ function minimalProtocol(): Protocol {
 				key: "CITIZEN",
 				label: "Cidadão",
 				description: "Descrição.",
-				suite_codes: ["S1"],
+				suites: [{ suite_code: "S1", specific_objectives: [] }],
 			},
 		],
 		questions: [
@@ -132,13 +132,18 @@ describe("collectProtocolIssues — referências suíte/tarefa e persona/suíte"
 
 	test("PERSONA_SUITE_CODE_UNDEFINED", () => {
 		const protocol = minimalProtocol();
-		protocol.personas[0]!.suite_codes = ["S99" as unknown as SuiteCode];
+		protocol.personas[0]!.suites = [
+			{ suite_code: "S99" as unknown as SuiteCode, specific_objectives: [] },
+		];
 		expect(codesOf(protocol)).toContain("PERSONA_SUITE_CODE_UNDEFINED");
 	});
 
 	test("DUPLICATE_SUITE_CODE_IN_PERSONA", () => {
 		const protocol = minimalProtocol();
-		protocol.personas[0]!.suite_codes = ["S1", "S1"];
+		protocol.personas[0]!.suites = [
+			{ suite_code: "S1", specific_objectives: [] },
+			{ suite_code: "S1", specific_objectives: [] },
+		];
 		expect(codesOf(protocol)).toContain("DUPLICATE_SUITE_CODE_IN_PERSONA");
 	});
 });

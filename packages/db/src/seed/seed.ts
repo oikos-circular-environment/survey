@@ -96,13 +96,16 @@ export async function seedProtocol(
 				position,
 			});
 
-			for (const [suitePosition, suiteCode] of persona.suite_codes.entries()) {
-				const suiteId = suiteIdByCode.get(suiteCode);
+			for (const [suitePosition, personaSuite] of persona.suites.entries()) {
+				const suiteId = suiteIdByCode.get(personaSuite.suite_code);
 				if (!suiteId) continue;
 
-				await tx
-					.insert(personaSuites)
-					.values({ personaId, suiteId, position: suitePosition });
+				await tx.insert(personaSuites).values({
+					personaId,
+					suiteId,
+					position: suitePosition,
+					specificObjectives: personaSuite.specific_objectives,
+				});
 			}
 		}
 

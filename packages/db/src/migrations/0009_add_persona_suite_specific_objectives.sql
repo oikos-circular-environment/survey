@@ -1,0 +1,1 @@
+ALTER TABLE `usability_persona_suites` ADD `specific_objectives` json DEFAULT ('[]') NOT NULL;
