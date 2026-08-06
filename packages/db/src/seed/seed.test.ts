@@ -43,7 +43,7 @@ function minimalProtocol(
 				key: "CITIZEN",
 				label: "Cidadão",
 				description: "Descrição.",
-				suite_codes: ["S1"],
+				suites: [{ suite_code: "S1", specific_objectives: [] }],
 			},
 		],
 		questions: [

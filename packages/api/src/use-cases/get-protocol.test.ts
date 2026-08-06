@@ -25,8 +25,12 @@ describe("getProtocol", () => {
 				expect(typeof persona.key).toBe("string");
 				expect(typeof persona.label).toBe("string");
 				expect(typeof persona.description).toBe("string");
-				expect(Array.isArray(persona.suite_codes)).toBe(true);
-				expect(persona.suite_codes.length).toBeGreaterThan(0);
+				expect(Array.isArray(persona.suites)).toBe(true);
+				expect(persona.suites.length).toBeGreaterThan(0);
+				for (const suite of persona.suites) {
+					expect(typeof suite.suite_code).toBe("string");
+					expect(Array.isArray(suite.specific_objectives)).toBe(true);
+				}
 			}
 
 			for (const suite of response.suites) {

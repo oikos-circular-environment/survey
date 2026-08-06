@@ -59,11 +59,16 @@ export interface ProtocolVersionListRow {
 	isActive: boolean;
 }
 
+export interface ProtocolPersonaSuiteRow {
+	suiteCode: string;
+	specificObjectives: string[];
+}
+
 export interface ProtocolPersonaRow {
 	key: string;
 	label: string;
 	description: string;
-	suiteCodes: string[];
+	suites: ProtocolPersonaSuiteRow[];
 }
 
 export interface ProtocolSuiteRow {
@@ -318,24 +323,28 @@ export class ProtocolRepository {
 						.select({
 							personaId: personaSuites.personaId,
 							suiteCode: suiteDefs.code,
+							specificObjectives: personaSuites.specificObjectives,
 						})
 						.from(personaSuites)
 						.innerJoin(suiteDefs, eq(personaSuites.suiteId, suiteDefs.id))
 						.where(inArray(personaSuites.personaId, personaIds))
 						.orderBy(personaSuites.position);
 
-		const suiteCodesByPersonaId = new Map<string, string[]>();
+		const suitesByPersonaId = new Map<string, ProtocolPersonaSuiteRow[]>();
 		for (const link of links) {
-			const list = suiteCodesByPersonaId.get(link.personaId) ?? [];
-			list.push(link.suiteCode);
-			suiteCodesByPersonaId.set(link.personaId, list);
+			const list = suitesByPersonaId.get(link.personaId) ?? [];
+			list.push({
+				suiteCode: link.suiteCode,
+				specificObjectives: link.specificObjectives,
+			});
+			suitesByPersonaId.set(link.personaId, list);
 		}
 
 		return personas.map((persona) => ({
 			key: persona.key,
 			label: persona.label,
 			description: persona.description,
-			suiteCodes: suiteCodesByPersonaId.get(persona.id) ?? [],
+			suites: suitesByPersonaId.get(persona.id) ?? [],
 		}));
 	}
 
