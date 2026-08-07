@@ -24,7 +24,7 @@ import mysql from "mysql2/promise";
  * do servidor.
  */
 export function createPool(uri: string): mysql.Pool {
-	const pool = mysql.createPool({ uri });
+	const pool = mysql.createPool({ uri, flags: ["-FOUND_ROWS"] });
 
 	pool.on("connection", (connection) => {
 		connection.query("SET time_zone = '+00:00'");

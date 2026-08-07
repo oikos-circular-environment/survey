@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import type { MySql2Database } from "drizzle-orm/mysql2";
 
 import { answers, events, suiteRuns, taskRuns } from "../schema/collection";
@@ -89,15 +89,27 @@ export class CheckpointsRepository {
 	 * Tasks e answers são percorridos em ordem de id para que transações concorrentes
 	 * adquiram locks na mesma ordem; o `retryOnDeadlock` cobre a janela que resta.
 	 *
-	 * Eventos não entram na troca de suíte: vivem presos só à sessão (não à
-	 * `suite_run`), e a idempotência deles é por `client_event_id` — é o que permite a
-	 * mesma etapa chegar em mais de uma fatia sem que a segunda apague os eventos da
-	 * primeira.
+	 * Eventos não entram na transação do bloco: vivem presos só à sessão (não à
+	 * `suite_run`), e a idempotência deles é por `client_event_id` sobre o índice
+	 * `events_session_client_event`. Por isso são escritos antes e fora da transação —
+	 * o lock fica restrito às tabelas que precisam ser atômicas entre si, e uma falha
+	 * parcial cai na direção benigna: eventos gravados com bloco falhado são absorvidos
+	 * pelo retry, já que a deduplicação reaproveita. O `INSERT ... ON DUPLICATE KEY
+	 * UPDATE` com set no-op (`id = id`) substitui o check-then-insert, que era TOCTOU
+	 * sob envio contínuo — dois envios sobrepostos colidiam no índice único e abortavam
+	 * a transação inteira. A duplicata dentro do próprio payload (bug de cliente)
+	 * também deixa de estourar. `received_events` é o `affectedRows` da statement: só
+	 * conta inserções novas, e num retry após sucesso parcial volta 0 mesmo tendo
+	 * gravado na tentativa anterior — campo informativo, não alimenta nada.
 	 */
 	async upsertSuiteCheckpoint(
 		input: UpsertSuiteCheckpointInput,
 	): Promise<UpsertSuiteCheckpointResult> {
-		return retryOnDeadlock(() =>
+		const receivedEvents = await this.insertEvents(
+			input.sessionId,
+			input.events,
+		);
+		const suiteRunId = await retryOnDeadlock(() =>
 			this.db.transaction(async (tx) => {
 				await tx
 					.insert(suiteRuns)
@@ -180,43 +192,28 @@ export class CheckpointsRepository {
 						});
 				}
 
-				// idempotência dos eventos (R4/A4): só entra quem ainda não existe para a sessão
-				let receivedEvents = 0;
-				if (input.events.length > 0) {
-					const existingEvents = await tx
-						.select({ clientEventId: events.clientEventId })
-						.from(events)
-						.where(
-							and(
-								eq(events.sessionId, input.sessionId),
-								inArray(
-									events.clientEventId,
-									input.events.map((event) => event.clientEventId),
-								),
-							),
-						);
-					const existingIds = new Set(
-						existingEvents.map((rowEvent) => rowEvent.clientEventId),
-					);
-					const newEvents = input.events.filter(
-						(event) => !existingIds.has(event.clientEventId),
-					);
-
-					if (newEvents.length > 0) {
-						await tx.insert(events).values(
-							newEvents.map((event) => ({
-								id: randomUUID(),
-								sessionId: input.sessionId,
-								...event,
-							})),
-						);
-					}
-					receivedEvents = newEvents.length;
-				}
-
-				return { suiteRunId: row.id, receivedEvents };
+				return row.id;
 			}),
 		);
+		return { suiteRunId, receivedEvents };
+	}
+
+	private async insertEvents(
+		sessionId: string,
+		input: CheckpointEventInput[],
+	): Promise<number> {
+		if (input.length === 0) return 0;
+		const [result] = await this.db
+			.insert(events)
+			.values(
+				input.map((event) => ({
+					id: randomUUID(),
+					sessionId,
+					...event,
+				})),
+			)
+			.onDuplicateKeyUpdate({ set: { id: sql`id` } });
+		return result.affectedRows;
 	}
 }
 
