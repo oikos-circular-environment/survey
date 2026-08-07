@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { randomUUID } from "node:crypto";
-import { answers } from "@oikos-circular-environment/survey-db/schema/index";
+import {
+	answers,
+	questions,
+} from "@oikos-circular-environment/survey-db/schema/index";
 import { and, eq, isNull } from "drizzle-orm";
 
 import { abandonUsabilitySession } from "./abandon-usability-session";
@@ -44,6 +47,90 @@ describe("finishUsabilitySession", () => {
 					),
 				);
 			expect(finalAnswerCount).toHaveLength(1);
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("finish com answers vazio não zera as respostas finais já gravadas", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, session);
+
+			await finishUsabilitySession(repositories, {
+				session_id: session.session_id,
+				answers: [
+					{ question_key: "free_comment", value_text: "Gostei muito." },
+				],
+				active_ms: 1_840_000,
+				wall_ms: 2_600_000,
+				finished_at: new Date("2026-08-18T09:12:44.000Z"),
+			});
+
+			await finishUsabilitySession(repositories, {
+				session_id: session.session_id,
+				answers: [],
+				active_ms: 1_840_000,
+				wall_ms: 2_600_000,
+				finished_at: new Date("2026-08-18T09:12:44.000Z"),
+			});
+
+			const finalAnswers = await ephemeral.db
+				.select()
+				.from(answers)
+				.where(
+					and(
+						eq(answers.sessionId, session.session_id),
+						isNull(answers.suiteRunId),
+					),
+				);
+			expect(finalAnswers).toHaveLength(1);
+			expect(finalAnswers[0]?.valueText).toBe("Gostei muito.");
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("finish com uma pergunta substitui só aquela, preservando as demais", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, session);
+
+			await finishUsabilitySession(repositories, {
+				session_id: session.session_id,
+				answers: [
+					{ question_key: "free_comment", value_text: "Gostei muito." },
+					{ question_key: "error_occurred", value_text: "NO" },
+				],
+				active_ms: 1_840_000,
+				wall_ms: 2_600_000,
+				finished_at: new Date("2026-08-18T09:12:44.000Z"),
+			});
+
+			await finishUsabilitySession(repositories, {
+				session_id: session.session_id,
+				answers: [{ question_key: "error_occurred", value_text: "YES" }],
+				active_ms: 1_840_000,
+				wall_ms: 2_600_000,
+				finished_at: new Date("2026-08-18T09:12:44.000Z"),
+			});
+
+			const rows = await ephemeral.db
+				.select({ key: questions.key, valueText: answers.valueText })
+				.from(answers)
+				.innerJoin(questions, eq(answers.questionId, questions.id))
+				.where(
+					and(
+						eq(answers.sessionId, session.session_id),
+						isNull(answers.suiteRunId),
+					),
+				);
+			const byKey = new Map(rows.map((row) => [row.key, row.valueText]));
+			expect(rows).toHaveLength(2);
+			expect(byKey.get("free_comment")).toBe("Gostei muito.");
+			expect(byKey.get("error_occurred")).toBe("YES");
 		} finally {
 			await ephemeral.destroy();
 		}
