@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 
 import type { Context } from "../context";
 import { createCallerFactory } from "../index";
+import { usabilityRateLimiter } from "../lib/rate-limit";
 import {
 	buildSessionUpsertInput,
 	setupUsabilityTest,
@@ -75,12 +76,12 @@ describe("router usability — borda pública (S08)", () => {
 		);
 	});
 
-	test("ultrapassar 60 requisições/minuto no mesmo IP devolve TOO_MANY_REQUESTS", async () => {
+	test("ultrapassar o teto (1000 req/s) no mesmo IP devolve TOO_MANY_REQUESTS", async () => {
 		const ip = "10.77.99.99";
 		const caller = callerFor(headersFor(ip));
 
-		for (let i = 0; i < 60; i++) {
-			await caller.usability.protocol();
+		for (let i = 0; i < 1000; i++) {
+			usabilityRateLimiter.check(ip);
 		}
 
 		await expect(caller.usability.protocol()).rejects.toMatchObject({
