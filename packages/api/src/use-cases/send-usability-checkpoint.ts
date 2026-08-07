@@ -19,8 +19,8 @@ export interface SendUsabilityCheckpointResult {
  * que a chave estrangeira das tabelas de protocolo evita no seed (A2), aqui pego na borda
  * em vez de estourar como FK violation.
  *
- * A escrita em si (substituição idempotente da suíte, união idempotente dos eventos)
- * vive em `CheckpointsRepository.replaceSuiteCheckpoint` — este use-case só resolve
+ * A escrita em si (convergência idempotente da suíte, união idempotente dos eventos)
+ * vive em `CheckpointsRepository.upsertSuiteCheckpoint` — este use-case só resolve
  * código→id e traduz entrada/saída.
  */
 export async function sendUsabilityCheckpoint(
@@ -73,7 +73,7 @@ export async function sendUsabilityCheckpoint(
 		});
 	}
 
-	const result = await repositories.checkpoints.replaceSuiteCheckpoint({
+	const result = await repositories.checkpoints.upsertSuiteCheckpoint({
 		sessionId: input.session_id,
 		suiteId,
 		suite: {
