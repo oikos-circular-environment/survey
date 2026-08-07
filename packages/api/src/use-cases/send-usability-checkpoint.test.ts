@@ -146,7 +146,6 @@ describe("sendUsabilityCheckpoint", () => {
 				}),
 			);
 
-			// reenvio com T8 mais adiantada e sem sinal detectado: não pode regredir o primeiro
 			await sendUsabilityCheckpoint(
 				repositories,
 				buildCheckpointInput(session.session_id, {
@@ -184,7 +183,6 @@ describe("sendUsabilityCheckpoint", () => {
 			});
 			await sendUsabilityCheckpoint(repositories, closed);
 
-			// envio parcial no meio da execução: o payload não carrega finished_at/outcome
 			const midRun = buildCheckpointInput(session.session_id, {
 				suite: {
 					code: "S1",
@@ -263,7 +261,6 @@ describe("sendUsabilityCheckpoint", () => {
 				}),
 			);
 
-			// reenvio com valores menores que os gravados
 			await sendUsabilityCheckpoint(
 				repositories,
 				buildCheckpointInput(session.session_id, {
@@ -379,7 +376,6 @@ describe("sendUsabilityCheckpoint", () => {
 				}),
 			);
 
-			// reenvio da posição 0 com started_at mais tarde não regride o início
 			await sendUsabilityCheckpoint(
 				repositories,
 				buildCheckpointInput(session.session_id, {

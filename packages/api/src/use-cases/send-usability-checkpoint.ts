@@ -7,10 +7,8 @@ export interface SendUsabilityCheckpointResult {
 	session_id: string;
 	suite_code: string;
 	chunk_index: number;
-	/** Id efetivo da execução gravada — o do cliente se foi a primeira escrita, senão o já existente. */
 	suite_run_id: string;
 	received_events: number;
-	/** Medido do estado gravado (`finished_at` e `outcome` presentes), não da declaração de fatias. */
 	suite_complete: boolean;
 }
 
@@ -20,10 +18,6 @@ export interface SendUsabilityCheckpointResult {
  * existir na versão de protocolo que a sessão executa — o mesmo tipo de erro de digitação
  * que a chave estrangeira das tabelas de protocolo evita no seed (A2), aqui pego na borda
  * em vez de estourar como FK violation.
- *
- * A escrita em si (convergência idempotente da suíte, união idempotente dos eventos)
- * vive em `CheckpointsRepository.upsertSuiteCheckpoint` — este use-case só resolve
- * código→id e traduz entrada/saída.
  */
 export async function sendUsabilityCheckpoint(
 	repositories: Repositories,

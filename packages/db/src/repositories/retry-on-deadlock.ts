@@ -7,11 +7,6 @@ function isDeadlock(error: unknown): boolean {
 	return (error as { code?: unknown }).code === "ER_LOCK_DEADLOCK";
 }
 
-/**
- * Reexecuta `fn` quando o MySQL abortar a transação por deadlock ou por estouro do
- * lock wait timeout. O upsert de checkpoint é curto o bastante para ser reexecutado;
- * a única perda numa tentativa falha é a transação abortada.
- */
 export async function retryOnDeadlock<T>(fn: () => Promise<T>): Promise<T> {
 	const backoffMs = [25, 50];
 	let lastError: unknown;

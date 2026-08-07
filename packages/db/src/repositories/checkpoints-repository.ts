@@ -68,46 +68,6 @@ export interface UpsertSuiteCheckpointResult {
 export class CheckpointsRepository {
 	constructor(private readonly db: Db) {}
 
-	/**
-	 * Faz convergir o estado de uma suíte para o que o payload descreve, sem apagar
-	 * nada do que já foi gravado. Cada linha entra com `INSERT ... ON DUPLICATE KEY
-	 * UPDATE` sobre o índice único que já existe (`suite_runs_session_suite`,
-	 * `task_runs_suite_run_task`, `answers_session_run_question`), uma statement por
-	 * linha — o `set` é montado em JS e omite a chave ausente, então um envio parcial
-	 * não regride um campo que chegou completo antes.
-	 *
-	 * O checkpoint não pressupõe mais chegar com o bloco completo daquela suíte: com
-	 * envio contínuo ele chega quantas vezes for preciso, e cada envio descreve o
-	 * estado até aquele instante. Idempotência é por convergência, não por destruição.
-	 *
-	 * Campos monotônicos usam SQL, não JS: `least` em `started_at` e `greatest` em
-	 * `active_ms`/`wall_ms` fazem um reenvio antigo não desfazer o novo, e `or` impede
-	 * um tick posterior de apagar um `auto_detected` que um tick anterior viu.
-	 *
-	 * `id` e `created_at` nunca entram no `set`: `id` é PK referenciada por `task_runs`
-	 * e `answers` (FK sem `ON UPDATE CASCADE`), e `created_at` marca o primeiro envio,
-	 * não o último. `suite_run_id` do payload (opcional) entra como PK da primeira
-	 * escrita; quando já existe linha para `(sessionId, suiteId)`, o id gravado vence e
-	 * é o devolvido na resposta, para o cliente reconciliar. `suite_complete` é medido
-	 * do estado gravado (`finished_at` e `outcome` não nulos), não da declaração de
-	 * fatias do cliente.
-	 *
-	 * Tasks e answers são percorridos em ordem de id para que transações concorrentes
-	 * adquiram locks na mesma ordem; o `retryOnDeadlock` cobre a janela que resta.
-	 *
-	 * Eventos não entram na transação do bloco: vivem presos só à sessão (não à
-	 * `suite_run`), e a idempotência deles é por `client_event_id` sobre o índice
-	 * `events_session_client_event`. Por isso são escritos antes e fora da transação —
-	 * o lock fica restrito às tabelas que precisam ser atômicas entre si, e uma falha
-	 * parcial cai na direção benigna: eventos gravados com bloco falhado são absorvidos
-	 * pelo retry, já que a deduplicação reaproveita. O `INSERT ... ON DUPLICATE KEY
-	 * UPDATE` com set no-op (`id = id`) substitui o check-then-insert, que era TOCTOU
-	 * sob envio contínuo — dois envios sobrepostos colidiam no índice único e abortavam
-	 * a transação inteira. A duplicata dentro do próprio payload (bug de cliente)
-	 * também deixa de estourar. `received_events` é o `affectedRows` da statement: só
-	 * conta inserções novas, e num retry após sucesso parcial volta 0 mesmo tendo
-	 * gravado na tentativa anterior — campo informativo, não alimenta nada.
-	 */
 	async upsertSuiteCheckpoint(
 		input: UpsertSuiteCheckpointInput,
 	): Promise<UpsertSuiteCheckpointResult> {
