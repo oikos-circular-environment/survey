@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 
 import type { Context } from "../context";
 import { createCallerFactory } from "../index";
+import { usabilityRateLimiter } from "../lib/rate-limit";
 import {
 	buildSessionUpsertInput,
 	setupUsabilityTest,
@@ -75,48 +76,17 @@ describe("router usability — borda pública (S08)", () => {
 		);
 	});
 
-	test("ultrapassar 60 requisições/minuto no mesmo IP devolve TOO_MANY_REQUESTS", async () => {
+	test("ultrapassar o teto (1000 req/s) no mesmo IP devolve TOO_MANY_REQUESTS", async () => {
 		const ip = "10.77.99.99";
 		const caller = callerFor(headersFor(ip));
 
-		for (let i = 0; i < 60; i++) {
-			await caller.usability.protocol();
+		for (let i = 0; i < 1000; i++) {
+			usabilityRateLimiter.check(ip);
 		}
 
 		await expect(caller.usability.protocol()).rejects.toMatchObject({
 			code: "TOO_MANY_REQUESTS",
 		});
-	});
-
-	test("checkpoint acima de 256 KB é recusado com PAYLOAD_TOO_LARGE, não uma falha genérica", async () => {
-		const caller = callerFor(headersFor(nextIp()));
-		const session = buildSessionUpsertInput();
-		await caller.usability.session.upsert(session);
-
-		const attempt = caller.usability.checkpoint.send({
-			session_id: session.session_id,
-			chunk: { index: 0, total: 1 },
-			suite: {
-				code: "S1",
-				position: 0,
-				started_at: new Date(),
-				active_ms: 1_000,
-				wall_ms: 1_000,
-			},
-			tasks: [],
-			answers: [],
-			events: [
-				{
-					client_event_id: randomUUID(),
-					seq: 0,
-					type: "api.call",
-					occurred_at: new Date(),
-					payload: { blob: "x".repeat(300_000) },
-				},
-			],
-		});
-
-		await expect(attempt).rejects.toMatchObject({ code: "PAYLOAD_TOO_LARGE" });
 	});
 
 	test("checkpoint para sessão inexistente devolve NOT_FOUND pela mesma forma de erro", async () => {

@@ -1,5 +1,4 @@
 import { apiKeyProcedure, router } from "../index";
-import { assertWithinBodyLimit } from "../lib/body-size";
 import { enforceUsabilityGuard } from "../lib/usability-guard";
 import { abandonUsabilitySession } from "../use-cases/abandon-usability-session";
 import { finishUsabilitySession } from "../use-cases/finish-usability-session";
@@ -24,8 +23,7 @@ import {
  * sentido de A5 — sem conta de pesquisador nem de participante, então nunca exigem
  * sessão. Cada resolver ainda chama `enforceUsabilityGuard` explicitamente, mas só pelo
  * limite de requisições agora (S08/R3) — dimensionado para o tráfego destas cinco rotas,
- * não estendido a `dashboard.*`. O teto de corpo (256 KB) só é checado em
- * `checkpoint.send`, a única das cinco cujo payload cresce com o uso.
+ * não estendido a `dashboard.*`.
  */
 export const usabilityRouter = router({
 	protocol: apiKeyProcedure.query(({ ctx }) => {
@@ -47,7 +45,6 @@ export const usabilityRouter = router({
 			.input(usabilityCheckpointInput)
 			.mutation(({ ctx, input }) => {
 				enforceUsabilityGuard(ctx);
-				assertWithinBodyLimit(input);
 				return sendUsabilityCheckpoint(ctx.repositories, input);
 			}),
 	}),

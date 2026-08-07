@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 import type { MySql2Database } from "drizzle-orm/mysql2";
 
 import { sessions, suiteRuns } from "../schema/collection";
@@ -42,7 +42,12 @@ export class SuiteRunsRepository {
 			})
 			.from(suiteRuns)
 			.innerJoin(sessions, eq(suiteRuns.sessionId, sessions.id))
-			.where(dateRangeFilter(sessions.startedAt, range));
+			.where(
+				and(
+					dateRangeFilter(sessions.startedAt, range),
+					isNotNull(suiteRuns.finishedAt),
+				),
+			);
 	}
 
 	/** Execuções de suíte de UMA sessão específica, na ordem em que aconteceram. */

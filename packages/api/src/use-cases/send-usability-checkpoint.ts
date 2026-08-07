@@ -7,8 +7,8 @@ export interface SendUsabilityCheckpointResult {
 	session_id: string;
 	suite_code: string;
 	chunk_index: number;
+	suite_run_id: string;
 	received_events: number;
-	/** Verdadeiro só na última fatia declarada (`chunk.index` alcança `chunk.total`). */
 	suite_complete: boolean;
 }
 
@@ -18,10 +18,6 @@ export interface SendUsabilityCheckpointResult {
  * existir na versão de protocolo que a sessão executa — o mesmo tipo de erro de digitação
  * que a chave estrangeira das tabelas de protocolo evita no seed (A2), aqui pego na borda
  * em vez de estourar como FK violation.
- *
- * A escrita em si (substituição idempotente da suíte, união idempotente dos eventos)
- * vive em `CheckpointsRepository.replaceSuiteCheckpoint` — este use-case só resolve
- * código→id e traduz entrada/saída.
  */
 export async function sendUsabilityCheckpoint(
 	repositories: Repositories,
@@ -73,8 +69,9 @@ export async function sendUsabilityCheckpoint(
 		});
 	}
 
-	const result = await repositories.checkpoints.replaceSuiteCheckpoint({
+	const result = await repositories.checkpoints.upsertSuiteCheckpoint({
 		sessionId: input.session_id,
+		suiteRunId: input.suite_run_id,
 		suiteId,
 		suite: {
 			position: input.suite.position,
@@ -123,7 +120,8 @@ export async function sendUsabilityCheckpoint(
 		session_id: input.session_id,
 		suite_code: input.suite.code,
 		chunk_index: input.chunk.index,
+		suite_run_id: result.suiteRunId,
 		received_events: result.receivedEvents,
-		suite_complete: input.chunk.index + 1 >= input.chunk.total,
+		suite_complete: result.suiteComplete,
 	};
 }

@@ -1,4 +1,4 @@
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, isNotNull } from "drizzle-orm";
 import type { MySql2Database } from "drizzle-orm/mysql2";
 
 import { sessions, suiteRuns, taskRuns } from "../schema/collection";
@@ -45,7 +45,12 @@ export class TaskRunsRepository {
 			.from(taskRuns)
 			.innerJoin(suiteRuns, eq(taskRuns.suiteRunId, suiteRuns.id))
 			.innerJoin(sessions, eq(suiteRuns.sessionId, sessions.id))
-			.where(dateRangeFilter(sessions.startedAt, range));
+			.where(
+				and(
+					dateRangeFilter(sessions.startedAt, range),
+					isNotNull(taskRuns.finishedAt),
+				),
+			);
 	}
 
 	/**
