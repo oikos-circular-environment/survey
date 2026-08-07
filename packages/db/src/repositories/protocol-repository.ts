@@ -300,6 +300,26 @@ export class ProtocolRepository {
 		return row?.id;
 	}
 
+	/**
+	 * Resolve o id da versão para `key`/`version`. Devolve `undefined` em vez de lançar:
+	 * o painel navega por versões arbitrárias vindas da URL, então id inexistente é
+	 * entrada inválida, não falha de seed.
+	 */
+	async findProtocolVersionById(
+		id: string,
+	): Promise<ActiveProtocolVersionRow | undefined> {
+		const [row] = await this.db
+			.select({
+				id: protocolVersions.id,
+				key: protocolVersions.key,
+				version: protocolVersions.version,
+			})
+			.from(protocolVersions)
+			.where(eq(protocolVersions.id, id))
+			.limit(1);
+		return row;
+	}
+
 	/** Personas do protocolo com os códigos de suíte (não os ids) — forma do contrato E1. */
 	async getProtocolPersonas(
 		protocolVersionId: string,
@@ -467,11 +487,20 @@ export class ProtocolRepository {
 	 * Liga/desliga uma versão para novos participantes (E1). Ativar uma versão desativa
 	 * as irmãs da mesma `key` na mesma transação — só uma versão ativa por `key` de cada
 	 * vez. Desativar não exige ativar outra: é o "desligar tudo" para aquela `key`.
+	 *
+	 * Só a última versão da `key` pode ser ativada: publicar substitui, não coexiste.
+	 * Reativar uma versão antiga entregaria a participantes novos um instrumento que já
+	 * foi corrigido, e os códigos de tarefa mudam entre versões — a comparação entre
+	 * sessões deixaria de fazer sentido. Desativar continua valendo para qualquer uma,
+	 * porque é o caminho do kill switch.
 	 */
 	async setProtocolVersionActive(id: string, isActive: boolean): Promise<void> {
 		await this.db.transaction(async (tx) => {
 			const [target] = await tx
-				.select({ key: protocolVersions.key })
+				.select({
+					key: protocolVersions.key,
+					version: protocolVersions.version,
+				})
 				.from(protocolVersions)
 				.where(eq(protocolVersions.id, id));
 			if (!target) {
@@ -479,6 +508,19 @@ export class ProtocolRepository {
 			}
 
 			if (isActive) {
+				const [latest] = await tx
+					.select({ version: protocolVersions.version })
+					.from(protocolVersions)
+					.where(eq(protocolVersions.key, target.key))
+					.orderBy(desc(protocolVersions.version))
+					.limit(1);
+
+				if (latest && latest.version > target.version) {
+					throw new Error(
+						`Só a última versão de "${target.key}" pode ser ativada — a v${target.version} foi substituída pela v${latest.version}.`,
+					);
+				}
+
 				await tx
 					.update(protocolVersions)
 					.set({ isActive: false })

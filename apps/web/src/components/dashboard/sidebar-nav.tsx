@@ -48,6 +48,7 @@ const RESULTS_ITEMS = [
 
 const MANAGEMENT_ITEMS = [
 	{ href: "/dashboard/testers", label: "Testadores", icon: UserCog },
+	{ href: "/dashboard/protocol", label: "Protocolo", icon: ClipboardList },
 	{
 		href: "/dashboard/protocol-versions",
 		label: "Versões do protocolo",

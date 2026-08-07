@@ -7,13 +7,12 @@ import { Progress } from "@survey/ui/components/progress";
 import { useQuery } from "@tanstack/react-query";
 
 import { useDateRange } from "@/components/dashboard/date-range-context";
-import { LikertScale } from "@/components/dashboard/likert-scale";
+import {
+	LikertMetric,
+	pluralizeResponses,
+} from "@/components/dashboard/likert-metric";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { trpc } from "@/utils/trpc";
-
-function formatRate(value: number): string {
-	return value.toFixed(2).replace(".", ",");
-}
 
 function HeuristicCard({ heuristic }: { heuristic: HeuristicResult }) {
 	return (
@@ -45,16 +44,11 @@ function HeuristicCard({ heuristic }: { heuristic: HeuristicResult }) {
 								</span>
 								<Progress value={heuristic.prevencao.percentual * 100} />
 							</div>
-							<div className="flex flex-col gap-1.5 border-t pt-3">
-								<span className="text-muted-foreground text-xs">
-									Quando houve erro ({heuristic.recuperacao.n} suítes com
-									error_occurred = Sim)
-								</span>
-								<span className="font-semibold text-base">
-									Recuperação avaliada em{" "}
-									{formatRate(heuristic.recuperacao.mediaBruta)} / 5
-								</span>
-								<LikertScale value={heuristic.recuperacao.mediaBruta} />
+							<div className="border-t pt-3">
+								<LikertMetric
+									caption={`Recuperação quando houve erro (${heuristic.recuperacao.n} suítes com error_occurred = Sim)`}
+									value={heuristic.recuperacao.mediaBruta}
+								/>
 							</div>
 						</>
 					)}
@@ -62,15 +56,10 @@ function HeuristicCard({ heuristic }: { heuristic: HeuristicResult }) {
 				{heuristic.measured &&
 					heuristic.id !== "H5" &&
 					"mediaBruta" in heuristic && (
-						<>
-							<span className="text-muted-foreground text-xs">
-								Média bruta ({heuristic.n} respostas)
-							</span>
-							<span className="font-semibold text-2xl">
-								{formatRate(heuristic.mediaBruta)} / 5
-							</span>
-							<LikertScale value={heuristic.mediaBruta} />
-						</>
+						<LikertMetric
+							caption={`Média bruta (${pluralizeResponses(heuristic.n)})`}
+							value={heuristic.mediaBruta}
+						/>
 					)}
 			</CardContent>
 		</Card>

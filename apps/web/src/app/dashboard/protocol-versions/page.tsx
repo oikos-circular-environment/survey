@@ -38,6 +38,14 @@ export default function ProtocolVersionsPage() {
 		}),
 	);
 
+	const latestVersionByKey = new Map<string, number>();
+	for (const version of versions.data ?? []) {
+		const current = latestVersionByKey.get(version.key);
+		if (current === undefined || version.version > current) {
+			latestVersionByKey.set(version.key, version.version);
+		}
+	}
+
 	return (
 		<div className="flex flex-col gap-6">
 			<div className="flex flex-col gap-1">
@@ -45,9 +53,10 @@ export default function ProtocolVersionsPage() {
 					Versões do protocolo
 				</h1>
 				<p className="text-muted-foreground text-sm">
-					Liga ou desliga uma versão para novos participantes. Desligar todas as
-					versões de uma chave esconde o convite no aplicativo; sessões já em
-					andamento não são afetadas.
+					Liga ou desliga a última versão de cada chave para novos
+					participantes. Desligá-la esconde o convite no aplicativo; sessões já
+					em andamento não são afetadas. Versões substituídas não voltam a
+					circular — publicar uma versão nova a entrega automaticamente.
 				</p>
 			</div>
 
@@ -63,24 +72,38 @@ export default function ProtocolVersionsPage() {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{(versions.data ?? []).map((version) => (
-								<TableRow key={version.id}>
-									<TableCell>{version.key}</TableCell>
-									<TableCell>{version.version}</TableCell>
-									<TableCell>
-										{formatPublishedAt(version.publishedAt)}
-									</TableCell>
-									<TableCell className="text-right">
-										<Switch
-											checked={version.isActive}
-											disabled={setActive.isPending}
-											onCheckedChange={(checked) =>
-												setActive.mutate({ id: version.id, isActive: checked })
-											}
-										/>
-									</TableCell>
-								</TableRow>
-							))}
+							{(versions.data ?? []).map((version) => {
+								const isLatest =
+									latestVersionByKey.get(version.key) === version.version;
+								return (
+									<TableRow key={version.id}>
+										<TableCell>{version.key}</TableCell>
+										<TableCell>{version.version}</TableCell>
+										<TableCell>
+											{formatPublishedAt(version.publishedAt)}
+										</TableCell>
+										<TableCell className="text-right">
+											<span className="flex items-center justify-end gap-2">
+												{isLatest ? null : (
+													<span className="text-muted-foreground text-xs">
+														substituída
+													</span>
+												)}
+												<Switch
+													checked={version.isActive}
+													disabled={setActive.isPending || !isLatest}
+													onCheckedChange={(checked) =>
+														setActive.mutate({
+															id: version.id,
+															isActive: checked,
+														})
+													}
+												/>
+											</span>
+										</TableCell>
+									</TableRow>
+								);
+							})}
 						</TableBody>
 					</Table>
 				</CardContent>

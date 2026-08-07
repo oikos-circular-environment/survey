@@ -1,8 +1,9 @@
 import { randomUUID } from "node:crypto";
 
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, inArray, isNull } from "drizzle-orm";
 import type { MySql2Database } from "drizzle-orm/mysql2";
 
+import type { Option } from "../protocol/types";
 import { answers, sessions, suiteRuns } from "../schema/collection";
 import type * as schema from "../schema/index";
 import { questions } from "../schema/protocol";
@@ -20,6 +21,17 @@ export interface AnswerRow {
 	sessionId: string;
 	suiteRunId: string | null;
 	suiteId: string | null;
+	valueNumber: number | null;
+	valueText: string | null;
+}
+
+export interface SuiteAnswerRow {
+	suiteRunId: string | null;
+	questionKey: string;
+	questionLabel: string;
+	questionType: string;
+	position: number;
+	options: Option[] | null;
 	valueNumber: number | null;
 	valueText: string | null;
 }
@@ -93,6 +105,32 @@ export class AnswersRepository {
 					dateRangeFilter(sessions.startedAt, range),
 				),
 			);
+	}
+
+	/**
+	 * Respostas pós-etapa das suítes informadas, já com a definição da pergunta
+	 * (rótulo, tipo, opções) para o painel resolver valor→rótulo sem uma segunda ida.
+	 * Uma consulta para todas as suítes da sessão: a matriz comparativa precisa das
+	 * três de uma vez.
+	 */
+	async findBySuiteRunIds(suiteRunIds: string[]): Promise<SuiteAnswerRow[]> {
+		if (suiteRunIds.length === 0) return [];
+
+		return this.db
+			.select({
+				suiteRunId: answers.suiteRunId,
+				questionKey: questions.key,
+				questionLabel: questions.label,
+				questionType: questions.type,
+				position: questions.position,
+				options: questions.options,
+				valueNumber: answers.valueNumber,
+				valueText: answers.valueText,
+			})
+			.from(answers)
+			.innerJoin(questions, eq(answers.questionId, questions.id))
+			.where(inArray(answers.suiteRunId, suiteRunIds))
+			.orderBy(questions.position);
 	}
 
 	/** O comentário livre (se houver) de UMA sessão específica — painel de testador. */
