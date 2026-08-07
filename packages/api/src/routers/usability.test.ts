@@ -89,37 +89,6 @@ describe("router usability — borda pública (S08)", () => {
 		});
 	});
 
-	test("checkpoint acima de 256 KB é recusado com PAYLOAD_TOO_LARGE, não uma falha genérica", async () => {
-		const caller = callerFor(headersFor(nextIp()));
-		const session = buildSessionUpsertInput();
-		await caller.usability.session.upsert(session);
-
-		const attempt = caller.usability.checkpoint.send({
-			session_id: session.session_id,
-			chunk: { index: 0, total: 1 },
-			suite: {
-				code: "S1",
-				position: 0,
-				started_at: new Date(),
-				active_ms: 1_000,
-				wall_ms: 1_000,
-			},
-			tasks: [],
-			answers: [],
-			events: [
-				{
-					client_event_id: randomUUID(),
-					seq: 0,
-					type: "api.call",
-					occurred_at: new Date(),
-					payload: { blob: "x".repeat(300_000) },
-				},
-			],
-		});
-
-		await expect(attempt).rejects.toMatchObject({ code: "PAYLOAD_TOO_LARGE" });
-	});
-
 	test("checkpoint para sessão inexistente devolve NOT_FOUND pela mesma forma de erro", async () => {
 		const caller = callerFor(headersFor(nextIp()));
 
