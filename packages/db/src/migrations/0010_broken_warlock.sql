@@ -1,0 +1,2 @@
+ALTER TABLE `usability_suite_runs` ADD `updated_at` timestamp(3) DEFAULT (now(3)) NOT NULL;--> statement-breakpoint
+ALTER TABLE `usability_task_runs` ADD `updated_at` timestamp(3) DEFAULT (now(3)) NOT NULL;

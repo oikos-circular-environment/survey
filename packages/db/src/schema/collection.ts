@@ -130,6 +130,10 @@ export const suiteRuns = mysqlTable(
 		wallMs: int("wall_ms").notNull().default(0),
 		outcome: mysqlEnum("outcome", outcomes),
 		createdAt: timestampMs("created_at").notNull().default(nowMs()),
+		updatedAt: timestampMs("updated_at")
+			.notNull()
+			.default(nowMs())
+			.$onUpdate(() => new Date()),
 	},
 	(t) => [
 		// idempotência do checkpoint: reenviar a mesma etapa não cria uma segunda
@@ -164,6 +168,10 @@ export const taskRuns = mysqlTable(
 		outcome: mysqlEnum("outcome", outcomes),
 		autoDetected: boolean("auto_detected").notNull().default(false),
 		createdAt: timestampMs("created_at").notNull().default(nowMs()),
+		updatedAt: timestampMs("updated_at")
+			.notNull()
+			.default(nowMs())
+			.$onUpdate(() => new Date()),
 	},
 	(t) => [
 		uniqueIndex("task_runs_suite_run_task").on(t.suiteRunId, t.taskId),

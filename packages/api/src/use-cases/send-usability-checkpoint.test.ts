@@ -89,6 +89,28 @@ async function taskRowsOf(
 		.orderBy(taskRuns.position);
 }
 
+async function updatedAtOf(
+	ephemeral: Awaited<ReturnType<typeof setupUsabilityTest>>["ephemeral"],
+	sessionId: string,
+) {
+	const [suiteRun] = await ephemeral.db
+		.select({ id: suiteRuns.id, updatedAt: suiteRuns.updatedAt })
+		.from(suiteRuns)
+		.where(eq(suiteRuns.sessionId, sessionId));
+	if (!suiteRun) throw new Error("esperava a suite_run");
+
+	const tasks = await ephemeral.db
+		.select({ updatedAt: taskRuns.updatedAt })
+		.from(taskRuns)
+		.where(eq(taskRuns.suiteRunId, suiteRun.id))
+		.orderBy(taskRuns.position);
+
+	return {
+		suite: suiteRun.updatedAt,
+		tasks: tasks.map((row) => row.updatedAt),
+	};
+}
+
 describe("sendUsabilityCheckpoint", () => {
 	test("reenviar o mesmo checkpoint converge para uma única execução, sem substituição destrutiva", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
@@ -749,6 +771,38 @@ describe("sendUsabilityCheckpoint", () => {
 					}),
 				),
 			).rejects.toMatchObject({ code: "BAD_REQUEST" });
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("reenviar o checkpoint avança updated_at da suíte e das tarefas, não só na primeira escrita", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, session);
+			const input = buildCheckpointInput(session.session_id);
+
+			await sendUsabilityCheckpoint(repositories, input);
+			const afterFirst = await updatedAtOf(ephemeral, session.session_id);
+
+			// Sem a espera, os dois envios podem cair no mesmo milissegundo e o teste
+			// passaria sem provar nada.
+			await Bun.sleep(5);
+
+			await sendUsabilityCheckpoint(repositories, input);
+			const afterResend = await updatedAtOf(ephemeral, session.session_id);
+
+			expect(afterResend.suite.getTime()).toBeGreaterThan(
+				afterFirst.suite.getTime(),
+			);
+			expect(afterResend.tasks).toHaveLength(afterFirst.tasks.length);
+			for (let i = 0; i < afterResend.tasks.length; i++) {
+				const next = afterResend.tasks[i];
+				const prev = afterFirst.tasks[i];
+				if (!next || !prev) throw new Error("esperava updated_at das tarefas");
+				expect(next.getTime()).toBeGreaterThan(prev.getTime());
+			}
 		} finally {
 			await ephemeral.destroy();
 		}

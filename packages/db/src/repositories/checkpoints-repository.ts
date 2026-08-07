@@ -96,6 +96,7 @@ export class CheckpointsRepository {
 							startedAt: sql`least(${suiteRuns.startedAt}, ${input.suite.startedAt})`,
 							activeMs: sql`greatest(${suiteRuns.activeMs}, ${input.suite.activeMs})`,
 							wallMs: sql`greatest(${suiteRuns.wallMs}, ${input.suite.wallMs})`,
+							updatedAt: new Date(),
 							...suiteFinishSet(input.suite),
 						},
 					});
@@ -139,6 +140,7 @@ export class CheckpointsRepository {
 								startedAt: sql`least(${taskRuns.startedAt}, ${task.startedAt})`,
 								activeMs: sql`greatest(${taskRuns.activeMs}, ${task.activeMs})`,
 								autoDetected: sql`(${taskRuns.autoDetected} or ${task.autoDetected})`,
+								updatedAt: new Date(),
 								...taskFinishSet(task),
 							},
 						});
