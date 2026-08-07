@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import type { Protocol } from "../protocol/types";
 import {
 	personaDefs,
+	protocolVersions,
 	questions,
 	sessions,
 	suiteDefs,
@@ -122,6 +123,34 @@ describe("seedProtocol", () => {
 
 		expect(taskV1?.title).toBe("Tarefa versão 1");
 		expect(taskV2?.title).toBe("Tarefa versão 2");
+	});
+
+	test("publicar versão nova a entrega e tira a anterior de circulação", async () => {
+		const db = getDb();
+		const key = "test-seed-single-active";
+
+		const seededV1 = await seedProtocol(db, minimalProtocol(key, 1, "v1"));
+		const seededV2 = await seedProtocol(db, minimalProtocol(key, 2, "v2"));
+		const seededV3 = await seedProtocol(db, minimalProtocol(key, 3, "v3"));
+
+		const rows = await db
+			.select({
+				id: protocolVersions.id,
+				version: protocolVersions.version,
+				isActive: protocolVersions.isActive,
+			})
+			.from(protocolVersions)
+			.where(eq(protocolVersions.key, key));
+
+		const active = rows.filter((row) => row.isActive);
+		expect(active.length).toBe(1);
+		expect(active[0]?.id).toBe(seededV3.protocolVersionId);
+		expect(
+			rows.find((row) => row.id === seededV1.protocolVersionId)?.isActive,
+		).toBe(false);
+		expect(
+			rows.find((row) => row.id === seededV2.protocolVersionId)?.isActive,
+		).toBe(false);
 	});
 
 	test("sessão presa à versão antiga continua resolvendo depois de uma versão nova publicada", async () => {

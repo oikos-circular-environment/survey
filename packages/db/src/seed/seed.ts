@@ -48,10 +48,21 @@ export async function seedProtocol(
 
 	return db.transaction(async (tx) => {
 		const protocolVersionId = randomUUID();
+
+		// Publicar substitui: a versão nova entra ativa e as anteriores da mesma `key`
+		// saem de circulação na mesma transação. Sem isso as duas ficariam ativas (a
+		// coluna tem default `true`) e desligar a nova faria o app cair silenciosamente
+		// na antiga, em vez de esconder o convite como o kill switch promete.
+		await tx
+			.update(protocolVersions)
+			.set({ isActive: false })
+			.where(eq(protocolVersions.key, protocol.key));
+
 		await tx.insert(protocolVersions).values({
 			id: protocolVersionId,
 			key: protocol.key,
 			version: protocol.version,
+			isActive: true,
 		});
 
 		const taskByCode = new Map(protocol.tasks.map((task) => [task.code, task]));

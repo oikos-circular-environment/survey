@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { protocol } from "@oikos-circular-environment/survey-db/protocol/data";
+import { seedProtocol } from "@oikos-circular-environment/survey-db/seed/seed";
 
 import type { UsabilityCheckpointInput } from "../routers/usability-schemas";
 import { getTesterDetail } from "./get-tester-detail";
@@ -138,6 +140,36 @@ describe("getTesterDetail", () => {
 			expect(
 				run?.answers.every((answer) => answer.questionKey !== "free_comment"),
 			).toBe(true);
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("resolve as suítes pela versão que a sessão executou, não pela vigente", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, session);
+			await sendUsabilityCheckpoint(
+				repositories,
+				suiteOneCheckpoint(session.session_id),
+			);
+
+			// Publica uma versão mais nova depois da sessão: as definições dela têm ids
+			// próprios, então resolver pela vigente não acharia a suíte executada e o
+			// código cairia no UUID cru.
+			await seedProtocol(ephemeral.db, {
+				...protocol,
+				version: protocol.version + 1,
+			});
+
+			const detail = await getTesterDetail(repositories, session.session_id);
+			const [run] = detail?.suiteRuns ?? [];
+
+			expect(run?.suiteCode).toBe("S1");
+			expect(run?.suiteTitle.length).toBeGreaterThan(0);
+			expect(run?.tasks.map((task) => task.taskCode)).toEqual(["T8", "T9"]);
+			expect(detail?.ageRange).toBe("25 a 34 anos");
 		} finally {
 			await ephemeral.destroy();
 		}

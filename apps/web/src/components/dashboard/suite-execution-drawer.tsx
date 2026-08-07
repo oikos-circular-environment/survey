@@ -33,6 +33,15 @@ function formatDuration(ms: number): string {
 	return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
+function formatClock(iso: string | null): string {
+	if (!iso) return "—";
+	return new Date(iso).toLocaleTimeString("pt-BR", {
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+	});
+}
+
 function answerCell(
 	run: TesterSuiteRun | undefined,
 	questionKey: string,
@@ -53,11 +62,13 @@ export function SuiteExecutionDrawer({
 	selectedSuiteRunId,
 	onSelect,
 	onClose,
+	abandonReason,
 }: {
 	suiteRuns: TesterSuiteRun[];
 	selectedSuiteRunId: string | null;
 	onSelect: (suiteRunId: string) => void;
 	onClose: () => void;
+	abandonReason: string | null;
 }) {
 	const selected = suiteRuns.find(
 		(run) => run.suiteRunId === selectedSuiteRunId,
@@ -86,7 +97,7 @@ export function SuiteExecutionDrawer({
 				if (!open) onClose();
 			}}
 		>
-			<SheetContent className="w-full overflow-y-auto sm:max-w-2xl">
+			<SheetContent className="w-full overflow-y-auto data-[side=right]:sm:w-[30vw] data-[side=right]:sm:max-w-[30vw]">
 				<SheetHeader>
 					<SheetTitle>
 						{selected ? `${selected.suiteCode} · ${selected.suiteTitle}` : ""}
@@ -99,6 +110,30 @@ export function SuiteExecutionDrawer({
 				</SheetHeader>
 
 				<div className="flex flex-col gap-6 p-4">
+					<div className="grid grid-cols-2 gap-3">
+						<div className="bg-muted p-3">
+							<p className="text-muted-foreground text-xs">Início</p>
+							<p className="font-medium text-sm">
+								{formatClock(selected?.startedAt ?? null)}
+							</p>
+						</div>
+						<div className="bg-muted p-3">
+							<p className="text-muted-foreground text-xs">Fim</p>
+							<p className="font-medium text-sm">
+								{formatClock(selected?.finishedAt ?? null)}
+							</p>
+						</div>
+					</div>
+
+					{abandonReason ? (
+						<div className="bg-muted p-3">
+							<p className="text-muted-foreground text-xs">
+								Motivo do abandono da pesquisa
+							</p>
+							<p className="text-sm">“{abandonReason}”</p>
+						</div>
+					) : null}
+
 					<div>
 						<p className="mb-2 font-semibold text-[11px] text-muted-foreground uppercase tracking-wide">
 							Tarefas
@@ -110,6 +145,8 @@ export function SuiteExecutionDrawer({
 										<TableHead className="w-14">Cód.</TableHead>
 										<TableHead>Tarefa</TableHead>
 										<TableHead className="w-28">Desfecho</TableHead>
+										<TableHead className="w-20">Início</TableHead>
+										<TableHead className="w-20">Fim</TableHead>
 										<TableHead className="w-20 text-right">Tempo</TableHead>
 									</TableRow>
 								</TableHeader>
@@ -134,6 +171,12 @@ export function SuiteExecutionDrawer({
 												<Badge variant="secondary">
 													{OUTCOME_LABELS[task.outcome ?? ""] ?? "—"}
 												</Badge>
+											</TableCell>
+											<TableCell className="text-muted-foreground text-xs">
+												{formatClock(task.startedAt)}
+											</TableCell>
+											<TableCell className="text-muted-foreground text-xs">
+												{formatClock(task.finishedAt)}
 											</TableCell>
 											<TableCell className="text-right text-muted-foreground text-xs">
 												{formatDuration(task.activeMs)}

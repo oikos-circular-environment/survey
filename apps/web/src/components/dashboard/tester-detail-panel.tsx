@@ -180,6 +180,7 @@ export function TesterDetailPanel({ tester }: { tester: TesterDetail }) {
 					selectedSuiteRunId={openSuiteRunId}
 					onSelect={setOpenSuiteRunId}
 					onClose={() => setOpenSuiteRunId(null)}
+					abandonReason={tester.abandonReason}
 				/>
 			</CardContent>
 		</Card>

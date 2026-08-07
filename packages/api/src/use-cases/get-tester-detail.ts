@@ -89,8 +89,11 @@ export async function getTesterDetail(
 	const session = await repositories.sessions.findDetailById(sessionId);
 	if (!session) return null;
 
-	const protocolVersionId =
-		await repositories.protocol.getLatestProtocolVersionId();
+	// A versão que ESTA sessão executou, não a vigente: os ids de suíte/tarefa são
+	// próprios de cada versão, então resolver contra a mais recente não encontra as
+	// definições de uma sessão antiga — o código da suíte caía no UUID cru e os
+	// rótulos do screener saíam da versão errada.
+	const protocolVersionId = session.protocolVersionId;
 	const [personaDefs, questionOptions, suiteDefs, suiteRuns, freeComment] =
 		await Promise.all([
 			repositories.protocol.getPersonaDefs(protocolVersionId),

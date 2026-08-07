@@ -167,13 +167,52 @@ describe("router dashboard — protocolVersions.list/setActive (S15)", () => {
 			).toBe(false);
 		} finally {
 			// Restaura o estado original para não vazar para os outros testes do arquivo.
+			// A irmã mais nova sai primeiro: enquanto ela existir, `original` é uma versão
+			// substituída e reativá-la é recusado.
+			await setup.ephemeral.db
+				.delete(protocolVersions)
+				.where(eq(protocolVersions.id, siblingId));
 			await caller.dashboard.protocolVersions.setActive({
 				id: original.id,
 				isActive: true,
 			});
+		}
+	});
+
+	test("reativar uma versão substituída é recusado", async () => {
+		const caller = await adminCaller();
+		const versions = await caller.dashboard.protocolVersions.list();
+		const original = versions[0];
+		if (!original) throw new Error("esperava ao menos uma versão semeada");
+
+		const siblingId = randomUUID();
+		await setup.ephemeral.db.insert(protocolVersions).values({
+			id: siblingId,
+			key: original.key,
+			version: original.version + 1,
+			isActive: true,
+		});
+
+		try {
+			await caller.dashboard.protocolVersions.setActive({
+				id: original.id,
+				isActive: false,
+			});
+
+			await expect(
+				caller.dashboard.protocolVersions.setActive({
+					id: original.id,
+					isActive: true,
+				}),
+			).rejects.toThrow(/última versão/);
+		} finally {
 			await setup.ephemeral.db
 				.delete(protocolVersions)
 				.where(eq(protocolVersions.id, siblingId));
+			await caller.dashboard.protocolVersions.setActive({
+				id: original.id,
+				isActive: true,
+			});
 		}
 	});
 });

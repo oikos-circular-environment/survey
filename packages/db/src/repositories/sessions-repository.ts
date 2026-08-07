@@ -30,6 +30,7 @@ export interface SessionRow {
 
 export interface SessionDetailRow {
 	id: string;
+	protocolVersionId: string;
 	participantCode: string;
 	persona: string;
 	status: string;
@@ -55,6 +56,7 @@ export interface SessionDetailRow {
 
 const detailColumns = {
 	id: sessions.id,
+	protocolVersionId: sessions.protocolVersionId,
 	participantCode: sessions.participantCode,
 	persona: sessions.persona,
 	status: sessions.status,
