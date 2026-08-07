@@ -81,6 +81,33 @@ function suiteTwoCheckpoint(sessionId: string): UsabilityCheckpointInput {
 	};
 }
 
+function suiteInProgressCheckpoint(
+	sessionId: string,
+): UsabilityCheckpointInput {
+	return {
+		session_id: sessionId,
+		chunk: { index: 0, total: 1 },
+		suite: {
+			code: "S6",
+			position: 5,
+			started_at: new Date("2026-08-15T18:10:00.000Z"),
+			active_ms: 8_000,
+			wall_ms: 15_000,
+		},
+		tasks: [
+			{
+				code: "T16",
+				position: 0,
+				started_at: new Date("2026-08-15T18:10:00.000Z"),
+				active_ms: 3_000,
+				auto_detected: true,
+			},
+		],
+		events: [],
+		answers: [],
+	};
+}
+
 describe("getTesterDetail", () => {
 	test("cada suíte carrega suas tarefas e as respostas pós-etapa", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
@@ -184,6 +211,30 @@ describe("getTesterDetail", () => {
 			const detail = await getTesterDetail(repositories, session.session_id);
 
 			expect(detail?.suiteRuns).toEqual([]);
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("execução em andamento aparece no detalhe do testador (findBySessionId não filtra)", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, session);
+			await sendUsabilityCheckpoint(
+				repositories,
+				suiteInProgressCheckpoint(session.session_id),
+			);
+
+			const detail = await getTesterDetail(repositories, session.session_id);
+			const [run] = detail?.suiteRuns ?? [];
+
+			expect(detail?.suiteRuns.length).toBe(1);
+			expect(run?.suiteCode).toBe("S6");
+			expect(run?.outcome).toBeNull();
+			expect(run?.finishedAt).toBeNull();
+			expect(run?.tasks[0]?.taskCode).toBe("T16");
+			expect(run?.tasks[0]?.finishedAt).toBeNull();
 		} finally {
 			await ephemeral.destroy();
 		}

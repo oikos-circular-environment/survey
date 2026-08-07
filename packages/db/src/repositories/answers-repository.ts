@@ -153,26 +153,35 @@ export class AnswersRepository {
 	}
 
 	/**
-	 * Substitui as respostas de fim de sessão (`suite_run_id` nulo) de uma sessão (E4).
+	 * Grava as respostas de fim de sessão (`suite_run_id` nulo) de uma sessão (E4),
+	 * substituindo só as perguntas reenviadas.
 	 *
 	 * Delete-then-insert, não upsert linha a linha: o índice único
 	 * `answers_session_run_question` não protege esse caso, porque em MySQL nulos não
 	 * colidem entre si — duas gravações de fim de sessão passariam pela constraint sem
-	 * conflito nenhum (ver a nota em `schema/collection.ts`). Apagar as respostas finais
-	 * antigas antes de gravar as novas é o que garante que reenviar E4 não duplica.
+	 * conflito nenhum (ver a nota em `schema/collection.ts`). Apagar antes de gravar é o
+	 * que garante que reenviar E4 não duplica; o delete é escopado às perguntas do
+	 * payload para preservar respostas finais de um envio anterior, e `finish` vazio
+	 * não toca em nada (guarda antes de qualquer escrita).
 	 */
-	async replaceFinalAnswers(
+	async upsertFinalAnswers(
 		sessionId: string,
 		rows: FinalAnswerInput[],
 	): Promise<void> {
+		if (rows.length === 0) return;
+
+		const questionIds = [...new Set(rows.map((row) => row.questionId))];
+
 		await this.db.transaction(async (tx) => {
 			await tx
 				.delete(answers)
 				.where(
-					and(eq(answers.sessionId, sessionId), isNull(answers.suiteRunId)),
+					and(
+						eq(answers.sessionId, sessionId),
+						isNull(answers.suiteRunId),
+						inArray(answers.questionId, questionIds),
+					),
 				);
-
-			if (rows.length === 0) return;
 
 			await tx.insert(answers).values(
 				rows.map((row) => ({

@@ -140,7 +140,32 @@ describe("factories", () => {
 			false,
 		);
 		expect(factory.session.abandonReason).toBeDefined();
-		expect(factory.session.finishedAt).toBeUndefined();
+		expect(factory.session.finishedAt).toBeDefined();
+		expect(factory.session.finishedAt?.getTime()).toBeGreaterThanOrEqual(
+			factory.session.startedAt.getTime(),
+		);
+	});
+
+	test("só sessão IN_PROGRESS fica sem hora de término", async () => {
+		const seeded = await seededProtocol();
+
+		for (const status of ["COMPLETED", "ABANDONED"] as const) {
+			const factory = buildFactorySession(seeded, {
+				personaKey: "CITIZEN",
+				status,
+			});
+			expect(factory.session.finishedAt).toBeDefined();
+			expect(factory.session.wallMs).toBe(
+				(factory.session.finishedAt?.getTime() ?? 0) -
+					factory.session.startedAt.getTime(),
+			);
+		}
+
+		const inProgress = buildFactorySession(seeded, {
+			personaKey: "CITIZEN",
+			status: "IN_PROGRESS",
+		});
+		expect(inProgress.session.finishedAt).toBeUndefined();
 	});
 
 	test("comentário livre nunca aparece fora de sessões COMPLETED", async () => {

@@ -11,7 +11,7 @@ export interface FinishUsabilitySessionResult {
 /**
  * E4 — grava as respostas de fim de sessão e marca `COMPLETED`. Idempotente: reenviar
  * devolve o mesmo `participant_code` e substitui (não acumula) as respostas finais —
- * ver a ressalva de índice único nulo em `AnswersRepository.replaceFinalAnswers`.
+ * ver a ressalva de índice único nulo em `AnswersRepository.upsertFinalAnswers`.
  */
 export async function finishUsabilitySession(
 	repositories: Repositories,
@@ -40,7 +40,7 @@ export async function finishUsabilitySession(
 		});
 	}
 
-	await repositories.answers.replaceFinalAnswers(
+	await repositories.answers.upsertFinalAnswers(
 		input.session_id,
 		input.answers.map((answer) => {
 			const questionId = questionIdByKey.get(answer.question_key);
