@@ -81,6 +81,43 @@ describe("router dashboard — chave de cliente + sessão de admin (S09/S10/A9)"
 			callerFor(new Headers()).dashboard.overview({}),
 		).rejects.toMatchObject({ code: "UNAUTHORIZED" });
 	});
+
+	test("`protocol` também exige as duas camadas", async () => {
+		await expect(
+			callerFor(new Headers()).dashboard.protocol({}),
+		).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+	});
+});
+
+describe("router dashboard — protocol", () => {
+	async function adminCaller() {
+		const sessionHeaders = await createAdminSessionHeaders(setup.auth);
+		const headers = new Headers(sessionHeaders);
+		headers.set("x-client-key", env.CLIENT_API_KEY);
+		return callerFor(headers);
+	}
+
+	test("sem versão explícita cai na ativa", async () => {
+		const caller = await adminCaller();
+
+		const response = await caller.dashboard.protocol({});
+
+		expect(response?.suites.length).toBeGreaterThan(0);
+		expect(response?.questions.length).toBeGreaterThan(0);
+	});
+
+	test("com versão explícita devolve aquela versão", async () => {
+		const caller = await adminCaller();
+		const [version] = await caller.dashboard.protocolVersions.list();
+		if (!version) throw new Error("versão semeada deveria existir");
+
+		const response = await caller.dashboard.protocol({
+			protocolVersionId: version.id,
+		});
+
+		expect(response?.version).toBe(version.version);
+		expect(response?.key).toBe(version.key);
+	});
 });
 
 describe("router dashboard — protocolVersions.list/setActive (S15)", () => {
@@ -130,13 +167,52 @@ describe("router dashboard — protocolVersions.list/setActive (S15)", () => {
 			).toBe(false);
 		} finally {
 			// Restaura o estado original para não vazar para os outros testes do arquivo.
+			// A irmã mais nova sai primeiro: enquanto ela existir, `original` é uma versão
+			// substituída e reativá-la é recusado.
+			await setup.ephemeral.db
+				.delete(protocolVersions)
+				.where(eq(protocolVersions.id, siblingId));
 			await caller.dashboard.protocolVersions.setActive({
 				id: original.id,
 				isActive: true,
 			});
+		}
+	});
+
+	test("reativar uma versão substituída é recusado", async () => {
+		const caller = await adminCaller();
+		const versions = await caller.dashboard.protocolVersions.list();
+		const original = versions[0];
+		if (!original) throw new Error("esperava ao menos uma versão semeada");
+
+		const siblingId = randomUUID();
+		await setup.ephemeral.db.insert(protocolVersions).values({
+			id: siblingId,
+			key: original.key,
+			version: original.version + 1,
+			isActive: true,
+		});
+
+		try {
+			await caller.dashboard.protocolVersions.setActive({
+				id: original.id,
+				isActive: false,
+			});
+
+			await expect(
+				caller.dashboard.protocolVersions.setActive({
+					id: original.id,
+					isActive: true,
+				}),
+			).rejects.toThrow(/última versão/);
+		} finally {
 			await setup.ephemeral.db
 				.delete(protocolVersions)
 				.where(eq(protocolVersions.id, siblingId));
+			await caller.dashboard.protocolVersions.setActive({
+				id: original.id,
+				isActive: true,
+			});
 		}
 	});
 });

@@ -31,6 +31,7 @@
 	--chart-4: oklch(0.554 0.135 66.442);
 	--chart-5: oklch(0.476 0.114 61.907);
 	--status-good: #0ca30c;
+	--status-fair: #a8c93a;
 	--status-warning: #fab219;
 	--status-serious: #ec835a;
 	--status-critical: #d03b3b;
@@ -95,6 +96,7 @@
 	--color-chart-2: var(--chart-2);
 	--color-chart-1: var(--chart-1);
 	--color-status-good: var(--status-good);
+	--color-status-fair: var(--status-fair);
 	--color-status-warning: var(--status-warning);
 	--color-status-serious: var(--status-serious);
 	--color-status-critical: var(--status-critical);

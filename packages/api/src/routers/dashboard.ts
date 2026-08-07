@@ -7,6 +7,7 @@ import { getDomainItems } from "../use-cases/get-domain-items";
 import { getHeuristics } from "../use-cases/get-heuristics";
 import { getOverview } from "../use-cases/get-overview";
 import { getPersonas } from "../use-cases/get-personas";
+import { getProtocol, getProtocolByVersionId } from "../use-cases/get-protocol";
 import { getSuitePersonas } from "../use-cases/get-suite-personas";
 import { getSuites } from "../use-cases/get-suites";
 import { getTasks } from "../use-cases/get-tasks";
@@ -76,6 +77,20 @@ export const dashboardRouter = router({
 		.input(z.object({ sessionId: z.string() }))
 		.query(({ ctx, input }) =>
 			getTesterDetail(ctx.repositories, input.sessionId),
+		),
+
+	/**
+	 * Definição do protocolo para o navegador do painel. Separada de
+	 * `usability.protocol` de propósito: aquela vive na borda pública (`apiKeyProcedure`)
+	 * e é o contrato do app — aceitar versão arbitrária ali ampliaria a superfície
+	 * pública sem necessidade. Sem `protocolVersionId`, cai na versão ativa.
+	 */
+	protocol: dashboardProcedure
+		.input(z.object({ protocolVersionId: z.string().optional() }))
+		.query(({ ctx, input }) =>
+			input.protocolVersionId
+				? getProtocolByVersionId(ctx.repositories, input.protocolVersionId)
+				: getProtocol(ctx.repositories),
 		),
 
 	protocolVersions: router({

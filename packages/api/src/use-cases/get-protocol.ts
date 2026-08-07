@@ -70,6 +70,30 @@ export async function getProtocol(
 	const version = await repositories.protocol.getActiveProtocolVersion(key);
 	if (!version) return null;
 
+	return buildProtocolResponse(repositories, version);
+}
+
+/**
+ * Mesma resposta de `getProtocol`, mas para uma versão explícita — o painel navega
+ * pelo histórico, e ler uma sessão antiga com a definição vigente induz a erro: códigos
+ * de tarefa foram renumerados entre versões. Ignora `is_active` de propósito; versão
+ * desligada continua legível para análise.
+ */
+export async function getProtocolByVersionId(
+	repositories: Repositories,
+	protocolVersionId: string,
+): Promise<ProtocolResponse | null> {
+	const version =
+		await repositories.protocol.findProtocolVersionById(protocolVersionId);
+	if (!version) return null;
+
+	return buildProtocolResponse(repositories, version);
+}
+
+async function buildProtocolResponse(
+	repositories: Repositories,
+	version: { id: string; key: string; version: number },
+): Promise<ProtocolResponse> {
 	const [personas, suites, tasks, questions] = await Promise.all([
 		repositories.protocol.getProtocolPersonas(version.id),
 		repositories.protocol.getProtocolSuites(version.id),

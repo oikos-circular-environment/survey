@@ -1,9 +1,10 @@
 import { describe, expect, test } from "bun:test";
+import { randomUUID } from "node:crypto";
 import { protocol } from "@oikos-circular-environment/survey-db/protocol/data";
 import { protocolVersions } from "@oikos-circular-environment/survey-db/schema/protocol";
 import { eq } from "drizzle-orm";
 
-import { getProtocol } from "./get-protocol";
+import { getProtocol, getProtocolByVersionId } from "./get-protocol";
 import { setupUsabilityTest } from "./usability-test-helpers";
 
 describe("getProtocol", () => {
@@ -117,6 +118,44 @@ describe("getProtocol", () => {
 				.where(eq(protocolVersions.key, protocol.key));
 
 			const response = await getProtocol(repositories, protocol.key);
+
+			expect(response).toBeNull();
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+});
+
+describe("getProtocolByVersionId", () => {
+	test("lê uma versão desligada, que `getProtocol` já não devolve", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const versionId = await repositories.protocol.getProtocolVersionId(
+				protocol.key,
+				protocol.version,
+			);
+			if (!versionId) throw new Error("versão semeada deveria existir");
+
+			await ephemeral.db
+				.update(protocolVersions)
+				.set({ isActive: false })
+				.where(eq(protocolVersions.key, protocol.key));
+
+			expect(await getProtocol(repositories, protocol.key)).toBeNull();
+
+			const response = await getProtocolByVersionId(repositories, versionId);
+			expect(response?.version).toBe(protocol.version);
+			expect(response?.suites.length).toBe(protocol.suites.length);
+			expect(response?.tasks.length).toBe(protocol.tasks.length);
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("devolve null para id inexistente em vez de lançar", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const response = await getProtocolByVersionId(repositories, randomUUID());
 
 			expect(response).toBeNull();
 		} finally {
