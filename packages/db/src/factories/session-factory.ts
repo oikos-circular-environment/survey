@@ -175,7 +175,6 @@ export function buildFactorySession(
 		.sort((a, b) => a.position - b.position);
 
 	let sessionActiveMs = 0;
-	let sessionFinishedAt: Date | undefined;
 
 	for (const [suiteIndex, suite] of engagedSuites.entries()) {
 		const isLastEngagedSuite = suiteIndex === engagedSuites.length - 1;
@@ -262,7 +261,6 @@ export function buildFactorySession(
 			answerRows.push(
 				...buildPerSuiteAnswers(perSuiteQuestions, sessionId, suiteRunId),
 			);
-			sessionFinishedAt = cursor;
 		}
 	}
 
@@ -312,7 +310,7 @@ export function buildFactorySession(
 			screenSizes,
 		) as (typeof screenSizes)[number],
 		startedAt: sessionStartedAt,
-		finishedAt: status === "COMPLETED" ? sessionFinishedAt : undefined,
+		finishedAt: status === "IN_PROGRESS" ? undefined : cursor,
 		activeMs: sessionActiveMs,
 		wallMs: cursor.getTime() - sessionStartedAt.getTime(),
 		abandonReason: status === "ABANDONED" ? faker.lorem.sentence() : undefined,
