@@ -38,6 +38,7 @@ export interface CheckpointEventInput {
 
 export interface UpsertSuiteCheckpointInput {
 	sessionId: string;
+	suiteRunId?: string;
 	suiteId: string;
 	suite: {
 		position: number;
@@ -55,6 +56,7 @@ export interface UpsertSuiteCheckpointInput {
 export interface UpsertSuiteCheckpointResult {
 	suiteRunId: string;
 	receivedEvents: number;
+	suiteComplete: boolean;
 }
 
 /**
@@ -84,7 +86,11 @@ export class CheckpointsRepository {
 	 *
 	 * `id` e `created_at` nunca entram no `set`: `id` é PK referenciada por `task_runs`
 	 * e `answers` (FK sem `ON UPDATE CASCADE`), e `created_at` marca o primeiro envio,
-	 * não o último.
+	 * não o último. `suite_run_id` do payload (opcional) entra como PK da primeira
+	 * escrita; quando já existe linha para `(sessionId, suiteId)`, o id gravado vence e
+	 * é o devolvido na resposta, para o cliente reconciliar. `suite_complete` é medido
+	 * do estado gravado (`finished_at` e `outcome` não nulos), não da declaração de
+	 * fatias do cliente.
 	 *
 	 * Tasks e answers são percorridos em ordem de id para que transações concorrentes
 	 * adquiram locks na mesma ordem; o `retryOnDeadlock` cobre a janela que resta.
@@ -109,12 +115,12 @@ export class CheckpointsRepository {
 			input.sessionId,
 			input.events,
 		);
-		const suiteRunId = await retryOnDeadlock(() =>
+		const { id: suiteRunId, suiteComplete } = await retryOnDeadlock(() =>
 			this.db.transaction(async (tx) => {
 				await tx
 					.insert(suiteRuns)
 					.values({
-						id: randomUUID(),
+						id: input.suiteRunId ?? randomUUID(),
 						sessionId: input.sessionId,
 						suiteId: input.suiteId,
 						position: input.suite.position,
@@ -135,7 +141,11 @@ export class CheckpointsRepository {
 					});
 
 				const [row] = await tx
-					.select({ id: suiteRuns.id })
+					.select({
+						id: suiteRuns.id,
+						finishedAt: suiteRuns.finishedAt,
+						outcome: suiteRuns.outcome,
+					})
 					.from(suiteRuns)
 					.where(
 						and(
@@ -144,6 +154,7 @@ export class CheckpointsRepository {
 						),
 					);
 				if (!row) throw new Error("upsert da suite_run não deixou linha");
+				const suiteComplete = row.finishedAt !== null && row.outcome !== null;
 
 				const orderedTasks = [...input.tasks].sort((a, b) =>
 					a.taskId.localeCompare(b.taskId),
@@ -192,10 +203,10 @@ export class CheckpointsRepository {
 						});
 				}
 
-				return row.id;
+				return { id: row.id, suiteComplete };
 			}),
 		);
-		return { suiteRunId, receivedEvents };
+		return { suiteRunId, receivedEvents, suiteComplete };
 	}
 
 	private async insertEvents(

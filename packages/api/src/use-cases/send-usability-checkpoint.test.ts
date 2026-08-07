@@ -548,6 +548,140 @@ describe("sendUsabilityCheckpoint", () => {
 		}
 	});
 
+	test("envio sem suite_run_id gera o id no servidor e o reenvio acerta a mesma linha", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, session);
+
+			const first = await sendUsabilityCheckpoint(
+				repositories,
+				buildCheckpointInput(session.session_id),
+			);
+			const second = await sendUsabilityCheckpoint(
+				repositories,
+				buildCheckpointInput(session.session_id),
+			);
+
+			expect(first.suite_run_id).toBeTruthy();
+			expect(second.suite_run_id).toBe(first.suite_run_id);
+			expect(await rowCount(ephemeral.db, suiteRuns)).toBe(1);
+
+			const [stored] = await ephemeral.db
+				.select({ id: suiteRuns.id })
+				.from(suiteRuns);
+			expect(stored?.id).toBe(first.suite_run_id);
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("envio com id grava com esse id e mantém id e created_at idênticos em três envios", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, session);
+			const suiteRunId = randomUUID();
+
+			await sendUsabilityCheckpoint(
+				repositories,
+				buildCheckpointInput(session.session_id, { suite_run_id: suiteRunId }),
+			);
+			const readCreatedAt = async () => {
+				const [row] = await ephemeral.db
+					.select({ id: suiteRuns.id, createdAt: suiteRuns.createdAt })
+					.from(suiteRuns);
+				return row;
+			};
+			const first = await readCreatedAt();
+			expect(first?.id).toBe(suiteRunId);
+
+			await sendUsabilityCheckpoint(
+				repositories,
+				buildCheckpointInput(session.session_id, { suite_run_id: suiteRunId }),
+			);
+			await sendUsabilityCheckpoint(
+				repositories,
+				buildCheckpointInput(session.session_id, { suite_run_id: suiteRunId }),
+			);
+
+			const after = await readCreatedAt();
+			expect(after?.id).toBe(suiteRunId);
+			expect(after?.createdAt).toEqual(first?.createdAt);
+			expect(await rowCount(ephemeral.db, suiteRuns)).toBe(1);
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("id conflitante: linha pré-existente vence e task_runs penduram no id gravado", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, session);
+
+			const existing = await sendUsabilityCheckpoint(
+				repositories,
+				buildCheckpointInput(session.session_id),
+			);
+			const conflicting = await sendUsabilityCheckpoint(
+				repositories,
+				buildCheckpointInput(session.session_id, {
+					suite_run_id: randomUUID(),
+				}),
+			);
+
+			expect(conflicting.suite_run_id).toBe(existing.suite_run_id);
+
+			const [stored] = await ephemeral.db
+				.select({ id: suiteRuns.id })
+				.from(suiteRuns);
+			expect(stored?.id).toBe(existing.suite_run_id);
+
+			const taskRunIds = await ephemeral.db
+				.select({ suiteRunId: taskRuns.suiteRunId })
+				.from(taskRuns);
+			expect(taskRunIds).not.toHaveLength(0);
+			expect(new Set(taskRunIds.map((row) => row.suiteRunId))).toEqual(
+				new Set([existing.suite_run_id]),
+			);
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("suite_complete é falso enquanto faltar finished_at ou outcome e vira verdadeiro quando chegam", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, session);
+
+			const midRun = await sendUsabilityCheckpoint(
+				repositories,
+				buildCheckpointInput(session.session_id, {
+					suite: {
+						code: "S1",
+						position: 0,
+						started_at: new Date("2026-08-15T18:00:00.000Z"),
+						active_ms: 200_000,
+						wall_ms: 600_000,
+					},
+					events: [],
+					answers: [],
+				}),
+			);
+			expect(midRun.suite_complete).toBe(false);
+
+			const closed = await sendUsabilityCheckpoint(
+				repositories,
+				buildCheckpointInput(session.session_id, { events: [], answers: [] }),
+			);
+			expect(closed.suite_complete).toBe(true);
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
 	test("checkpoint para sessão inexistente devolve NOT_FOUND sem criar nada", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
