@@ -486,6 +486,68 @@ describe("sendUsabilityCheckpoint", () => {
 		}
 	});
 
+	test("duplicata dentro do mesmo payload não aborta e grava a suíte normalmente", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, session);
+			const event = {
+				client_event_id: randomUUID(),
+				seq: 0,
+				type: "api.call" as const,
+				suite_code: "S1",
+				task_code: "T8",
+				occurred_at: new Date("2026-08-15T18:00:30.000Z"),
+				payload: { method: "GET", path_pattern: "/v1/market", status: 200 },
+			};
+
+			const result = await sendUsabilityCheckpoint(
+				repositories,
+				buildCheckpointInput(session.session_id, {
+					events: [event, { ...event }],
+				}),
+			);
+
+			expect(result.received_events).toBe(1);
+			expect(await rowCount(ephemeral.db, events)).toBe(1);
+			expect(await rowCount(ephemeral.db, suiteRuns)).toBe(1);
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("duplicata entre payloads devolve received_events = 0 no segundo envio", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, session);
+			const event = {
+				client_event_id: randomUUID(),
+				seq: 0,
+				type: "api.call" as const,
+				suite_code: "S1",
+				task_code: "T8",
+				occurred_at: new Date("2026-08-15T18:00:30.000Z"),
+				payload: { method: "GET", path_pattern: "/v1/market", status: 200 },
+			};
+
+			const first = await sendUsabilityCheckpoint(
+				repositories,
+				buildCheckpointInput(session.session_id, { events: [event] }),
+			);
+			expect(first.received_events).toBe(1);
+
+			const second = await sendUsabilityCheckpoint(
+				repositories,
+				buildCheckpointInput(session.session_id, { events: [event] }),
+			);
+			expect(second.received_events).toBe(0);
+			expect(await rowCount(ephemeral.db, events)).toBe(1);
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
 	test("checkpoint para sessão inexistente devolve NOT_FOUND sem criar nada", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
