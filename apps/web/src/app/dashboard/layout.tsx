@@ -13,10 +13,10 @@ export default function DashboardLayout({
 }) {
 	return (
 		<DateRangeProvider>
-			<SidebarProvider>
+			<SidebarProvider className="min-w-0">
 				<DashboardSidebar />
-				<SidebarInset>
-					<div className="flex flex-1 flex-col gap-6 p-6 md:p-8">
+				<SidebarInset className="min-w-0">
+					<div className="flex min-w-0 flex-1 flex-col gap-6 p-6 md:p-8">
 						<SidebarTrigger className="md:hidden" />
 						{children}
 					</div>

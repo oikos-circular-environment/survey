@@ -152,10 +152,10 @@ export default function ProtocolPage() {
 												<TableCell>
 													<Badge variant="outline">{suite.code}</Badge>
 												</TableCell>
-												<TableCell className="font-medium">
+												<TableCell className="whitespace-normal align-top font-medium">
 													{suite.title}
 												</TableCell>
-												<TableCell className="text-muted-foreground text-sm">
+												<TableCell className="max-w-lg whitespace-normal align-top text-muted-foreground text-sm">
 													{suite.objective}
 												</TableCell>
 												<TableCell>
@@ -193,13 +193,13 @@ export default function ProtocolPage() {
 												<TableCell>
 													<Badge variant="outline">{task.code}</Badge>
 												</TableCell>
-												<TableCell className="font-medium">
+												<TableCell className="min-w-40 whitespace-normal align-top font-medium">
 													{task.title}
 												</TableCell>
-												<TableCell className="text-muted-foreground text-sm">
+												<TableCell className="max-w-md whitespace-normal align-top text-muted-foreground text-sm">
 													{task.instruction}
 												</TableCell>
-												<TableCell>
+												<TableCell className="align-top">
 													<div className="flex flex-col gap-1">
 														<span className="text-[11px] text-muted-foreground uppercase">
 															{task.success.mode === "all"
@@ -258,7 +258,7 @@ export default function ProtocolPage() {
 												<TableCell className="text-muted-foreground text-sm">
 													{question.type}
 												</TableCell>
-												<TableCell className="max-w-md">
+												<TableCell className="min-w-64 max-w-sm whitespace-normal align-top">
 													<p className="text-sm">{question.label}</p>
 													{question.depends_on ? (
 														<p className="mt-1 text-[11px] text-muted-foreground">
@@ -267,7 +267,7 @@ export default function ProtocolPage() {
 														</p>
 													) : null}
 												</TableCell>
-												<TableCell className="text-muted-foreground text-xs">
+												<TableCell className="max-w-md whitespace-normal align-top text-muted-foreground text-xs">
 													{question.options
 														?.map(
 															(option) => `${option.value}. ${option.label}`,

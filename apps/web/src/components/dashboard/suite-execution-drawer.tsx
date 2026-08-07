@@ -119,7 +119,7 @@ export function SuiteExecutionDrawer({
 											<TableCell>
 												<Badge variant="outline">{task.taskCode}</Badge>
 											</TableCell>
-											<TableCell className="text-sm">
+											<TableCell className="whitespace-normal align-top text-sm">
 												<span className="flex items-center gap-1.5">
 													{task.taskTitle}
 													{task.autoDetected ? (
@@ -181,7 +181,7 @@ export function SuiteExecutionDrawer({
 								<TableBody>
 									{questions.map((question) => (
 										<TableRow key={question.key}>
-											<TableCell className="text-sm">
+											<TableCell className="whitespace-normal align-top text-sm">
 												{question.label}
 											</TableCell>
 											{suiteRuns.map((run) => (
