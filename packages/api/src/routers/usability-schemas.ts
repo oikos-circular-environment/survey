@@ -128,6 +128,7 @@ const checkpointEventInput = z.object({
 
 export const usabilityCheckpointInput = z.object({
 	session_id: z.string().min(1).max(36),
+	suite_run_id: z.uuid().optional(),
 	chunk: chunkInput,
 	suite: checkpointSuiteInput,
 	tasks: z.array(checkpointTaskInput).default([]),
