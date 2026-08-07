@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@survey/ui/components/card";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 
+import { OutcomeBadge } from "./outcome-badge";
 import { SuiteExecutionDrawer } from "./suite-execution-drawer";
 import { TesterStatusBadge } from "./tester-status-badge";
 
@@ -34,12 +35,6 @@ function formatDuration(ms: number): string {
 function participantCodeLabel(participantCode: string): string {
 	return `PSQ-${participantCode}`;
 }
-
-const OUTCOME_LABELS: Record<string, string> = {
-	YES: "Concluída",
-	PARTIAL: "Parcial",
-	NO: "Não concluída",
-};
 
 function InfoField({ label, value }: { label: string; value: string }) {
 	return (
@@ -155,9 +150,7 @@ export function TesterDetailPanel({ tester }: { tester: TesterDetail }) {
 									</div>
 									<div className="flex items-center gap-3 text-muted-foreground text-xs">
 										<span>{formatDuration(run.activeMs)}</span>
-										<Badge variant="secondary">
-											{run.outcome ? OUTCOME_LABELS[run.outcome] : "—"}
-										</Badge>
+										<OutcomeBadge outcome={run.outcome} />
 										<ChevronRight className="size-4" />
 									</div>
 								</button>

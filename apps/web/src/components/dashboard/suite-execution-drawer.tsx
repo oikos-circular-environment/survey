@@ -20,11 +20,7 @@ import {
 import { cn } from "@survey/ui/lib/utils";
 import { Zap } from "lucide-react";
 
-const OUTCOME_LABELS: Record<string, string> = {
-	YES: "Concluída",
-	PARTIAL: "Parcial",
-	NO: "Não concluída",
-};
+import { OUTCOME_LABELS, OutcomeBadge } from "./outcome-badge";
 
 function formatDuration(ms: number): string {
 	const totalSeconds = Math.round(ms / 1000);
@@ -171,9 +167,7 @@ export function SuiteExecutionDrawer({
 												)}
 											</TableCell>
 											<TableCell>
-												<Badge variant="secondary">
-													{OUTCOME_LABELS[task.outcome ?? ""] ?? "—"}
-												</Badge>
+												<OutcomeBadge outcome={task.outcome} />
 											</TableCell>
 											<TableCell className="text-muted-foreground text-xs">
 												{formatClock(task.startedAt)}
