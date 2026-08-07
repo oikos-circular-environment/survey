@@ -144,6 +144,7 @@ export function SuiteExecutionDrawer({
 									<TableRow>
 										<TableHead className="w-14">Cód.</TableHead>
 										<TableHead>Tarefa</TableHead>
+										<TableHead className="w-12 text-center">Sinal</TableHead>
 										<TableHead className="w-28">Desfecho</TableHead>
 										<TableHead className="w-20">Início</TableHead>
 										<TableHead className="w-20">Fim</TableHead>
@@ -157,15 +158,17 @@ export function SuiteExecutionDrawer({
 												<Badge variant="outline">{task.taskCode}</Badge>
 											</TableCell>
 											<TableCell className="whitespace-normal align-top text-sm">
-												<span className="flex items-center gap-1.5">
-													{task.taskTitle}
-													{task.autoDetected ? (
-														<Zap
-															className="size-3 text-muted-foreground"
-															aria-label="detectada por sinal"
-														/>
-													) : null}
-												</span>
+												{task.taskTitle}
+											</TableCell>
+											<TableCell className="text-center align-top">
+												{task.autoDetected ? (
+													<Zap
+														className="inline size-3.5 text-muted-foreground"
+														aria-label="concluída por sinal automático"
+													/>
+												) : (
+													<span className="sr-only">resolvida manualmente</span>
+												)}
 											</TableCell>
 											<TableCell>
 												<Badge variant="secondary">
@@ -191,8 +194,8 @@ export function SuiteExecutionDrawer({
 							</p>
 						)}
 						<p className="mt-2 text-[11px] text-muted-foreground">
-							<Zap className="mr-1 inline size-3" />
-							concluída por sinal automático; sem o ícone, foi resolvida
+							Sinal: <Zap className="mx-1 inline size-3" />
+							concluída por sinal automático; coluna vazia, resolvida
 							manualmente.
 						</p>
 					</div>
