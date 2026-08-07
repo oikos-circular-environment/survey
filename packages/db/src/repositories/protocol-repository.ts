@@ -300,6 +300,26 @@ export class ProtocolRepository {
 		return row?.id;
 	}
 
+	/**
+	 * Resolve o id da versão para `key`/`version`. Devolve `undefined` em vez de lançar:
+	 * o painel navega por versões arbitrárias vindas da URL, então id inexistente é
+	 * entrada inválida, não falha de seed.
+	 */
+	async findProtocolVersionById(
+		id: string,
+	): Promise<ActiveProtocolVersionRow | undefined> {
+		const [row] = await this.db
+			.select({
+				id: protocolVersions.id,
+				key: protocolVersions.key,
+				version: protocolVersions.version,
+			})
+			.from(protocolVersions)
+			.where(eq(protocolVersions.id, id))
+			.limit(1);
+		return row;
+	}
+
 	/** Personas do protocolo com os códigos de suíte (não os ids) — forma do contrato E1. */
 	async getProtocolPersonas(
 		protocolVersionId: string,

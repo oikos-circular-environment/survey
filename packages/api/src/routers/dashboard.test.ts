@@ -81,6 +81,43 @@ describe("router dashboard — chave de cliente + sessão de admin (S09/S10/A9)"
 			callerFor(new Headers()).dashboard.overview({}),
 		).rejects.toMatchObject({ code: "UNAUTHORIZED" });
 	});
+
+	test("`protocol` também exige as duas camadas", async () => {
+		await expect(
+			callerFor(new Headers()).dashboard.protocol({}),
+		).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+	});
+});
+
+describe("router dashboard — protocol", () => {
+	async function adminCaller() {
+		const sessionHeaders = await createAdminSessionHeaders(setup.auth);
+		const headers = new Headers(sessionHeaders);
+		headers.set("x-client-key", env.CLIENT_API_KEY);
+		return callerFor(headers);
+	}
+
+	test("sem versão explícita cai na ativa", async () => {
+		const caller = await adminCaller();
+
+		const response = await caller.dashboard.protocol({});
+
+		expect(response?.suites.length).toBeGreaterThan(0);
+		expect(response?.questions.length).toBeGreaterThan(0);
+	});
+
+	test("com versão explícita devolve aquela versão", async () => {
+		const caller = await adminCaller();
+		const [version] = await caller.dashboard.protocolVersions.list();
+		if (!version) throw new Error("versão semeada deveria existir");
+
+		const response = await caller.dashboard.protocol({
+			protocolVersionId: version.id,
+		});
+
+		expect(response?.version).toBe(version.version);
+		expect(response?.key).toBe(version.key);
+	});
 });
 
 describe("router dashboard — protocolVersions.list/setActive (S15)", () => {

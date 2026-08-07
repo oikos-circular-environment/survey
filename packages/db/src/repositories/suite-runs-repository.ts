@@ -16,6 +16,7 @@ export interface SuiteRunRow {
 }
 
 export interface SuiteRunOfSessionRow {
+	id: string;
 	suiteId: string;
 	position: number;
 	outcome: "YES" | "PARTIAL" | "NO" | null;
@@ -48,6 +49,7 @@ export class SuiteRunsRepository {
 	async findBySessionId(sessionId: string): Promise<SuiteRunOfSessionRow[]> {
 		return this.db
 			.select({
+				id: suiteRuns.id,
 				suiteId: suiteRuns.suiteId,
 				position: suiteRuns.position,
 				outcome: suiteRuns.outcome,

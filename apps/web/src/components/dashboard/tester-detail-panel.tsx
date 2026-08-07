@@ -1,7 +1,12 @@
+"use client";
+
 import type { TesterDetail } from "@oikos-circular-environment/survey-api/use-cases/get-tester-detail";
 import { Badge } from "@survey/ui/components/badge";
 import { Card, CardContent, CardHeader } from "@survey/ui/components/card";
+import { ChevronRight } from "lucide-react";
+import { useState } from "react";
 
+import { SuiteExecutionDrawer } from "./suite-execution-drawer";
 import { TesterStatusBadge } from "./tester-status-badge";
 
 function formatDateTime(iso: string | null): string {
@@ -52,6 +57,8 @@ function InfoField({ label, value }: { label: string; value: string }) {
  * isso, ver `schema/collection.ts`.
  */
 export function TesterDetailPanel({ tester }: { tester: TesterDetail }) {
+	const [openSuiteRunId, setOpenSuiteRunId] = useState<string | null>(null);
+
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between">
@@ -136,9 +143,11 @@ export function TesterDetailPanel({ tester }: { tester: TesterDetail }) {
 						</p>
 						<div className="flex flex-col gap-2">
 							{tester.suiteRuns.map((run) => (
-								<div
+								<button
+									type="button"
 									key={run.suiteCode}
-									className="flex items-center justify-between gap-3 bg-muted p-3"
+									onClick={() => setOpenSuiteRunId(run.suiteRunId)}
+									className="flex items-center justify-between gap-3 bg-muted p-3 text-left transition-colors hover:bg-muted/70"
 								>
 									<div className="flex items-center gap-2">
 										<Badge variant="outline">{run.suiteCode}</Badge>
@@ -149,8 +158,9 @@ export function TesterDetailPanel({ tester }: { tester: TesterDetail }) {
 										<Badge variant="secondary">
 											{run.outcome ? OUTCOME_LABELS[run.outcome] : "—"}
 										</Badge>
+										<ChevronRight className="size-4" />
 									</div>
-								</div>
+								</button>
 							))}
 						</div>
 					</div>
@@ -164,6 +174,13 @@ export function TesterDetailPanel({ tester }: { tester: TesterDetail }) {
 						<p className="text-sm">“{tester.freeComment}”</p>
 					</div>
 				) : null}
+
+				<SuiteExecutionDrawer
+					suiteRuns={tester.suiteRuns}
+					selectedSuiteRunId={openSuiteRunId}
+					onSelect={setOpenSuiteRunId}
+					onClose={() => setOpenSuiteRunId(null)}
+				/>
 			</CardContent>
 		</Card>
 	);
