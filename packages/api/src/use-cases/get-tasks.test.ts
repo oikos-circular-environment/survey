@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { randomUUID } from "node:crypto";
 
 import type { UsabilityCheckpointInput } from "../routers/usability-schemas";
 import { getTasks, type TaskMetrics } from "./get-tasks";
@@ -21,6 +22,7 @@ const RANGE = {
 function finishedTasksCheckpoint(sessionId: string): UsabilityCheckpointInput {
 	return {
 		session_id: sessionId,
+		suite_run_id: randomUUID(),
 		chunk: { index: 0, total: 1 },
 		suite: {
 			code: "S1",
@@ -59,6 +61,7 @@ function finishedTasksCheckpoint(sessionId: string): UsabilityCheckpointInput {
 function inProgressTaskCheckpoint(sessionId: string): UsabilityCheckpointInput {
 	return {
 		session_id: sessionId,
+		suite_run_id: randomUUID(),
 		chunk: { index: 0, total: 1 },
 		suite: {
 			code: "S6",

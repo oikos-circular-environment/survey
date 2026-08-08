@@ -94,6 +94,7 @@ describe("router usability — borda pública (S08)", () => {
 
 		const attempt = caller.usability.checkpoint.send({
 			session_id: randomUUID(),
+			suite_run_id: randomUUID(),
 			chunk: { index: 0, total: 1 },
 			suite: {
 				code: "S1",
@@ -137,6 +138,7 @@ describe("router usability — borda pública (S08)", () => {
 
 		const checkpoint = await caller.usability.checkpoint.send({
 			session_id: session.session_id,
+			suite_run_id: randomUUID(),
 			chunk: { index: 0, total: 1 },
 			suite: {
 				code: "S1",

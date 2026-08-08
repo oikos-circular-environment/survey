@@ -48,7 +48,7 @@ const BRAZILIAN_STATE_CODES = [
 	"TO",
 ] as const;
 
-const screenerInput = z.object({
+const screenerInput = z.strictObject({
 	state_uf: z.enum(BRAZILIAN_STATE_CODES),
 	city_name: z.string().min(1).max(128),
 	age_range: z.enum(ageRanges),
@@ -58,19 +58,19 @@ const screenerInput = z.object({
 	app_experience: z.number().int().min(1).max(5),
 });
 
-const consentInput = z.object({
+const consentInput = z.strictObject({
 	version: z.string().min(1).max(32),
 	accepted_at: z.coerce.date(),
 });
 
-const deviceInput = z.object({
+const deviceInput = z.strictObject({
 	os: z.string().min(1).max(32),
 	os_version: z.string().min(1).max(32),
 	app_version: z.string().min(1).max(32),
 	screen_size: z.enum(screenSizes),
 });
 
-export const usabilitySessionUpsertInput = z.object({
+export const usabilitySessionUpsertInput = z.strictObject({
 	session_id: z.string().min(1).max(36),
 	protocol_key: z.string().min(1).max(64),
 	protocol_version: z.number().int().min(1),
@@ -84,19 +84,19 @@ export type UsabilitySessionUpsertInput = z.infer<
 	typeof usabilitySessionUpsertInput
 >;
 
-const answerInput = z.object({
+const answerInput = z.strictObject({
 	question_key: z.string().min(1).max(64),
 	value_text: z.string().max(4000).optional(),
 	value_number: z.number().optional(),
 });
 export type UsabilityAnswerInput = z.infer<typeof answerInput>;
 
-const chunkInput = z.object({
+const chunkInput = z.strictObject({
 	index: z.number().int().min(0),
 	total: z.number().int().min(1),
 });
 
-const checkpointSuiteInput = z.object({
+const checkpointSuiteInput = z.strictObject({
 	code: z.string().min(1).max(8),
 	position: z.number().int().min(0),
 	started_at: z.coerce.date(),
@@ -106,7 +106,7 @@ const checkpointSuiteInput = z.object({
 	outcome: z.enum(outcomes).optional(),
 });
 
-const checkpointTaskInput = z.object({
+const checkpointTaskInput = z.strictObject({
 	code: z.string().min(1).max(8),
 	position: z.number().int().min(0),
 	started_at: z.coerce.date(),
@@ -116,7 +116,7 @@ const checkpointTaskInput = z.object({
 	auto_detected: z.boolean(),
 });
 
-const checkpointEventInput = z.object({
+const checkpointEventInput = z.strictObject({
 	client_event_id: z.string().min(1).max(36),
 	seq: z.number().int().min(0),
 	type: z.string().min(1).max(48),
@@ -126,18 +126,18 @@ const checkpointEventInput = z.object({
 	payload: z.record(z.string(), z.unknown()),
 });
 
-export const usabilityCheckpointInput = z.object({
+export const usabilityCheckpointInput = z.strictObject({
 	session_id: z.string().min(1).max(36),
-	suite_run_id: z.uuid().optional(),
+	suite_run_id: z.uuid(),
 	chunk: chunkInput,
 	suite: checkpointSuiteInput,
-	tasks: z.array(checkpointTaskInput).default([]),
-	events: z.array(checkpointEventInput).default([]),
-	answers: z.array(answerInput).default([]),
+	tasks: z.array(checkpointTaskInput),
+	events: z.array(checkpointEventInput).max(2000),
+	answers: z.array(answerInput),
 });
 export type UsabilityCheckpointInput = z.infer<typeof usabilityCheckpointInput>;
 
-export const usabilityFinishInput = z.object({
+export const usabilityFinishInput = z.strictObject({
 	session_id: z.string().min(1).max(36),
 	answers: z.array(answerInput),
 	active_ms: z.number().int().min(0),
@@ -146,7 +146,7 @@ export const usabilityFinishInput = z.object({
 });
 export type UsabilityFinishInput = z.infer<typeof usabilityFinishInput>;
 
-export const usabilityAbandonInput = z.object({
+export const usabilityAbandonInput = z.strictObject({
 	session_id: z.string().min(1).max(36),
 	reason: z.string().max(512).optional(),
 	current_suite_code: z.string().max(8).optional(),

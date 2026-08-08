@@ -44,6 +44,7 @@ function buildCheckpointInput(
 ): UsabilityCheckpointInput {
 	return {
 		session_id: sessionId,
+		suite_run_id: randomUUID(),
 		chunk: { index: 0, total: 1 },
 		suite: {
 			code: "S1",
@@ -561,34 +562,6 @@ describe("sendUsabilityCheckpoint", () => {
 			);
 			expect(second.received_events).toBe(0);
 			expect(await rowCount(ephemeral.db, events)).toBe(1);
-		} finally {
-			await ephemeral.destroy();
-		}
-	});
-
-	test("envio sem suite_run_id gera o id no servidor e o reenvio acerta a mesma linha", async () => {
-		const { ephemeral, repositories } = await setupUsabilityTest();
-		try {
-			const session = buildSessionUpsertInput();
-			await upsertUsabilitySession(repositories, session);
-
-			const first = await sendUsabilityCheckpoint(
-				repositories,
-				buildCheckpointInput(session.session_id),
-			);
-			const second = await sendUsabilityCheckpoint(
-				repositories,
-				buildCheckpointInput(session.session_id),
-			);
-
-			expect(first.suite_run_id).toBeTruthy();
-			expect(second.suite_run_id).toBe(first.suite_run_id);
-			expect(await rowCount(ephemeral.db, suiteRuns)).toBe(1);
-
-			const [stored] = await ephemeral.db
-				.select({ id: suiteRuns.id })
-				.from(suiteRuns);
-			expect(stored?.id).toBe(first.suite_run_id);
 		} finally {
 			await ephemeral.destroy();
 		}
