@@ -171,7 +171,6 @@ export function TesterDetailPanel({ tester }: { tester: TesterDetail }) {
 				<SuiteExecutionDrawer
 					suiteRuns={tester.suiteRuns}
 					selectedSuiteRunId={openSuiteRunId}
-					onSelect={setOpenSuiteRunId}
 					onClose={() => setOpenSuiteRunId(null)}
 					abandonReason={tester.abandonReason}
 				/>

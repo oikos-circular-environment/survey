@@ -17,7 +17,6 @@ import {
 	TableHeader,
 	TableRow,
 } from "@survey/ui/components/table";
-import { cn } from "@survey/ui/lib/utils";
 import { Zap } from "lucide-react";
 
 import { OUTCOME_LABELS, OutcomeBadge } from "./outcome-badge";
@@ -38,31 +37,23 @@ function formatClock(iso: string | null): string {
 	});
 }
 
-function answerCell(
-	run: TesterSuiteRun | undefined,
-	questionKey: string,
-): string {
-	const answer = run?.answers.find((a) => a.questionKey === questionKey);
-	if (!answer) return "—";
+function answerCell(answer: TesterSuiteRun["answers"][number]): string {
 	if (answer.value !== null) return String(answer.value);
 	return answer.valueText?.trim() || "—";
 }
 
 /**
- * Detalhe de execução de uma suíte. A matriz cobre todas as suítes da sessão, não só a
- * selecionada: a leitura que interessa é a mesma pergunta comparada entre etapas, e as
- * colunas dobram como navegação — clicar troca a suíte sem fechar o drawer.
+ * Detalhe de execução de uma suíte. O drawer exibe apenas os dados da suíte
+ * selecionada: tarefas e respostas pós-etapa pertencem exclusivamente a ela.
  */
 export function SuiteExecutionDrawer({
 	suiteRuns,
 	selectedSuiteRunId,
-	onSelect,
 	onClose,
 	abandonReason,
 }: {
 	suiteRuns: TesterSuiteRun[];
 	selectedSuiteRunId: string | null;
-	onSelect: (suiteRunId: string) => void;
 	onClose: () => void;
 	abandonReason: string | null;
 }) {
@@ -70,20 +61,8 @@ export function SuiteExecutionDrawer({
 		(run) => run.suiteRunId === selectedSuiteRunId,
 	);
 
-	const questions = suiteRuns
-		.flatMap((run) => run.answers)
-		.reduce<{ key: string; label: string; position: number }[]>(
-			(acc, answer) => {
-				if (acc.some((q) => q.key === answer.questionKey)) return acc;
-				acc.push({
-					key: answer.questionKey,
-					label: answer.questionLabel,
-					position: answer.position,
-				});
-				return acc;
-			},
-			[],
-		)
+	const questions = (selected?.answers ?? [])
+		.slice()
 		.sort((a, b) => a.position - b.position);
 
 	return (
@@ -203,38 +182,18 @@ export function SuiteExecutionDrawer({
 								<TableHeader>
 									<TableRow>
 										<TableHead>Pergunta</TableHead>
-										{suiteRuns.map((run) => (
-											<TableHead
-												key={run.suiteRunId}
-												className={cn(
-													"w-16 cursor-pointer text-center",
-													run.suiteRunId === selectedSuiteRunId &&
-														"bg-muted font-semibold text-foreground",
-												)}
-												onClick={() => onSelect(run.suiteRunId)}
-											>
-												{run.suiteCode}
-											</TableHead>
-										))}
+										<TableHead>Resposta</TableHead>
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{questions.map((question) => (
-										<TableRow key={question.key}>
+									{questions.map((answer) => (
+										<TableRow key={answer.questionKey}>
 											<TableCell className="whitespace-normal align-top text-sm">
-												{question.label}
+												{answer.questionLabel}
 											</TableCell>
-											{suiteRuns.map((run) => (
-												<TableCell
-													key={run.suiteRunId}
-													className={cn(
-														"text-center text-sm",
-														run.suiteRunId === selectedSuiteRunId && "bg-muted",
-													)}
-												>
-													{answerCell(run, question.key)}
-												</TableCell>
-											))}
+											<TableCell className="text-sm">
+												{answerCell(answer)}
+											</TableCell>
 										</TableRow>
 									))}
 								</TableBody>
