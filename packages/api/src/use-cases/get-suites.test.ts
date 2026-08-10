@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { randomUUID } from "node:crypto";
 
 import type { UsabilityCheckpointInput } from "../routers/usability-schemas";
 import { getSuites, type SuiteMetrics } from "./get-suites";
@@ -21,6 +22,7 @@ const RANGE = {
 function suiteOneCheckpoint(sessionId: string): UsabilityCheckpointInput {
 	return {
 		session_id: sessionId,
+		suite_run_id: randomUUID(),
 		chunk: { index: 0, total: 1 },
 		suite: {
 			code: "S1",
@@ -50,6 +52,7 @@ function suiteOneCheckpoint(sessionId: string): UsabilityCheckpointInput {
 function suiteTwoCheckpoint(sessionId: string): UsabilityCheckpointInput {
 	return {
 		session_id: sessionId,
+		suite_run_id: randomUUID(),
 		chunk: { index: 0, total: 1 },
 		suite: {
 			code: "S2",
@@ -71,6 +74,7 @@ function suiteInProgressCheckpoint(
 ): UsabilityCheckpointInput {
 	return {
 		session_id: sessionId,
+		suite_run_id: randomUUID(),
 		chunk: { index: 0, total: 1 },
 		suite: {
 			code: "S6",
