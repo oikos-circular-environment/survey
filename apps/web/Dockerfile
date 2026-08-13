@@ -7,6 +7,8 @@ COPY . .
 RUN --mount=type=cache,target=/root/.bun/install/cache bun install
 
 ENV NODE_ENV=production
+ARG NEXT_PUBLIC_CLIENT_API_KEY
+ENV NEXT_PUBLIC_CLIENT_API_KEY=$NEXT_PUBLIC_CLIENT_API_KEY
 RUN cd apps/web && bun run build
 # standalone output excludes public/; ensure it exists so the runner copy never fails
 RUN mkdir -p apps/web/public
