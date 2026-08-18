@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, mock, test } from "bun:test";
+import { randomUUID } from "node:crypto";
 import type { Context } from "@oikos-circular-environment/survey-api/context";
 import { usabilityRateLimiter } from "@oikos-circular-environment/survey-api/lib/rate-limit";
 import type { AppRouter } from "@oikos-circular-environment/survey-api/routers/index";
@@ -160,6 +161,7 @@ describe("route HTTP — borda pública (S08/R3)", () => {
 
 		const checkpoint = await client.usability.checkpoint.send.mutate({
 			session_id: session.session_id,
+			suite_run_id: randomUUID(),
 			chunk: { index: 0, total: 1 },
 			suite: {
 				code: "S1",

@@ -3,6 +3,8 @@ import type {
 	Repositories,
 } from "@oikos-circular-environment/survey-db/repositories/index";
 
+export type TesterStatusFilter = "active" | "deleted" | "all";
+
 export interface TesterListRow {
 	sessionId: string;
 	participantCode: string;
@@ -17,30 +19,53 @@ export interface TesterListRow {
 	startedAt: string;
 	finishedAt: string | null;
 	activeMs: number;
+	deletedAt: string | null;
+}
+
+export interface PaginatedTesters {
+	items: TesterListRow[];
+	total: number;
+	page: number;
+	pageSize: number;
+}
+
+export interface GetTestersInput {
+	range: DateRange;
+	status: TesterStatusFilter;
+	page: number;
+	pageSize: number;
 }
 
 const SCREENER_KEYS = ["age_range", "education_level"] as const;
 
 /**
- * Alimenta o painel de gerenciamento de testadores — uma linha por sessão, com os
- * dados que identificam o teste (não a pessoa): persona, status, screener resolvido em
- * rótulo, aparelho, tempos. Rótulos de `ageRange`/`educationLevel` vêm de
+ * Alimenta o painel de gerenciamento de testadores — uma linha por sessão (ou, na aba
+ * "Deletados", por registro de auditoria de uma sessão já apagada), com os dados que
+ * identificam o teste (não a pessoa): persona, status, screener resolvido em rótulo,
+ * aparelho, tempos. Rótulos de `ageRange`/`educationLevel` vêm de
  * `personaDefs`/`questions.options` (mesma fonte que a Caracterização usa), não
- * hardcoded.
+ * hardcoded. Paginado em memória, mesmo padrão de `get-tasks.ts`.
  */
 export async function getTesters(
 	repositories: Repositories,
-	range: DateRange,
-): Promise<TesterListRow[]> {
+	{ range, status, page, pageSize }: GetTestersInput,
+): Promise<PaginatedTesters> {
 	const protocolVersionId =
 		await repositories.protocol.getLatestProtocolVersionId();
-	const [sessions, personaDefs, questionOptions] = await Promise.all([
-		repositories.sessions.findAllDetailedInRange(range),
-		repositories.protocol.getPersonaDefs(protocolVersionId),
-		repositories.protocol.getQuestionOptions(protocolVersionId, [
-			...SCREENER_KEYS,
-		]),
-	]);
+
+	const [activeSessions, deletedSessions, personaDefs, questionOptions] =
+		await Promise.all([
+			status === "deleted"
+				? Promise.resolve([])
+				: repositories.sessions.findAllDetailedInRange(range),
+			status === "active"
+				? Promise.resolve([])
+				: repositories.sessions.findDeletedInRange(range),
+			repositories.protocol.getPersonaDefs(protocolVersionId),
+			repositories.protocol.getQuestionOptions(protocolVersionId, [
+				...SCREENER_KEYS,
+			]),
+		]);
 
 	const personaLabelByKey = new Map(
 		personaDefs.map((persona) => [persona.key, persona.label]),
@@ -56,21 +81,50 @@ export async function getTesters(
 		return option?.label ?? optionKey;
 	}
 
-	return sessions
-		.sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime())
-		.map((session) => ({
-			sessionId: session.id,
-			participantCode: session.participantCode,
-			persona: personaLabelByKey.get(session.persona) ?? session.persona,
-			status: session.status,
-			stateUf: session.stateUf,
-			cityName: session.cityName,
-			ageRange: labelFor("age_range", session.ageRange),
-			educationLevel: labelFor("education_level", session.educationLevel),
-			deviceOs: session.deviceOs,
-			deviceOsVersion: session.deviceOsVersion,
-			startedAt: session.startedAt.toISOString(),
-			finishedAt: session.finishedAt?.toISOString() ?? null,
-			activeMs: session.activeMs,
-		}));
+	const activeRows: TesterListRow[] = activeSessions.map((session) => ({
+		sessionId: session.id,
+		participantCode: session.participantCode,
+		persona: personaLabelByKey.get(session.persona) ?? session.persona,
+		status: session.status,
+		stateUf: session.stateUf,
+		cityName: session.cityName,
+		ageRange: labelFor("age_range", session.ageRange),
+		educationLevel: labelFor("education_level", session.educationLevel),
+		deviceOs: session.deviceOs,
+		deviceOsVersion: session.deviceOsVersion,
+		startedAt: session.startedAt.toISOString(),
+		finishedAt: session.finishedAt?.toISOString() ?? null,
+		activeMs: session.activeMs,
+		deletedAt: null,
+	}));
+
+	const deletedRows: TesterListRow[] = deletedSessions.map((session) => ({
+		sessionId: session.sessionId,
+		participantCode: session.participantCode,
+		persona: personaLabelByKey.get(session.persona) ?? session.persona,
+		status: session.status,
+		stateUf: session.stateUf,
+		cityName: session.cityName,
+		ageRange: labelFor("age_range", session.ageRange),
+		educationLevel: labelFor("education_level", session.educationLevel),
+		deviceOs: session.deviceOs,
+		deviceOsVersion: session.deviceOsVersion,
+		startedAt: session.startedAt.toISOString(),
+		finishedAt: session.finishedAt?.toISOString() ?? null,
+		activeMs: session.activeMs,
+		deletedAt: session.deletedAt.toISOString(),
+	}));
+
+	const items = [...activeRows, ...deletedRows].sort(
+		(a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
+	);
+
+	const total = items.length;
+	const start = (page - 1) * pageSize;
+	return {
+		items: items.slice(start, start + pageSize),
+		total,
+		page,
+		pageSize,
+	};
 }
