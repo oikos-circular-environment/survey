@@ -155,3 +155,10 @@ export const usabilityAbandonInput = z.strictObject({
 	finished_at: z.coerce.date(),
 });
 export type UsabilityAbandonInput = z.infer<typeof usabilityAbandonInput>;
+
+export const usabilitySessionDeleteInput = z.strictObject({
+	session_id: z.string().min(1).max(36),
+});
+export type UsabilitySessionDeleteInput = z.infer<
+	typeof usabilitySessionDeleteInput
+>;

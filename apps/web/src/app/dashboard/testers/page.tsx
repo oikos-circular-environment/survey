@@ -14,6 +14,7 @@ import {
 import { Badge } from "@survey/ui/components/badge";
 import { Button } from "@survey/ui/components/button";
 import { Card, CardContent } from "@survey/ui/components/card";
+import { Input } from "@survey/ui/components/input";
 import { Skeleton } from "@survey/ui/components/skeleton";
 import {
 	Table,
@@ -93,9 +94,16 @@ export default function TestersPage() {
 	const queryClient = useQueryClient();
 	const [status, setStatus] = React.useState<StatusFilter>("active");
 	const [page, setPage] = React.useState(1);
+	const [codeSearch, setCodeSearch] = React.useState("");
+	const [debouncedCodeSearch, setDebouncedCodeSearch] = React.useState("");
 	const [selectedSessionId, setSelectedSessionId] = React.useState<
 		string | null
 	>(null);
+
+	React.useEffect(() => {
+		const timeout = setTimeout(() => setDebouncedCodeSearch(codeSearch), 300);
+		return () => clearTimeout(timeout);
+	}, [codeSearch]);
 
 	const listQuery = trpc.dashboard.testers.list.queryOptions({
 		from: range.from,
@@ -103,6 +111,7 @@ export default function TestersPage() {
 		status,
 		page,
 		pageSize: PAGE_SIZE,
+		participantCode: debouncedCodeSearch || undefined,
 	});
 	const testers = useQuery({
 		...listQuery,
@@ -134,6 +143,11 @@ export default function TestersPage() {
 		setPage(1);
 	}
 
+	function handleCodeSearchChange(value: string) {
+		setCodeSearch(value);
+		setPage(1);
+	}
+
 	const totalPages = testers.data
 		? Math.max(1, Math.ceil(testers.data.total / PAGE_SIZE))
 		: 1;
@@ -145,18 +159,27 @@ export default function TestersPage() {
 				description="Uma linha por sessão. Selecione uma linha para ver todos os dados do testador — screener, aparelho e execução por suíte."
 			/>
 
-			<Tabs
-				value={status}
-				onValueChange={(value) => handleStatusChange(value as StatusFilter)}
-			>
-				<TabsList>
-					{STATUS_TABS.map((tab) => (
-						<TabsTrigger key={tab.value} value={tab.value}>
-							{tab.label}
-						</TabsTrigger>
-					))}
-				</TabsList>
-			</Tabs>
+			<div className="flex flex-wrap items-center justify-between gap-3">
+				<Tabs
+					value={status}
+					onValueChange={(value) => handleStatusChange(value as StatusFilter)}
+				>
+					<TabsList>
+						{STATUS_TABS.map((tab) => (
+							<TabsTrigger key={tab.value} value={tab.value}>
+								{tab.label}
+							</TabsTrigger>
+						))}
+					</TabsList>
+				</Tabs>
+
+				<Input
+					placeholder="Buscar por código (ex.: PSQ-01M0B68HECSH7KXHTHRJX1QR72)"
+					value={codeSearch}
+					onChange={(e) => handleCodeSearchChange(e.target.value)}
+					className="w-full sm:w-80"
+				/>
+			</div>
 
 			<Card>
 				<CardContent className="p-0">
