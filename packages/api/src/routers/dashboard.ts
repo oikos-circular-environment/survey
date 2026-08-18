@@ -69,9 +69,31 @@ export const dashboardRouter = router({
 		.input(dateRangeInput)
 		.query(({ ctx, input }) => getComments(ctx.repositories, input)),
 
-	testers: dashboardProcedure
-		.input(dateRangeInput)
-		.query(({ ctx, input }) => getTesters(ctx.repositories, input)),
+	testers: router({
+		list: dashboardProcedure
+			.input(
+				dateRangeInput.merge(paginationInput).extend({
+					status: z.enum(["active", "deleted", "all"]).default("active"),
+				}),
+			)
+			.query(({ ctx, input }) =>
+				getTesters(ctx.repositories, {
+					range: { from: input.from, to: input.to },
+					status: input.status,
+					page: input.page,
+					pageSize: input.pageSize,
+				}),
+			),
+
+		delete: dashboardProcedure
+			.input(z.object({ sessionId: z.string() }))
+			.mutation(({ ctx, input }) =>
+				ctx.repositories.sessions.hardDelete(
+					input.sessionId,
+					ctx.session.user.id,
+				),
+			),
+	}),
 
 	testerDetail: dashboardProcedure
 		.input(z.object({ sessionId: z.string() }))

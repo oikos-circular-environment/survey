@@ -1,8 +1,10 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { randomUUID } from "node:crypto";
+import { sessions } from "@oikos-circular-environment/survey-db/schema/collection";
 import { protocolVersions } from "@oikos-circular-environment/survey-db/schema/protocol";
+import { insertSession } from "@oikos-circular-environment/survey-db/testing/fixtures";
 import { env } from "@survey/env/server";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 import type { Context } from "../context";
 import { createCallerFactory } from "../index";
@@ -213,6 +215,96 @@ describe("router dashboard — protocolVersions.list/setActive (S15)", () => {
 				id: original.id,
 				isActive: true,
 			});
+		}
+	});
+});
+
+describe("router dashboard — testers.list/delete", () => {
+	async function adminCaller() {
+		const sessionHeaders = await createAdminSessionHeaders(setup.auth);
+		const headers = new Headers(sessionHeaders);
+		headers.set("x-client-key", env.CLIENT_API_KEY);
+		return callerFor(headers);
+	}
+
+	test("delete apaga a sessão e a move de 'active' para 'deleted'", async () => {
+		const caller = await adminCaller();
+		const protocolVersionId =
+			await setup.repositories.protocol.getLatestProtocolVersionId();
+		const sessionId = await insertSession(
+			setup.ephemeral.db,
+			protocolVersionId,
+		);
+
+		try {
+			const beforeDelete = await caller.dashboard.testers.list({
+				status: "active",
+			});
+			expect(
+				beforeDelete.items.some((item) => item.sessionId === sessionId),
+			).toBe(true);
+
+			await caller.dashboard.testers.delete({ sessionId });
+
+			const afterActive = await caller.dashboard.testers.list({
+				status: "active",
+			});
+			expect(
+				afterActive.items.some((item) => item.sessionId === sessionId),
+			).toBe(false);
+
+			const afterDeleted = await caller.dashboard.testers.list({
+				status: "deleted",
+			});
+			const deletedRow = afterDeleted.items.find(
+				(item) => item.sessionId === sessionId,
+			);
+			expect(deletedRow).toBeDefined();
+			expect(deletedRow?.deletedAt).not.toBeNull();
+
+			const afterAll = await caller.dashboard.testers.list({ status: "all" });
+			expect(afterAll.items.some((item) => item.sessionId === sessionId)).toBe(
+				true,
+			);
+		} finally {
+			await setup.ephemeral.db
+				.delete(sessions)
+				.where(inArray(sessions.id, [sessionId]));
+		}
+	});
+
+	test("delete numa sessão inexistente é recusado", async () => {
+		const caller = await adminCaller();
+
+		await expect(
+			caller.dashboard.testers.delete({ sessionId: randomUUID() }),
+		).rejects.toThrow();
+	});
+
+	test("list pagina por pageSize", async () => {
+		const caller = await adminCaller();
+		const protocolVersionId =
+			await setup.repositories.protocol.getLatestProtocolVersionId();
+		const sessionIds = await Promise.all(
+			Array.from({ length: 3 }, () =>
+				insertSession(setup.ephemeral.db, protocolVersionId),
+			),
+		);
+
+		try {
+			const firstPage = await caller.dashboard.testers.list({
+				status: "active",
+				page: 1,
+				pageSize: 2,
+			});
+			expect(firstPage.items).toHaveLength(2);
+			expect(firstPage.total).toBeGreaterThanOrEqual(3);
+			expect(firstPage.page).toBe(1);
+			expect(firstPage.pageSize).toBe(2);
+		} finally {
+			await setup.ephemeral.db
+				.delete(sessions)
+				.where(inArray(sessions.id, sessionIds));
 		}
 	});
 });

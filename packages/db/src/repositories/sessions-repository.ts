@@ -1,7 +1,10 @@
+import { randomUUID } from "node:crypto";
+
 import { eq } from "drizzle-orm";
 import type { MySql2Database } from "drizzle-orm/mysql2";
 import { ulid } from "ulid";
 
+import { deletedTesters } from "../schema/audit";
 import { sessions } from "../schema/collection";
 import type {
 	ageRanges,
@@ -79,6 +82,23 @@ const detailColumns = {
 	wallMs: sessions.wallMs,
 	abandonReason: sessions.abandonReason,
 } as const;
+
+export interface DeletedTesterRow {
+	sessionId: string;
+	participantCode: string;
+	persona: string;
+	status: string;
+	stateUf: string;
+	cityName: string;
+	ageRange: string;
+	educationLevel: string;
+	deviceOs: string;
+	deviceOsVersion: string;
+	startedAt: Date;
+	finishedAt: Date | null;
+	activeMs: number;
+	deletedAt: Date;
+}
 
 export interface SessionStateRow {
 	id: string;
@@ -309,5 +329,63 @@ export class SessionsRepository {
 			.update(sessions)
 			.set({ supersededBy: newSessionId })
 			.where(eq(sessions.id, oldSessionId));
+	}
+
+	/** Mesmo recorte de `findAllDetailedInRange`, lendo de `usability_deleted_testers`. */
+	async findDeletedInRange(range: DateRange): Promise<DeletedTesterRow[]> {
+		return this.db
+			.select({
+				sessionId: deletedTesters.sessionId,
+				participantCode: deletedTesters.participantCode,
+				persona: deletedTesters.persona,
+				status: deletedTesters.status,
+				stateUf: deletedTesters.stateUf,
+				cityName: deletedTesters.cityName,
+				ageRange: deletedTesters.ageRange,
+				educationLevel: deletedTesters.educationLevel,
+				deviceOs: deletedTesters.deviceOs,
+				deviceOsVersion: deletedTesters.deviceOsVersion,
+				startedAt: deletedTesters.startedAt,
+				finishedAt: deletedTesters.finishedAt,
+				activeMs: deletedTesters.activeMs,
+				deletedAt: deletedTesters.deletedAt,
+			})
+			.from(deletedTesters)
+			.where(dateRangeFilter(deletedTesters.startedAt, range));
+	}
+
+	/** Grava o snapshot em `usability_deleted_testers` e apaga a sessão (cascata cuida do resto). */
+	async hardDelete(sessionId: string, deletedByUserId: string): Promise<void> {
+		await this.db.transaction(async (tx) => {
+			const [row] = await tx
+				.select(detailColumns)
+				.from(sessions)
+				.where(eq(sessions.id, sessionId));
+
+			if (!row) {
+				throw new Error(`Sessão não encontrada: ${sessionId}`);
+			}
+
+			await tx.insert(deletedTesters).values({
+				id: randomUUID(),
+				sessionId: row.id,
+				participantCode: row.participantCode,
+				persona: row.persona,
+				status: row.status,
+				stateUf: row.stateUf,
+				cityName: row.cityName,
+				ageRange: row.ageRange,
+				educationLevel: row.educationLevel,
+				deviceOs: row.deviceOs,
+				deviceOsVersion: row.deviceOsVersion,
+				startedAt: row.startedAt,
+				finishedAt: row.finishedAt,
+				activeMs: row.activeMs,
+				deletedAt: new Date(),
+				deletedByUserId,
+			});
+
+			await tx.delete(sessions).where(eq(sessions.id, sessionId));
+		});
 	}
 }
