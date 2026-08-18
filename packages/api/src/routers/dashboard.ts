@@ -74,6 +74,7 @@ export const dashboardRouter = router({
 			.input(
 				dateRangeInput.merge(paginationInput).extend({
 					status: z.enum(["active", "deleted", "all"]).default("active"),
+					participantCode: z.string().trim().min(1).optional(),
 				}),
 			)
 			.query(({ ctx, input }) =>
@@ -82,6 +83,7 @@ export const dashboardRouter = router({
 					status: input.status,
 					page: input.page,
 					pageSize: input.pageSize,
+					participantCode: input.participantCode,
 				}),
 			),
 

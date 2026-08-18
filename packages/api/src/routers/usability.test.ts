@@ -173,6 +173,38 @@ describe("router usability — borda pública (S08)", () => {
 		});
 		expect(abandoned.status).toBe("ABANDONED");
 	});
+
+	test("session.delete apaga a sessão e devolve o participant_code", async () => {
+		const caller = callerFor(headersFor(nextIp()));
+		const input = buildSessionUpsertInput();
+		await caller.usability.session.upsert(input);
+
+		const result = await caller.usability.session.delete({
+			session_id: input.session_id,
+		});
+		expect(result.deleted).toBe(true);
+
+		const state = await setup.repositories.sessions.findStateById(
+			input.session_id,
+		);
+		expect(state).toBeUndefined();
+	});
+
+	test("session.delete sem chave de cliente é recusada antes de qualquer acesso ao banco", async () => {
+		const caller = callerFor(headersFor(nextIp(), false));
+
+		await expect(
+			caller.usability.session.delete({ session_id: randomUUID() }),
+		).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+	});
+
+	test("session.delete para sessão inexistente devolve NOT_FOUND", async () => {
+		const caller = callerFor(headersFor(nextIp()));
+
+		await expect(
+			caller.usability.session.delete({ session_id: randomUUID() }),
+		).rejects.toMatchObject({ code: "NOT_FOUND" });
+	});
 });
 
 describe("router usability — protocol() com versão inativa (S15)", () => {

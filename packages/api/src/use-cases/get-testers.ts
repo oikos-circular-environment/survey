@@ -34,6 +34,8 @@ export interface GetTestersInput {
 	status: TesterStatusFilter;
 	page: number;
 	pageSize: number;
+	/** Aceita com ou sem o prefixo "PSQ-" exibido na UI; comparação exata (case-insensitive). */
+	participantCode?: string;
 }
 
 const SCREENER_KEYS = ["age_range", "education_level"] as const;
@@ -48,7 +50,7 @@ const SCREENER_KEYS = ["age_range", "education_level"] as const;
  */
 export async function getTesters(
 	repositories: Repositories,
-	{ range, status, page, pageSize }: GetTestersInput,
+	{ range, status, page, pageSize, participantCode }: GetTestersInput,
 ): Promise<PaginatedTesters> {
 	const protocolVersionId =
 		await repositories.protocol.getLatestProtocolVersionId();
@@ -115,7 +117,18 @@ export async function getTesters(
 		deletedAt: session.deletedAt.toISOString(),
 	}));
 
-	const items = [...activeRows, ...deletedRows].sort(
+	const normalizedCode = participantCode
+		?.trim()
+		.replace(/^psq-/i, "")
+		.toUpperCase();
+
+	const filtered = normalizedCode
+		? [...activeRows, ...deletedRows].filter(
+				(row) => row.participantCode.toUpperCase() === normalizedCode,
+			)
+		: [...activeRows, ...deletedRows];
+
+	const items = filtered.sort(
 		(a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
 	);
 
