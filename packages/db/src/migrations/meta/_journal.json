@@ -78,6 +78,13 @@
 			"when": 1786118810774,
 			"tag": "0010_broken_warlock",
 			"breakpoints": true
+		},
+		{
+			"idx": 11,
+			"version": "5",
+			"when": 1787084073422,
+			"tag": "0011_salty_master_mold",
+			"breakpoints": true
 		}
 	]
 }

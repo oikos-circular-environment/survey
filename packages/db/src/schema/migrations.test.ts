@@ -3,7 +3,7 @@
  *
  * O harness já aplica as migrações no `beforeAll`, então uma falha de migração derruba
  * a suíte antes de qualquer expectativa rodar. O que sobra para verificar aqui é que o
- * resultado tem a forma esperada — as onze tabelas, e não dez.
+ * resultado tem a forma esperada — as doze tabelas, e não onze.
  */
 
 import { describe, expect, test } from "bun:test";
@@ -14,6 +14,7 @@ import { withEphemeralDatabase } from "../testing/suite";
 
 const expectedTables = [
 	"usability_answers",
+	"usability_deleted_testers",
 	"usability_events",
 	"usability_persona_defs",
 	"usability_persona_suites",
@@ -29,7 +30,7 @@ const expectedTables = [
 describe("migração inicial", () => {
 	const getDb = withEphemeralDatabase();
 
-	test("cria as onze tabelas usability_*", async () => {
+	test("cria as doze tabelas usability_*", async () => {
 		const rows = await getDb().execute<{ table_name: string }>(sql`
 			SELECT TABLE_NAME AS table_name
 			FROM information_schema.TABLES
