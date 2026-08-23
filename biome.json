@@ -28,8 +28,7 @@
 			"!**/.source",
 			"!**/convex/_generated",
 			"!packages/ui/src/components",
-			"!pencil/scripts",
-			"!.agents"
+			"!pencil/scripts"
 		]
 	},
 	"formatter": {
