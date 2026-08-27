@@ -263,7 +263,7 @@ const personas: Persona[] = [
 				suite_code: "S1",
 				specific_objectives: [
 					"Abra a aba DENÚNCIAS e experimente os filtros por situação, por categoria de resíduo e por nível de periculosidade. São exatamente os que você usaria, como órgão fiscalizador, para decidir o que atender primeiro.",
-					"Repare que todo esse panorama aparece sem login, ou seja, qualquer cidadão enxerga os mesmos problemas que a fiscalização enxerga.",
+					"Repare que esse é o mesmo panorama que qualquer cidadão enxerga — os problemas que a fiscalização vê são os mesmos que aparecem para a população.",
 					"Passe pela aba PONTOS DE COLETA e veja que estrutura de coleta já existe na região, pública ou privada.",
 					"Na aba DENÚNCIAS, registre uma ocorrência encontrada em campo, como faria um agente de fiscalização.",
 					"Abra a denúncia que você registrou na lista, avalie pelo voto a denúncia feita por um cidadão e documente a resolução tomada em nome do órgão.",
