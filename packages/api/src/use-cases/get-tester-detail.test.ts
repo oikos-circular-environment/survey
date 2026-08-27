@@ -37,7 +37,7 @@ function suiteOneCheckpoint(sessionId: string): UsabilityCheckpointInput {
 				auto_detected: true,
 			},
 			{
-				code: "T9",
+				code: "T13",
 				position: 1,
 				started_at: new Date("2026-08-15T18:01:00.000Z"),
 				finished_at: new Date("2026-08-15T18:02:00.000Z"),
@@ -54,36 +54,6 @@ function suiteOneCheckpoint(sessionId: string): UsabilityCheckpointInput {
 	};
 }
 
-function suiteTwoCheckpoint(sessionId: string): UsabilityCheckpointInput {
-	return {
-		session_id: sessionId,
-		suite_run_id: randomUUID(),
-		chunk: { index: 0, total: 1 },
-		suite: {
-			code: "S2",
-			position: 1,
-			started_at: new Date("2026-08-15T18:05:00.000Z"),
-			finished_at: new Date("2026-08-15T18:09:00.000Z"),
-			active_ms: 90_000,
-			wall_ms: 240_000,
-			outcome: "PARTIAL",
-		},
-		tasks: [
-			{
-				code: "T1",
-				position: 0,
-				started_at: new Date("2026-08-15T18:05:00.000Z"),
-				finished_at: new Date("2026-08-15T18:06:00.000Z"),
-				active_ms: 40_000,
-				outcome: "YES",
-				auto_detected: true,
-			},
-		],
-		events: [],
-		answers: [{ question_key: "satisfaction", value_number: 2 }],
-	};
-}
-
 function suiteInProgressCheckpoint(
 	sessionId: string,
 ): UsabilityCheckpointInput {
@@ -92,8 +62,8 @@ function suiteInProgressCheckpoint(
 		suite_run_id: randomUUID(),
 		chunk: { index: 0, total: 1 },
 		suite: {
-			code: "S6",
-			position: 5,
+			code: "S1",
+			position: 0,
 			started_at: new Date("2026-08-15T18:10:00.000Z"),
 			active_ms: 8_000,
 			wall_ms: 15_000,
@@ -113,7 +83,7 @@ function suiteInProgressCheckpoint(
 }
 
 describe("getTesterDetail", () => {
-	test("cada suíte carrega suas tarefas e as respostas pós-etapa", async () => {
+	test("a suíte carrega suas tarefas e as respostas pós-etapa", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
 			const session = buildSessionUpsertInput();
@@ -122,18 +92,14 @@ describe("getTesterDetail", () => {
 				repositories,
 				suiteOneCheckpoint(session.session_id),
 			);
-			await sendUsabilityCheckpoint(
-				repositories,
-				suiteTwoCheckpoint(session.session_id),
-			);
 
 			const detail = await getTesterDetail(repositories, session.session_id);
 			if (!detail) throw new Error("sessão deveria existir");
 
-			expect(detail.suiteRuns.length).toBe(2);
+			expect(detail.suiteRuns.length).toBe(1);
 
 			const s1 = detail.suiteRuns.find((run) => run.suiteCode === "S1");
-			expect(s1?.tasks.map((task) => task.taskCode)).toEqual(["T8", "T9"]);
+			expect(s1?.tasks.map((task) => task.taskCode)).toEqual(["T8", "T13"]);
 			expect(s1?.tasks[0]?.autoDetected).toBe(true);
 			expect(s1?.tasks[1]?.autoDetected).toBe(false);
 			expect(s1?.tasks[1]?.outcome).toBe("NO");
@@ -143,13 +109,6 @@ describe("getTesterDetail", () => {
 			);
 			expect(satisfaction?.value).toBe(4);
 			expect(satisfaction?.valueLabel).toBe("Bom");
-
-			const s2 = detail.suiteRuns.find((run) => run.suiteCode === "S2");
-			expect(s2?.tasks.map((task) => task.taskCode)).toEqual(["T1"]);
-			expect(
-				s2?.answers.find((answer) => answer.questionKey === "satisfaction")
-					?.value,
-			).toBe(2);
 		} finally {
 			await ephemeral.destroy();
 		}
@@ -199,7 +158,7 @@ describe("getTesterDetail", () => {
 
 			expect(run?.suiteCode).toBe("S1");
 			expect(run?.suiteTitle.length).toBeGreaterThan(0);
-			expect(run?.tasks.map((task) => task.taskCode)).toEqual(["T8", "T9"]);
+			expect(run?.tasks.map((task) => task.taskCode)).toEqual(["T8", "T13"]);
 			expect(detail?.ageRange).toBe("25 a 34 anos");
 		} finally {
 			await ephemeral.destroy();
@@ -234,7 +193,7 @@ describe("getTesterDetail", () => {
 			const [run] = detail?.suiteRuns ?? [];
 
 			expect(detail?.suiteRuns.length).toBe(1);
-			expect(run?.suiteCode).toBe("S6");
+			expect(run?.suiteCode).toBe("S1");
 			expect(run?.outcome).toBeNull();
 			expect(run?.finishedAt).toBeNull();
 			expect(run?.tasks[0]?.taskCode).toBe("T16");

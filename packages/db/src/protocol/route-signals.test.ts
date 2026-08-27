@@ -19,14 +19,12 @@ describe("extractRouteSignals", () => {
 		expect(signals.some((s) => s.taskCode === "T11")).toBe(false);
 	});
 
-	test("tarefas com composição all geram um sinal por api (T3, T7, T16)", () => {
-		for (const taskCode of ["T3", "T7", "T16"] as const) {
-			expect(signals.filter((s) => s.taskCode === taskCode)).toHaveLength(2);
-		}
+	test("tarefa com composição all gera um sinal por api (T16)", () => {
+		expect(signals.filter((s) => s.taskCode === "T16")).toHaveLength(2);
 	});
 
 	test("tarefas com um único sinal api geram uma entrada", () => {
-		expect(signals.filter((s) => s.taskCode === "T1")).toHaveLength(1);
+		expect(signals.filter((s) => s.taskCode === "T17")).toHaveLength(1);
 	});
 });
 

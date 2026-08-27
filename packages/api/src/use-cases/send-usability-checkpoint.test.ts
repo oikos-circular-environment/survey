@@ -28,8 +28,8 @@ const T8_TASK = {
 	auto_detected: true,
 } as const;
 
-const T9_TASK = {
-	code: "T9",
+const T13_TASK = {
+	code: "T13",
 	position: 1,
 	started_at: new Date("2026-08-15T18:01:00.000Z"),
 	finished_at: new Date("2026-08-15T18:02:00.000Z"),
@@ -55,7 +55,7 @@ function buildCheckpointInput(
 			wall_ms: 300_000,
 			outcome: "YES",
 		},
-		tasks: [{ ...T8_TASK }, { ...T9_TASK }],
+		tasks: [{ ...T8_TASK }, { ...T13_TASK }],
 		events: [
 			{
 				client_event_id: randomUUID(),
@@ -179,7 +179,7 @@ describe("sendUsabilityCheckpoint", () => {
 							started_at: new Date("2026-08-15T18:00:30.000Z"),
 							auto_detected: false,
 						},
-						{ ...T9_TASK },
+						{ ...T13_TASK },
 					],
 					events: [],
 					answers: [],
@@ -214,7 +214,7 @@ describe("sendUsabilityCheckpoint", () => {
 					active_ms: 200_000,
 					wall_ms: 600_000,
 				},
-				tasks: [{ ...T8_TASK }, { ...T9_TASK }],
+				tasks: [{ ...T8_TASK }, { ...T13_TASK }],
 				events: [],
 				answers: [],
 			});
@@ -249,7 +249,7 @@ describe("sendUsabilityCheckpoint", () => {
 				buildCheckpointInput(session.session_id, {
 					answers: [],
 					events: [],
-					tasks: [{ ...T8_TASK }, { ...T9_TASK }],
+					tasks: [{ ...T8_TASK }, { ...T13_TASK }],
 				}),
 			);
 
@@ -325,7 +325,7 @@ describe("sendUsabilityCheckpoint", () => {
 						{ question_key: "satisfaction", value_number: 2 },
 						{ question_key: "error_occurred", value_text: "YES" },
 					],
-					tasks: [{ ...T8_TASK, outcome: "NO" }, { ...T9_TASK }],
+					tasks: [{ ...T8_TASK, outcome: "NO" }, { ...T13_TASK }],
 					events: [],
 				}),
 			);
@@ -349,37 +349,11 @@ describe("sendUsabilityCheckpoint", () => {
 		}
 	});
 
-	test("envios fora de ordem preservam as duas execuções e o menor started_at vence", async () => {
+	test("envio fora de ordem não regride o started_at já gravado", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
 			const session = buildSessionUpsertInput();
 			await upsertUsabilitySession(repositories, session);
-
-			const s2 = buildCheckpointInput(session.session_id, {
-				suite: {
-					code: "S2",
-					position: 1,
-					started_at: new Date("2026-08-15T18:05:00.000Z"),
-					finished_at: new Date("2026-08-15T18:10:00.000Z"),
-					active_ms: 90_000,
-					wall_ms: 300_000,
-					outcome: "NO",
-				},
-				tasks: [
-					{
-						code: "T1",
-						position: 0,
-						started_at: new Date("2026-08-15T18:05:00.000Z"),
-						finished_at: new Date("2026-08-15T18:06:00.000Z"),
-						active_ms: 30_000,
-						outcome: "YES",
-						auto_detected: true,
-					},
-				],
-				events: [],
-				answers: [],
-			});
-			await sendUsabilityCheckpoint(repositories, s2);
 
 			await sendUsabilityCheckpoint(
 				repositories,
@@ -393,7 +367,7 @@ describe("sendUsabilityCheckpoint", () => {
 						wall_ms: 300_000,
 						outcome: "YES",
 					},
-					tasks: [{ ...T8_TASK }, { ...T9_TASK }],
+					tasks: [{ ...T8_TASK }, { ...T13_TASK }],
 					events: [],
 					answers: [],
 				}),
@@ -409,7 +383,7 @@ describe("sendUsabilityCheckpoint", () => {
 						active_ms: 120_000,
 						wall_ms: 300_000,
 					},
-					tasks: [{ ...T8_TASK }, { ...T9_TASK }],
+					tasks: [{ ...T8_TASK }, { ...T13_TASK }],
 					events: [],
 					answers: [],
 				}),
@@ -422,9 +396,8 @@ describe("sendUsabilityCheckpoint", () => {
 				})
 				.from(suiteRuns)
 				.orderBy(suiteRuns.position);
-			expect(runs).toHaveLength(2);
+			expect(runs).toHaveLength(1);
 			expect(runs[0]?.position).toBe(0);
-			expect(runs[1]?.position).toBe(1);
 			expect(runs[0]?.startedAt).toEqual(new Date("2026-08-15T18:00:00.000Z"));
 		} finally {
 			await ephemeral.destroy();
@@ -444,7 +417,7 @@ describe("sendUsabilityCheckpoint", () => {
 					answers: [],
 				});
 				const sendT9 = buildCheckpointInput(session.session_id, {
-					tasks: [{ ...T9_TASK }],
+					tasks: [{ ...T13_TASK }],
 					events: [],
 					answers: [],
 				});
@@ -482,7 +455,7 @@ describe("sendUsabilityCheckpoint", () => {
 				seq: 1,
 				type: "screen.enter" as const,
 				suite_code: "S1",
-				task_code: "T9",
+				task_code: "T13",
 				occurred_at: new Date("2026-08-15T18:01:30.000Z"),
 				payload: { route: "/market" },
 			};
@@ -706,7 +679,7 @@ describe("sendUsabilityCheckpoint", () => {
 							outcome: "NO",
 						},
 						{
-							...T9_TASK,
+							...T13_TASK,
 							outcome: "YES",
 							auto_detected: false,
 						},

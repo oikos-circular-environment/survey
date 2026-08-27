@@ -4,7 +4,7 @@
  * A camada de tipos vive separada da de dados porque o schema Drizzle depende dela:
  * `success_rule`, `options` e `depends_on` são colunas JSON e precisam de
  * `$type<...>` para que o compilador verifique o que entra e o que sai do banco. O conjunto
- * de dados — as 19 tarefas, as 6 suítes, as 5 personas e as perguntas — vive em `./data.ts`,
+ * de dados — as 8 tarefas, a 1 suíte, as 5 personas e as perguntas — vive em `./data.ts`,
  * no mesmo diretório.
  *
  * Regras que valem para o protocolo inteiro:

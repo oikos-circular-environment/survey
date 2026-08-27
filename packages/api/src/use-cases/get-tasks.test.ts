@@ -44,7 +44,7 @@ function finishedTasksCheckpoint(sessionId: string): UsabilityCheckpointInput {
 				auto_detected: true,
 			},
 			{
-				code: "T9",
+				code: "T13",
 				position: 1,
 				started_at: new Date("2026-08-15T18:01:00.000Z"),
 				finished_at: new Date("2026-08-15T18:02:00.000Z"),
@@ -64,8 +64,8 @@ function inProgressTaskCheckpoint(sessionId: string): UsabilityCheckpointInput {
 		suite_run_id: randomUUID(),
 		chunk: { index: 0, total: 1 },
 		suite: {
-			code: "S6",
-			position: 5,
+			code: "S1",
+			position: 0,
 			started_at: new Date("2026-08-15T18:10:00.000Z"),
 			active_ms: 8_000,
 			wall_ms: 15_000,
@@ -88,15 +88,18 @@ describe("getTasks — exclusão de execuções em andamento (T07)", () => {
 	test("tarefa sem finished_at não entra em tentativas nem eficiencia", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
-			const session = buildSessionUpsertInput();
-			await upsertUsabilitySession(repositories, session);
+			const finishedSession = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, finishedSession);
 			await sendUsabilityCheckpoint(
 				repositories,
-				finishedTasksCheckpoint(session.session_id),
+				finishedTasksCheckpoint(finishedSession.session_id),
 			);
+
+			const inProgressSession = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, inProgressSession);
 			await sendUsabilityCheckpoint(
 				repositories,
-				inProgressTaskCheckpoint(session.session_id),
+				inProgressTaskCheckpoint(inProgressSession.session_id),
 			);
 
 			const { items } = await getTasks(repositories, {
@@ -119,11 +122,11 @@ describe("getTasks — exclusão de execuções em andamento (T07)", () => {
 	test("métricas com todas as execuções fechadas ficam idênticas às de antes da mudança", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
-			const session = buildSessionUpsertInput();
-			await upsertUsabilitySession(repositories, session);
+			const finishedSession = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, finishedSession);
 			await sendUsabilityCheckpoint(
 				repositories,
-				finishedTasksCheckpoint(session.session_id),
+				finishedTasksCheckpoint(finishedSession.session_id),
 			);
 
 			const antes = await getTasks(repositories, {
@@ -132,9 +135,11 @@ describe("getTasks — exclusão de execuções em andamento (T07)", () => {
 				pageSize: 100,
 			});
 
+			const inProgressSession = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, inProgressSession);
 			await sendUsabilityCheckpoint(
 				repositories,
-				inProgressTaskCheckpoint(session.session_id),
+				inProgressTaskCheckpoint(inProgressSession.session_id),
 			);
 
 			const depois = await getTasks(repositories, {
