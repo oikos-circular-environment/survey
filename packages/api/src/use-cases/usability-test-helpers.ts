@@ -16,9 +16,9 @@ import type { UsabilitySessionUpsertInput } from "../routers/usability-schemas";
 /**
  * Helper de teste dos use-cases de `usability.*` — não é um arquivo `*.test.ts`, então o
  * `bun test` não o executa como suíte, só como suporte. Semeia o protocolo real
- * (`protocol/data.ts`, versão 2), não um fixture mínimo: os critérios de aceite de S04
- * exigem tarefa com composição `all` (T3, T7) e com casamento por parâmetro de busca
- * (T9), que só o protocolo real tem.
+ * (`protocol/data.ts`), não um fixture mínimo: os critérios de aceite de S04
+ * exigem tarefa com composição `all` (T16) e com casamento por parâmetro de busca
+ * (T8), que só o protocolo real tem.
  */
 export interface UsabilityTestSetup {
 	ephemeral: EphemeralDatabase;
@@ -31,7 +31,7 @@ export async function setupUsabilityTest(): Promise<UsabilityTestSetup> {
 	return { ephemeral, repositories: createRepositories(ephemeral.db) };
 }
 
-/** Corpo válido de `usability.session.upsert` para a persona CITIZEN (S1, S2, S6). */
+/** Corpo válido de `usability.session.upsert` para a persona CITIZEN (S1). */
 export function buildSessionUpsertInput(
 	overrides: Partial<UsabilitySessionUpsertInput> = {},
 ): UsabilitySessionUpsertInput {

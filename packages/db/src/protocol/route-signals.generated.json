@@ -1,52 +1,12 @@
 {
 	"formatVersion": 1,
 	"protocolKey": "oikos-walkthrough",
-	"protocolVersion": 9,
+	"protocolVersion": 10,
 	"signals": [
 		{
-			"taskCode": "T1",
-			"method": "POST",
-			"pathPattern": "/v1/users/register"
-		},
-		{
-			"taskCode": "T2",
-			"method": "POST",
-			"pathPattern": "/v1/auth/login"
-		},
-		{
-			"taskCode": "T3",
-			"method": "PUT",
-			"pathPattern": "/v1/profiles"
-		},
-		{
-			"taskCode": "T3",
-			"method": "PUT",
-			"pathPattern": "/v1/profiles/avatar"
-		},
-		{
-			"taskCode": "T4",
-			"method": "POST",
-			"pathPattern": "/v1/companies"
-		},
-		{
-			"taskCode": "T5",
-			"method": "PUT",
-			"pathPattern": "/v1/companies/:id/addresses"
-		},
-		{
-			"taskCode": "T6",
-			"method": "PUT",
-			"pathPattern": "/v1/companies/:id/business-hours"
-		},
-		{
-			"taskCode": "T7",
-			"method": "PUT",
-			"pathPattern": "/v1/companies/:id/wastes"
-		},
-		{
-			"taskCode": "T7",
-			"method": "PUT",
-			"pathPattern": "/v1/companies/:id/services"
+			"taskCode": "T8",
+			"method": "GET",
+			"pathPattern": "/v1/market"
 		},
 		{
 			"taskCode": "T8",
@@ -54,12 +14,7 @@
 			"pathPattern": "/v1/market"
 		},
 		{
-			"taskCode": "T9",
-			"method": "GET",
-			"pathPattern": "/v1/market"
-		},
-		{
-			"taskCode": "T10",
+			"taskCode": "T8",
 			"method": "GET",
 			"pathPattern": "/v1/market"
 		},
@@ -74,12 +29,12 @@
 			"pathPattern": "/v1/complaints/map"
 		},
 		{
-			"taskCode": "T14",
+			"taskCode": "T13",
 			"method": "GET",
 			"pathPattern": "/v1/complaints/map"
 		},
 		{
-			"taskCode": "T15",
+			"taskCode": "T13",
 			"method": "GET",
 			"pathPattern": "/v1/complaints/map"
 		},

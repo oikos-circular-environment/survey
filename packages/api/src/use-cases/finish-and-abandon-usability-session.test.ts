@@ -189,7 +189,7 @@ describe("abandonUsabilitySession", () => {
 			const result = await abandonUsabilitySession(repositories, {
 				session_id: session.session_id,
 				reason: "Não consegui achar onde cadastrar o resíduo.",
-				current_suite_code: "S3",
+				current_suite_code: "S1",
 				active_ms: 420_000,
 				wall_ms: 610_000,
 				finished_at: new Date("2026-08-15T18:02:10.000Z"),

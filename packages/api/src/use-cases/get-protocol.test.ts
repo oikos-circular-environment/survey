@@ -58,7 +58,7 @@ describe("getProtocol", () => {
 			if (!response)
 				throw new Error("protocolo deveria estar ativo por padrão");
 
-			const allModeTask = response.tasks.find((task) => task.code === "T3");
+			const allModeTask = response.tasks.find((task) => task.code === "T16");
 			expect(allModeTask).toBeDefined();
 			expect(allModeTask?.success.mode).toBe("all");
 			expect(allModeTask?.success.signals.length).toBeGreaterThan(1);
@@ -77,13 +77,15 @@ describe("getProtocol", () => {
 			if (!response)
 				throw new Error("protocolo deveria estar ativo por padrão");
 
-			const queryMatchTask = response.tasks.find((task) => task.code === "T9");
+			const queryMatchTask = response.tasks.find((task) => task.code === "T8");
 			expect(queryMatchTask).toBeDefined();
 			expect(queryMatchTask?.success.mode).toBe("any");
-			const [signal] = queryMatchTask?.success.signals ?? [];
+			const signal = queryMatchTask?.success.signals.find(
+				(s) => s.kind === "api" && s.query?.q === true,
+			);
 			expect(signal?.kind).toBe("api");
 			if (signal?.kind === "api") {
-				expect(signal.query).toEqual({ category: true });
+				expect(signal.query).toEqual({ q: true });
 			}
 		} finally {
 			await ephemeral.destroy();
