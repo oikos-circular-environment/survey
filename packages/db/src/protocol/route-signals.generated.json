@@ -1,7 +1,7 @@
 {
 	"formatVersion": 1,
 	"protocolKey": "oikos-walkthrough",
-	"protocolVersion": 10,
+	"protocolVersion": 11,
 	"signals": [
 		{
 			"taskCode": "T8",

@@ -14,7 +14,7 @@ const tasks: Task[] = [
 					method: "GET",
 					path_pattern: "/v1/market",
 					status: 200,
-					query: { radius: { not: "2000" } },
+					query: { radius: { not: "10000" } },
 				},
 				{
 					kind: "api",
@@ -619,7 +619,7 @@ const finalQuestions: Question[] = [
 
 export const protocol: Protocol = {
 	key: "oikos-walkthrough",
-	version: 10,
+	version: 11,
 	tasks,
 	suites,
 	personas,
