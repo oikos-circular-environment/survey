@@ -145,7 +145,7 @@ const tasks: Task[] = [
 					kind: "api",
 					method: "POST",
 					path_pattern: "/v1/complaints/:id/resolutions",
-					status: 204,
+					status: 201,
 				},
 			],
 		},
@@ -619,7 +619,7 @@ const finalQuestions: Question[] = [
 
 export const protocol: Protocol = {
 	key: "oikos-walkthrough",
-	version: 11,
+	version: 12,
 	tasks,
 	suites,
 	personas,
