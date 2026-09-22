@@ -98,7 +98,7 @@ A diferença mais relevante está na satisfação. No estudo de referência ela 
 
 ### 3.1. Participantes
 
-Foram analisadas 14 sessões concluídas, coletadas entre 17 de agosto e 18 de setembro de 2026. Doze participantes se identificaram como Cidadão, um como Empresa de reciclagem e um como Órgão público. Nenhum participante escolheu as personas Coletor(a) e Empresa comum. Outras cinco sessões foram iniciadas e não finalizadas, e ficaram fora da análise.
+A pesquisa ficou disponível de 1 de agosto a 1 de outubro de 2026. Nesse período foram analisadas 14 sessões concluídas. Doze participantes se identificaram como Cidadão, um como Empresa de reciclagem e um como Órgão público. Nenhum participante escolheu as personas Coletor(a) e Empresa comum. Outras cinco sessões foram iniciadas e não finalizadas, e ficaram fora da análise.
 
 | Característica | Distribuição |
 |---|---|
@@ -190,11 +190,13 @@ O aplicativo Oikos apresenta **nível ótimo de usabilidade**.
 
 | Persona | Participantes | Concluídas / realizadas | Eficácia | Eficiência | Satisfação (1 a 5) | Nível de usabilidade | Faixa |
 |---|---|---|---|---|---|---|---|
-| Cidadão | 12 | 69 / 96 | 0,72 | 0,79 | 4,50 | 0,79 | Ótimo |
+| Coletor(a) | 0 | sem dado | sem dado | sem dado | sem dado | sem dado | sem dado |
 | Empresa de reciclagem | 1 | 8 / 8 | 1,00 | 0,87 | 5,00 | 0,96 | Ótimo |
+| Empresa comum | 0 | sem dado | sem dado | sem dado | sem dado | sem dado | sem dado |
+| Cidadão | 12 | 69 / 96 | 0,72 | 0,79 | 4,50 | 0,79 | Ótimo |
 | Órgão público | 1 | 0 / 8 | 0,00 | 0,00 | 4,00 | 0,25 | Satisfatório |
 
-Apenas a persona Cidadão tem número de participantes suficiente para uma leitura própria, e seus resultados acompanham os do conjunto. As outras duas personas têm um participante cada, e os valores descrevem esses casos individuais, sem permitir comparação entre grupos. O participante da persona Órgão público não concluiu nenhuma tarefa, o que leva eficácia e eficiência a zero. O nível de usabilidade de 0,25 decorre apenas da satisfação declarada.
+As cinco personas do instrumento aparecem na tabela, inclusive as que não tiveram participantes no período. Apenas a persona Cidadão tem número de participantes suficiente para uma leitura própria, e seus resultados acompanham os do conjunto. Empresa de reciclagem e Órgão público têm um participante cada, e os valores descrevem esses casos individuais, sem permitir comparação entre grupos. O participante da persona Órgão público não concluiu nenhuma tarefa, o que leva eficácia e eficiência a zero. O nível de usabilidade de 0,25 decorre apenas da satisfação declarada.
 
 ### 3.8. Indicadores complementares do questionário
 
