@@ -18,6 +18,8 @@ A conclusão de cada tarefa não é anotada por um observador. O aplicativo a re
 
 O teste é composto por uma etapa com oito tarefas, que cobrem a consulta a pontos de coleta e o ciclo de participação em denúncias de descarte irregular. O participante é orientado a percorrer as tarefas na ordem que preferir.
 
+**Tabela 1.** Tarefas do teste.
+
 | Código | Tarefa |
 |---|---|
 | T8 | Usar os filtros de Pontos de Coleta (raio de busca, categoria ou busca por texto) |
@@ -31,9 +33,23 @@ O teste é composto por uma etapa com oito tarefas, que cobrem a consulta a pont
 
 Uma tarefa é considerada concluída quando o seu sinal de sucesso é registrado na sessão do participante, ainda que a ação tenha sido realizada fora da ordem apresentada.
 
-### 2.3. Instrumento de percepção
+### 2.3. Estrutura do instrumento
 
-Ao final da etapa, o participante responde um questionário de escala. A satisfação é medida pela pergunta "Como você avalia sua satisfação com esta etapa?", em escala de cinco pontos (1 Péssimo, 2 Ruim, 3 Regular, 4 Bom, 5 Ótimo). O texto de apoio orienta o participante a considerar a experiência de uso do aplicativo na etapa como um todo. Os demais itens medem a concordância com afirmações associadas às heurísticas de Nielsen (1994) e a dois itens de relevância para o domínio da reciclagem.
+O instrumento tem três partes, aplicadas na ordem abaixo.
+
+1. **Caracterização.** Sete perguntas fechadas respondidas uma única vez, antes das tarefas: estado, cidade, faixa etária, escolaridade, papel na cadeia de resíduos, frequência de contato com reciclagem e experiência com aplicativos de celular. O participante também escolhe, entre cinco opções, a persona com que mais se identifica.
+2. **Execução das tarefas.** As oito tarefas da seção 2.2, executadas no aplicativo real, com conclusão e tempo capturados automaticamente.
+3. **Perguntas sobre a usabilidade.** Questionário respondido ao final da etapa. A satisfação é medida pela pergunta "Como você avalia sua satisfação com esta etapa?", em escala de cinco pontos (1 Péssimo, 2 Ruim, 3 Regular, 4 Bom, 5 Ótimo), com texto de apoio que orienta o participante a considerar a experiência de uso do aplicativo na etapa como um todo. Os demais itens medem a concordância com afirmações associadas às heurísticas de Nielsen (1994) e com dois itens de relevância para o domínio da reciclagem.
+
+A caracterização, as perguntas de heurística e os dois itens de domínio não fazem parte da metodologia de Lima, Oliveira e Santana (2013), que se limita às três dimensões da ISO 9241-11. Foram acrescentados aqui por três razões.
+
+A primeira é o formato do teste. Como não há avaliador acompanhando a execução, não existe observação direta de quem está do outro lado. No estudo de referência o pesquisador sabia quem eram os participantes, docentes e discentes de quatro programas de pós-graduação, e podia registrar dificuldades durante a sessão. Aqui esse conhecimento só existe se o próprio instrumento perguntar.
+
+A segunda é a verificação do público. A plataforma foi concebida a partir de um estudo qualitativo com atores da cadeia de resíduos, e é preciso saber se quem testou o aplicativo corresponde a esse público ou se pertence a outro perfil. A pergunta sobre o papel na cadeia de resíduos existe para captar a atividade real do participante, que pode divergir da persona escolhida por identificação.
+
+A terceira é o letramento digital. A facilidade de uso relatada depende da familiaridade prévia com aplicativos. Uma avaliação alta feita por participantes muito experientes com celular diz menos sobre a acessibilidade da interface do que a mesma avaliação feita por participantes de pouca experiência. Sem esse dado, eficácia e satisfação ficam sem contexto.
+
+As perguntas de heurística e os itens de domínio cumprem papel complementar. As primeiras localizam onde está a dificuldade quando um número de usabilidade é baixo, e os segundos medem a utilidade percebida, que é a razão de uso do aplicativo fora de um teste. Nenhuma delas entra no cálculo do nível de usabilidade, que continua sendo a média de eficácia, eficiência e satisfação.
 
 ### 2.4. Critério de inclusão
 
@@ -91,28 +107,67 @@ O cálculo segue a mesma lógica de Lima, Oliveira e Santana (2013), com diferen
 | Tempo | Cronometrado por tarefa | Tempo ativo medido pelo aplicativo, sem pausas |
 | Satisfação | Uma resposta por tarefa, escala de 0 a 3 | Uma resposta ao final da etapa, escala de 1 a 5 |
 | Tarefas | 10 | 8 |
+| Caracterização | Perfil conhecido pelo pesquisador | Sete perguntas fechadas antes das tarefas |
+| Itens complementares | Não previstos | Heurísticas de Nielsen e dois itens de relevância para o domínio |
 
 A diferença mais relevante está na satisfação. No estudo de referência ela é medida após cada tarefa. Aqui ela é medida uma única vez, ao fim da etapa, e expressa a percepção sobre o uso do aplicativo como um todo. Por isso a satisfação não aparece na tabela de resultados por tarefa.
 
 ## 3. Resultados
 
-### 3.1. Participantes
+### 3.1. Caracterização dos participantes
 
-A pesquisa ficou disponível de 1 de agosto a 1 de outubro de 2026. Nesse período foram analisadas 14 sessões concluídas. Doze participantes se identificaram como Cidadão, um como Empresa de reciclagem e um como Órgão público. Nenhum participante escolheu as personas Coletor(a) e Empresa comum. Outras cinco sessões foram iniciadas e não finalizadas, e ficaram fora da análise.
+A pesquisa ficou disponível de 1 de agosto a 1 de outubro de 2026. Nesse período foram analisadas 14 sessões concluídas. Outras cinco sessões foram iniciadas e não finalizadas, e ficaram fora da análise.
 
-| Característica | Distribuição |
-|---|---|
-| Faixa etária | 10 de 25 a 34 anos; 1 com menos de 18; 1 de 18 a 24; 1 de 35 a 44; 1 com mais de 64 |
-| Escolaridade | 2 fundamental completo; 4 superior incompleto; 6 superior completo; 2 pós-graduação |
-| Atuação com resíduos | 9 não atuam profissionalmente; 1 pesquisa o tema; 1 cooperativa; 1 empresa de reciclagem; 1 empresa de outro setor; 1 setor público |
-| Contato com reciclagem | 2 nunca; 6 raramente; 4 ocasionalmente; 2 diariamente |
-| Experiência com aplicativos | 1 básica; 1 moderada; 4 avançada; 8 muito avançada |
+**Tabela 2.** Caracterização dos 14 participantes.
 
-A amostra é jovem, escolarizada e familiarizada com aplicativos. Doze dos 14 participantes declaram experiência avançada ou muito avançada.
+| Variável | Categoria | Participantes |
+|---|---|---|
+| Persona escolhida | Cidadão | 12 |
+| | Empresa de reciclagem | 1 |
+| | Órgão público | 1 |
+| | Coletor(a) | 0 |
+| | Empresa comum | 0 |
+| Localidade | Rondonópolis, MT | 8 |
+| | Campo Novo do Parecis, MT | 3 |
+| | Nova Mutum, MT | 1 |
+| | Lucas do Rio Verde, MT | 1 |
+| | Alegrete, RS | 1 |
+| Faixa etária | Menos de 18 anos | 1 |
+| | 18 a 24 anos | 1 |
+| | 25 a 34 anos | 10 |
+| | 35 a 44 anos | 1 |
+| | Mais de 64 anos | 1 |
+| Escolaridade | Fundamental completo | 2 |
+| | Superior incompleto | 4 |
+| | Superior completo | 6 |
+| | Pós-graduação | 2 |
+| Papel na cadeia de resíduos | Não atua profissionalmente com resíduos | 9 |
+| | Trabalha em empresa de reciclagem | 1 |
+| | Trabalha em empresa de outro setor | 1 |
+| | Trabalha no setor público | 1 |
+| | Faz parte de cooperativa ou associação | 1 |
+| | Pesquisa ou estuda o tema | 1 |
+| Contato com reciclagem e resíduos | Nunca | 2 |
+| | Raramente | 6 |
+| | Ocasionalmente | 4 |
+| | Frequentemente | 0 |
+| | Diariamente | 2 |
+| Experiência com aplicativos | Básica | 1 |
+| | Moderada | 1 |
+| | Avançada | 4 |
+| | Muito avançada | 8 |
+
+**Origem.** Treze dos 14 participantes são de Mato Grosso, e oito deles de Rondonópolis, a mesma cidade do estudo qualitativo que originou a plataforma. A amostra, portanto, está concentrada no território para o qual o aplicativo foi concebido.
+
+**Relação com a cadeia de resíduos.** Nove participantes declararam não atuar profissionalmente com resíduos, e os outros cinco se distribuem entre empresa de reciclagem, cooperativa, setor público, empresa de outro setor e pesquisa. A frequência de contato com reciclagem confirma esse perfil: oito participantes têm contato nulo ou raro, e apenas dois convivem diariamente com o tema. O público que testou o aplicativo é, em sua maioria, o cidadão comum, e não o profissional da cadeia entrevistado na fase qualitativa.
+
+Há divergência entre a persona escolhida e a atividade declarada em alguns casos. Um participante que se identificou como Cidadão trabalha no setor público, outro pesquisa o tema e um terceiro trabalha em empresa de outro setor. O participante que escolheu a persona Órgão público declarou fazer parte de cooperativa. Isso é esperado, já que a persona é escolhida por identificação com a descrição exibida, e não pela ocupação formal. A leitura por persona da seção 3.7 deve considerar essa diferença.
+
+**Letramento digital.** Doze dos 14 participantes declaram experiência avançada ou muito avançada com aplicativos de celular. Apenas um declara experiência básica e um, moderada. A amostra também é jovem e escolarizada: dez participantes têm de 25 a 34 anos e doze têm ensino superior incompleto ou mais. Esse perfil favorece os resultados de eficácia e satisfação, porque são pessoas habituadas a aprender interfaces novas sem ajuda. É a ressalva mais importante para a leitura do nível de usabilidade obtido, e volta na seção 5.
 
 ### 3.2. Resultados por tarefa
 
-Os resultados por tarefa são expostos na Tabela 1. As colunas seguem uma sequência de afunilamento, do total de participantes até o desempenho de quem concluiu a tarefa.
+Os resultados por tarefa são expostos na Tabela 3. As colunas seguem uma sequência de afunilamento, do total de participantes até o desempenho de quem concluiu a tarefa.
 
 | Coluna | O que representa |
 |---|---|
@@ -127,7 +182,7 @@ Os resultados por tarefa são expostos na Tabela 1. As colunas seguem uma sequê
 
 A eficiência vem antes do tempo médio porque é calculada a partir dele, e o tempo médio fica ao lado como valor de apoio para a leitura.
 
-**Tabela 1.** Resultados por tarefa.
+**Tabela 3.** Resultados por tarefa.
 
 | Código | Título | Suíte | Total concluintes | Iniciaram | Concluíram | Eficácia | Eficiência | Tempo médio |
 |---|---|---|---|---|---|---|---|---|
@@ -186,7 +241,7 @@ O aplicativo Oikos apresenta **nível ótimo de usabilidade**.
 
 ### 3.7. Resultados por persona
 
-**Tabela 2.** Resultados por persona.
+**Tabela 4.** Resultados por persona.
 
 | Persona | Participantes | Concluídas / realizadas | Eficácia | Eficiência | Satisfação (1 a 5) | Nível de usabilidade | Faixa |
 |---|---|---|---|---|---|---|---|
@@ -202,9 +257,9 @@ As cinco personas do instrumento aparecem na tabela, inclusive as que não tiver
 
 As heurísticas de usabilidade de Nielsen (1994) fundamentam as perguntas do questionário pós-etapa. Nielsen as concebeu como método de inspeção por especialista, e nem toda heurística admite tradução válida para uma pergunta respondida pelo próprio usuário. Por isso oito das dez são medidas pelo instrumento e duas não são, com o motivo declarado.
 
-A Tabela 3 apresenta as dez heurísticas, o item do questionário que cobre cada uma e o resultado obtido com os 14 participantes. Os itens de concordância usam escala de 1 a 5, em que 1 é "discordo totalmente" e 5 é "concordo totalmente". Quanto maior a média, melhor a avaliação da heurística.
+A Tabela 5 apresenta as dez heurísticas, o item do questionário que cobre cada uma e o resultado obtido com os 14 participantes. Os itens de concordância usam escala de 1 a 5, em que 1 é "discordo totalmente" e 5 é "concordo totalmente". Quanto maior a média, melhor a avaliação da heurística.
 
-**Tabela 3.** Cobertura e resultado das heurísticas de Nielsen (1994).
+**Tabela 5.** Cobertura e resultado das heurísticas de Nielsen (1994).
 
 | Heurística | Item do questionário | Medida | Resultado |
 |---|---|---|---|
