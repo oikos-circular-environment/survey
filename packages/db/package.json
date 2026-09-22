@@ -37,6 +37,7 @@
 		"db:seed:demo": "bun run src/factories/demo-seed.ts",
 		"db:seed:auth": "bun run src/seed/auth-run.ts",
 		"db:unify-protocol": "bun run src/scripts/unify-into-active-protocol.ts",
+		"db:normalize-completions": "bun run src/scripts/normalize-out-of-order-completions.ts",
 		"db:auth:generate": "better-auth generate --config src/auth/config.ts --output src/schema/auth.ts -y"
 	},
 	"dependencies": {
