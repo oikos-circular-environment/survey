@@ -12,6 +12,7 @@ import {
 } from "@oikos-circular-environment/survey-db/testing/harness";
 
 import type { UsabilitySessionUpsertInput } from "../routers/usability-schemas";
+import { finishUsabilitySession } from "./finish-usability-session";
 
 /**
  * Helper de teste dos use-cases de `usability.*` — não é um arquivo `*.test.ts`, então o
@@ -62,4 +63,18 @@ export function buildSessionUpsertInput(
 		started_at: new Date("2026-08-15T17:33:02.000Z"),
 		...overrides,
 	};
+}
+
+/** Marca a sessão como COMPLETED, o único status que entra nas métricas do painel. */
+export async function completeSession(
+	repositories: Repositories,
+	sessionId: string,
+): Promise<void> {
+	await finishUsabilitySession(repositories, {
+		session_id: sessionId,
+		answers: [],
+		active_ms: 0,
+		wall_ms: 0,
+		finished_at: new Date("2026-08-15T18:30:00.000Z"),
+	});
 }

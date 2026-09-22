@@ -28,7 +28,7 @@ const result = await seedAdmin(db, {
 console.log(
 	result.status === "created"
 		? `Conta administradora criada (${result.userId}).`
-		: `Conta administradora já existia (${result.userId}) — nada a fazer.`,
+		: `Conta administradora já existia (${result.userId}), nada a fazer.`,
 );
 
 process.exit(0);

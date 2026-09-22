@@ -126,7 +126,7 @@ export class ProtocolRepository {
 			.limit(1);
 		if (!row) {
 			throw new Error(
-				`Protocolo "${key}" não está semeado — rode "bun run db:seed".`,
+				`Protocolo "${key}" não está semeado, rode "bun run db:seed".`,
 			);
 		}
 		return row.id;
@@ -271,7 +271,7 @@ export class ProtocolRepository {
 			.limit(1);
 		if (!anyRow) {
 			throw new Error(
-				`Protocolo "${key}" não está semeado — rode "bun run db:seed".`,
+				`Protocolo "${key}" não está semeado, rode "bun run db:seed".`,
 			);
 		}
 		return null;
@@ -517,7 +517,7 @@ export class ProtocolRepository {
 
 				if (latest && latest.version > target.version) {
 					throw new Error(
-						`Só a última versão de "${target.key}" pode ser ativada — a v${target.version} foi substituída pela v${latest.version}.`,
+						`Só a última versão de "${target.key}" pode ser ativada, a v${target.version} foi substituída pela v${latest.version}.`,
 					);
 				}
 

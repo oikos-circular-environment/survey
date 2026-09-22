@@ -42,7 +42,7 @@ bun run db:migrate
 
 Schema changes go through generated migration files, not `db:push`. After editing
 anything under `packages/db/src/schema`, run `bun run db:generate` and commit the
-resulting file in `packages/db/src/migrations` — that file is what runs in production,
+resulting file in `packages/db/src/migrations`. That file is what runs in production,
 and it is reviewed in the pull request like any other code.
 
 Then, run the development server:
@@ -62,8 +62,8 @@ bun run tunnel
 ```
 
 Requires `cloudflared` installed and authenticated (`cloudflared tunnel login`) with access
-to the `oikos.company` zone. The tunnel (`oikos-local-dev`) and DNS record already exist —
-this command only connects.
+to the `oikos.company` zone. The tunnel (`oikos-local-dev`) and DNS record already exist,
+so this command only connects.
 
 ## Testing
 
@@ -77,7 +77,7 @@ every test instead of hiding until deploy.
 
 Creating those databases needs a privilege the application user does not get by default,
 so `docker/mysql/init` grants it on the `survey_test_%` prefix. Init scripts only run when
-the MySQL volume is first created — if the grant is missing, recreate it:
+the MySQL volume is first created. If the grant is missing, recreate it:
 
 ```bash
 docker compose down -v && bun run db:start
@@ -152,7 +152,7 @@ survey/
 - `bun run test`: Run the test suites (needs the MySQL container running)
 - `bun run db:generate`: Generate a migration file from the current schema
 - `bun run db:migrate`: Apply pending migrations
-- `bun run db:push`: Apply the schema without a migration file — scratch databases only
+- `bun run db:push`: Apply the schema without a migration file, for scratch databases only
 - `bun run db:studio`: Open database studio UI
 - `bun run check`: Run Biome formatting and linting
 - `bun run tunnel`: Expose the local dev server at `local-survey.oikos.company` via Cloudflare

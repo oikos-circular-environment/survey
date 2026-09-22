@@ -26,8 +26,8 @@ const SCREENER_KEYS = [
 ] as const;
 
 /**
- * Alimenta a Caracterização dos participantes — uma distribuição por bucket para cada
- * campo de screener. Os rótulos vêm das `options` já semeadas em `usability_questions`
+ * Alimenta a Caracterização dos participantes (sessões concluídas) — uma distribuição
+ * por bucket para cada campo de screener. Os rótulos vêm das `options` já semeadas em `usability_questions`
  * (mesma fonte que o app usa para renderizar o formulário), não de uma cópia hardcoded
  * aqui — evita as duas divergirem se o protocolo for republicado.
  */
@@ -38,7 +38,7 @@ export async function getDemographics(
 	const protocolVersionId =
 		await repositories.protocol.getLatestProtocolVersionId();
 	const [sessions, questionOptions] = await Promise.all([
-		repositories.sessions.findInRange(range),
+		repositories.sessions.findCompletedInRange(range, protocolVersionId),
 		repositories.protocol.getQuestionOptions(protocolVersionId, [
 			...SCREENER_KEYS,
 		]),

@@ -13,8 +13,11 @@ const CLASSIFICATION_STYLES: Record<string, string> = {
 export function ClassificationBadge({
 	classificacao,
 }: {
-	classificacao: string;
+	classificacao: string | null;
 }) {
+	if (classificacao === null) {
+		return <span className="text-muted-foreground">—</span>;
+	}
 	return (
 		<Badge
 			variant="outline"

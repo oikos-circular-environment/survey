@@ -7,6 +7,7 @@ import { sendUsabilityCheckpoint } from "./send-usability-checkpoint";
 import { upsertUsabilitySession } from "./upsert-usability-session";
 import {
 	buildSessionUpsertInput,
+	completeSession,
 	setupUsabilityTest,
 } from "./usability-test-helpers";
 
@@ -84,7 +85,7 @@ function inProgressTaskCheckpoint(sessionId: string): UsabilityCheckpointInput {
 	};
 }
 
-describe("getTasks — exclusão de execuções em andamento (T07)", () => {
+describe("getTasks, exclusão de execuções em andamento (T07)", () => {
 	test("tarefa sem finished_at não entra em tentativas nem eficiencia", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
@@ -94,6 +95,7 @@ describe("getTasks — exclusão de execuções em andamento (T07)", () => {
 				repositories,
 				finishedTasksCheckpoint(finishedSession.session_id),
 			);
+			await completeSession(repositories, finishedSession.session_id);
 
 			const inProgressSession = buildSessionUpsertInput();
 			await upsertUsabilitySession(repositories, inProgressSession);
@@ -113,7 +115,7 @@ describe("getTasks — exclusão de execuções em andamento (T07)", () => {
 
 			expect(t8.tentativas).toBe(1);
 			expect(t16.tentativas).toBe(0);
-			expect(t16.eficiencia).toBe(0);
+			expect(t16.eficiencia).toBeNull();
 		} finally {
 			await ephemeral.destroy();
 		}
@@ -128,6 +130,7 @@ describe("getTasks — exclusão de execuções em andamento (T07)", () => {
 				repositories,
 				finishedTasksCheckpoint(finishedSession.session_id),
 			);
+			await completeSession(repositories, finishedSession.session_id);
 
 			const antes = await getTasks(repositories, {
 				range: RANGE,
@@ -151,6 +154,66 @@ describe("getTasks — exclusão de execuções em andamento (T07)", () => {
 			expect(Object.fromEntries(byCode(depois.items))).toEqual(
 				Object.fromEntries(byCode(antes.items)),
 			);
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+
+	test("sessão não concluída fica fora mesmo com tarefas finalizadas", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const openSession = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, openSession);
+			await sendUsabilityCheckpoint(
+				repositories,
+				finishedTasksCheckpoint(openSession.session_id),
+			);
+
+			const { items } = await getTasks(repositories, {
+				range: RANGE,
+				page: 1,
+				pageSize: 100,
+			});
+			const t8 = items.find((task) => task.code === "T8");
+			if (!t8) throw new Error("esperava linha T8");
+
+			expect(t8.tentativas).toBe(0);
+			expect(t8.eficacia).toBeNull();
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
+});
+
+describe("getTasks, eficácia e tempo por tarefa (Lima et al., 2013)", () => {
+	test("eficácia conta participantes que concluíram; tempo médio só das conclusões", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput();
+			await upsertUsabilitySession(repositories, session);
+			await sendUsabilityCheckpoint(
+				repositories,
+				finishedTasksCheckpoint(session.session_id),
+			);
+			await completeSession(repositories, session.session_id);
+
+			const { items } = await getTasks(repositories, {
+				range: RANGE,
+				page: 1,
+				pageSize: 100,
+			});
+			const t8 = items.find((task) => task.code === "T8");
+			const t13 = items.find((task) => task.code === "T13");
+			if (!t8 || !t13) throw new Error("esperava linhas T8 e T13");
+
+			expect(t8.concluidas).toBe(1);
+			expect(t8.eficacia).toBe(1);
+			expect(t8.tempoMedioMs).toBe(30_000);
+			expect(t13.tentativas).toBe(1);
+			expect(t13.concluidas).toBe(0);
+			expect(t13.eficacia).toBe(0);
+			expect(t13.tempoMedioMs).toBeNull();
+			expect(t13.eficiencia).toBe(0);
 		} finally {
 			await ephemeral.destroy();
 		}

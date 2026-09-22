@@ -98,7 +98,7 @@ function unbatchedClientFor(ip: string) {
 	});
 }
 
-describe("route HTTP — borda pública (S08/R3)", () => {
+describe("route HTTP, borda pública (S08/R3)", () => {
 	let setup: UsabilityTestSetup;
 
 	beforeAll(async () => {

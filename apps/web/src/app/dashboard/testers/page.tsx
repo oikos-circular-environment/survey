@@ -156,7 +156,7 @@ export default function TestersPage() {
 		<div className="flex flex-col gap-6">
 			<DashboardPageHeader
 				title="Testadores"
-				description="Uma linha por sessão. Selecione uma linha para ver todos os dados do testador — screener, aparelho e execução por suíte."
+				description="Uma linha por sessão. Selecione uma linha para ver todos os dados do testador: screener, aparelho e execução por suíte."
 			/>
 
 			<div className="flex flex-wrap items-center justify-between gap-3">
@@ -271,7 +271,7 @@ export default function TestersPage() {
 																	{participantCodeLabel(tester.participantCode)}
 																</AlertDialogTitle>
 																<AlertDialogDescription>
-																	Apaga a sessão e tudo vinculado a ela —
+																	Apaga a sessão e tudo vinculado a ela:
 																	execuções, eventos e respostas. Não pode ser
 																	desfeito.
 																</AlertDialogDescription>

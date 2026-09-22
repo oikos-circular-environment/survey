@@ -77,7 +77,7 @@ export async function resolveSeededProtocol(
 
 	if (!versionRow) {
 		throw new Error(
-			`Protocolo "${key}" versão ${version} não está semeado — rode "bun run db:seed" primeiro.`,
+			`Protocolo "${key}" versão ${version} não está semeado, rode "bun run db:seed" primeiro.`,
 		);
 	}
 	const protocolVersionId = versionRow.id;
