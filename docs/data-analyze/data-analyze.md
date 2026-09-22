@@ -98,17 +98,17 @@ A diferença mais relevante está na satisfação. No estudo de referência ela 
 
 ### 3.1. Participantes
 
-Foram analisadas 16 sessões concluídas, coletadas entre 7 de agosto e 18 de setembro de 2026. Doze participantes se identificaram como Cidadão, dois como Empresa comum, um como Empresa de reciclagem e um como Órgão público. Nenhum participante escolheu a persona Coletor(a). Outras cinco sessões foram iniciadas e não finalizadas, e ficaram fora da análise.
+Foram analisadas 14 sessões concluídas, coletadas entre 17 de agosto e 18 de setembro de 2026. Doze participantes se identificaram como Cidadão, um como Empresa de reciclagem e um como Órgão público. Nenhum participante escolheu as personas Coletor(a) e Empresa comum. Outras cinco sessões foram iniciadas e não finalizadas, e ficaram fora da análise.
 
 | Característica | Distribuição |
 |---|---|
-| Faixa etária | 12 de 25 a 34 anos; 1 com menos de 18; 1 de 18 a 24; 1 de 35 a 44; 1 com mais de 64 |
-| Escolaridade | 2 fundamental completo; 4 superior incompleto; 7 superior completo; 3 pós-graduação |
-| Atuação com resíduos | 10 não atuam profissionalmente; 2 pesquisam o tema; 1 cooperativa; 1 empresa de reciclagem; 1 empresa de outro setor; 1 setor público |
-| Contato com reciclagem | 3 nunca; 6 raramente; 5 ocasionalmente; 2 diariamente |
-| Experiência com aplicativos | 2 básica; 1 moderada; 4 avançada; 9 muito avançada |
+| Faixa etária | 10 de 25 a 34 anos; 1 com menos de 18; 1 de 18 a 24; 1 de 35 a 44; 1 com mais de 64 |
+| Escolaridade | 2 fundamental completo; 4 superior incompleto; 6 superior completo; 2 pós-graduação |
+| Atuação com resíduos | 9 não atuam profissionalmente; 1 pesquisa o tema; 1 cooperativa; 1 empresa de reciclagem; 1 empresa de outro setor; 1 setor público |
+| Contato com reciclagem | 2 nunca; 6 raramente; 4 ocasionalmente; 2 diariamente |
+| Experiência com aplicativos | 1 básica; 1 moderada; 4 avançada; 8 muito avançada |
 
-A amostra é jovem, escolarizada e familiarizada com aplicativos. Treze dos 16 participantes declaram experiência avançada ou muito avançada.
+A amostra é jovem, escolarizada e familiarizada com aplicativos. Doze dos 14 participantes declaram experiência avançada ou muito avançada.
 
 ### 3.2. Resultados por tarefa
 
@@ -131,58 +131,58 @@ A eficiência vem antes do tempo médio porque é calculada a partir dele, e o t
 
 | Código | Título | Suíte | Total concluintes | Iniciaram | Concluíram | Eficácia | Eficiência | Tempo médio |
 |---|---|---|---|---|---|---|---|---|
-| T8 | Usar os filtros de Pontos de Coleta | S1 | 16 | 16 | 12 | 75% | 0,83 | 0:57 |
-| T11 | Visualizar os detalhes de uma empresa | S1 | 16 | 16 | 12 | 75% | 0,94 | 0:21 |
-| T12 | Visualizar o mapa de denúncias | S1 | 16 | 16 | 13 | 81% | 0,91 | 0:30 |
-| T13 | Usar os filtros de Denúncias | S1 | 16 | 16 | 11 | 69% | 0,88 | 0:42 |
-| T16 | Criar uma denúncia | S1 | 16 | 14 | 9 | 64% | 0,48 | 2:58 |
-| T17 | Votar em uma denúncia | S1 | 16 | 14 | 10 | 71% | 0,90 | 0:33 |
-| T18 | Postar uma resolução | S1 | 16 | 14 | 9 | 64% | 0,60 | 2:18 |
-| T19 | Abrir uma denúncia sua na lista | S1 | 16 | 14 | 9 | 64% | 0,78 | 1:15 |
-| | **Total** | | **16** | **120** | **85** | **71%** | **0,80** | **1:08** |
+| T8 | Usar os filtros de Pontos de Coleta | S1 | 14 | 14 | 10 | 71% | 0,84 | 0:55 |
+| T11 | Visualizar os detalhes de uma empresa | S1 | 14 | 14 | 10 | 71% | 0,93 | 0:23 |
+| T12 | Visualizar o mapa de denúncias | S1 | 14 | 14 | 11 | 79% | 0,92 | 0:26 |
+| T13 | Usar os filtros de Denúncias | S1 | 14 | 14 | 9 | 64% | 0,87 | 0:44 |
+| T16 | Criar uma denúncia | S1 | 14 | 14 | 9 | 64% | 0,48 | 2:58 |
+| T17 | Votar em uma denúncia | S1 | 14 | 14 | 10 | 71% | 0,90 | 0:34 |
+| T18 | Postar uma resolução | S1 | 14 | 14 | 9 | 64% | 0,60 | 2:18 |
+| T19 | Abrir uma denúncia sua na lista | S1 | 14 | 14 | 9 | 64% | 0,78 | 1:15 |
+| | **Total** | | **14** | **112** | **77** | **69%** | **0,80** | **1:09** |
 
-As tarefas T16 a T19 foram iniciadas por 14 participantes, e não por 16, porque não integraram o roteiro dos dois participantes da persona Empresa comum. O tempo médio total é calculado sobre as 80 conclusões com tempo registrado, e não sobre a média das linhas.
+O tempo médio total é calculado sobre as 76 conclusões com tempo registrado, e não sobre a média das linhas.
 
-A leitura da tabela deve ser feita da esquerda para a direita. Na tarefa T11, por exemplo, 16 participantes concluíram a etapa, os 16 iniciaram a tarefa e 12 a concluíram, o que resulta em eficácia de 12 / 16 = 0,75. Os participantes que concluíram levaram em média 21 segundos. Esse tempo está muito mais próximo da conclusão mais rápida do teste (1 segundo) do que da mais lenta (5 minutos e 44 segundos), e por isso a eficiência é alta, 1 − 21,4 / (344 − 1) = 0,94.
+A leitura da tabela deve ser feita da esquerda para a direita. Na tarefa T11, por exemplo, os 14 participantes iniciaram a tarefa e 10 a concluíram, o que resulta em eficácia de 10 / 14 = 0,71. Os participantes que concluíram levaram em média 23 segundos. Esse tempo está muito mais próximo da conclusão mais rápida do teste (1 segundo) do que da mais lenta (5 minutos e 44 segundos), e por isso a eficiência é alta, 1 − 23,4 / (344 − 1) = 0,93.
 
 ### 3.3. Eficácia
 
-Os participantes concluíram 85 das 120 tarefas realizadas.
+Os participantes concluíram 77 das 112 tarefas realizadas.
 
-$$T_e = \frac{85}{120} = 0{,}71$$
+$$T_e = \frac{77}{112} = 0{,}69$$
 
-A eficácia do aplicativo situa-se na faixa **boa**, próxima do limite da faixa ótima. A tarefa com maior eficácia foi a visualização do mapa de denúncias (T12, 81%). As menores ficaram com a criação de denúncia (T16), a postagem de resolução (T18) e a abertura de denúncia própria na lista (T19), com 64% cada, tarefas que exigem mais passos ou dependem de outra ação anterior.
+A eficácia do aplicativo situa-se na faixa **boa**. A tarefa com maior eficácia foi a visualização do mapa de denúncias (T12, 79%). As menores ficaram com o uso dos filtros de Denúncias (T13), a criação de denúncia (T16), a postagem de resolução (T18) e a abertura de denúncia própria na lista (T19), com 64% cada, tarefas que exigem mais passos ou dependem de outra ação anterior.
 
 ### 3.4. Eficiência
 
-O menor tempo de conclusão observado foi de 1 segundo e o maior foi de 344 segundos (5 min 44 s). O tempo médio das 80 conclusões com tempo registrado foi de 67,7 segundos (1 min 08 s).
+O menor tempo de conclusão observado foi de 1 segundo e o maior foi de 344 segundos (5 min 44 s). O tempo médio das 76 conclusões com tempo registrado foi de 69,1 segundos (1 min 09 s).
 
-$$T_f = 1 - \frac{67{,}7}{344 - 1} = 0{,}80$$
+$$T_f = 1 - \frac{69{,}1}{344 - 1} = 0{,}80$$
 
-A eficiência do aplicativo situa-se na faixa **ótima**. Aplicando a mesma divisão em quatro intervalos iguais ao tempo médio, como fazem Lima, Oliveira e Santana (2013) no Gráfico 2, a eficiência seria ótima com tempo médio até cerca de 1 min 27 s, boa até 2 min 53 s, satisfatória até 4 min 18 s e péssima acima disso. O tempo médio observado, de 1 min 08 s, fica na faixa ótima.
+A eficiência do aplicativo situa-se na faixa **ótima**. Aplicando a mesma divisão em quatro intervalos iguais ao tempo médio, como fazem Lima, Oliveira e Santana (2013) no Gráfico 2, a eficiência seria ótima com tempo médio até cerca de 1 min 27 s, boa até 2 min 53 s, satisfatória até 4 min 18 s e péssima acima disso. O tempo médio observado, de 1 min 09 s, fica na faixa ótima.
 
-Por tarefa, a eficiência reflete a natureza da ação solicitada. As tarefas de consulta (T8, T11, T12, T13 e T17) têm tempo médio abaixo de um minuto e eficiência entre 0,83 e 0,94. As tarefas que envolvem preenchimento e envio de conteúdo são mais demoradas: criar uma denúncia, com local, foto e descrição (T16, 2:58, eficiência 0,48), e postar uma resolução (T18, 2:18, eficiência 0,60).
+Por tarefa, a eficiência reflete a natureza da ação solicitada. As tarefas de consulta (T8, T11, T12, T13 e T17) têm tempo médio abaixo de um minuto e eficiência entre 0,84 e 0,93. As tarefas que envolvem preenchimento e envio de conteúdo são mais demoradas: criar uma denúncia, com local, foto e descrição (T16, 2:58, eficiência 0,48), e postar uma resolução (T18, 2:18, eficiência 0,60).
 
 ### 3.5. Satisfação
 
-Quinze dos 16 participantes responderam à pergunta de satisfação. Nove atribuíram nota 5 (Ótimo), cinco atribuíram nota 4 (Bom) e um atribuiu nota 3 (Regular). A média das respostas foi 4,53.
+Os 14 participantes responderam à pergunta de satisfação. Oito atribuíram nota 5 (Ótimo), cinco atribuíram nota 4 (Bom) e um atribuiu nota 3 (Regular). A média das respostas foi 4,50.
 
-$$T_s = \frac{4{,}53 - 1}{4} = 0{,}88$$
+$$T_s = \frac{4{,}50 - 1}{4} = 0{,}88$$
 
 A satisfação situa-se na faixa **ótima** e é a dimensão mais alta das três.
 
 ### 3.6. Nível de usabilidade
 
-$$U_s = \frac{0{,}71 + 0{,}80 + 0{,}88}{3} = 0{,}80$$
+$$U_s = \frac{0{,}69 + 0{,}80 + 0{,}88}{3} = 0{,}79$$
 
 O aplicativo Oikos apresenta **nível ótimo de usabilidade**.
 
 | Dimensão | Taxa | Faixa |
 |---|---|---|
-| Eficácia | 0,71 | Bom |
+| Eficácia | 0,69 | Bom |
 | Eficiência | 0,80 | Ótimo |
 | Satisfação | 0,88 | Ótimo |
-| **Nível de usabilidade** | **0,80** | **Ótimo** |
+| **Nível de usabilidade** | **0,79** | **Ótimo** |
 
 ### 3.7. Resultados por persona
 
@@ -191,45 +191,43 @@ O aplicativo Oikos apresenta **nível ótimo de usabilidade**.
 | Persona | Participantes | Concluídas / realizadas | Eficácia | Eficiência | Satisfação (1 a 5) | Nível de usabilidade | Faixa |
 |---|---|---|---|---|---|---|---|
 | Cidadão | 12 | 69 / 96 | 0,72 | 0,79 | 4,50 | 0,79 | Ótimo |
-| Empresa comum | 2 | 8 / 8 | 1,00 | 0,88 | 5,00 | 0,96 | Ótimo |
 | Empresa de reciclagem | 1 | 8 / 8 | 1,00 | 0,87 | 5,00 | 0,96 | Ótimo |
 | Órgão público | 1 | 0 / 8 | 0,00 | 0,00 | 4,00 | 0,25 | Satisfatório |
-| Coletor(a) | 0 | sem dado | sem dado | sem dado | sem dado | sem dado | sem dado |
 
-Apenas a persona Cidadão tem número de participantes suficiente para uma leitura própria, e seus resultados acompanham os do conjunto. As demais personas têm um ou dois participantes, e os valores descrevem esses casos individuais, sem permitir comparação entre grupos. O participante da persona Órgão público não concluiu nenhuma tarefa, o que leva eficácia e eficiência a zero. O nível de usabilidade de 0,25 decorre apenas da satisfação declarada.
+Apenas a persona Cidadão tem número de participantes suficiente para uma leitura própria, e seus resultados acompanham os do conjunto. As outras duas personas têm um participante cada, e os valores descrevem esses casos individuais, sem permitir comparação entre grupos. O participante da persona Órgão público não concluiu nenhuma tarefa, o que leva eficácia e eficiência a zero. O nível de usabilidade de 0,25 decorre apenas da satisfação declarada.
 
 ### 3.8. Indicadores complementares do questionário
 
-As médias dos itens associados às heurísticas de Nielsen (1994), em escala de 1 a 5, com 15 respostas por item, foram as seguintes:
+As médias dos itens associados às heurísticas de Nielsen (1994), em escala de 1 a 5, com 14 respostas por item, foram as seguintes:
 
 | Heurística | Item | Média |
 |---|---|---|
-| H1 Visibilidade do status do sistema | O aplicativo deixou claro o que estava acontecendo | 4,67 |
-| H2 Correspondência com o mundo real | Os termos e as categorias fizeram sentido | 4,33 |
-| H3 Controle e liberdade do usuário | Sempre soube onde estava e como seguir | 4,20 |
-| H4 Consistência e padrões | As telas seguiram um padrão parecido | 4,53 |
-| H6 Reconhecimento em vez de memorização | Não precisei guardar informações entre telas | 4,33 |
-| H8 Design estético e minimalista | As telas mostraram o necessário | 4,53 |
+| H1 Visibilidade do status do sistema | O aplicativo deixou claro o que estava acontecendo | 4,64 |
+| H2 Correspondência com o mundo real | Os termos e as categorias fizeram sentido | 4,36 |
+| H3 Controle e liberdade do usuário | Sempre soube onde estava e como seguir | 4,29 |
+| H4 Consistência e padrões | As telas seguiram um padrão parecido | 4,64 |
+| H6 Reconhecimento em vez de memorização | Não precisei guardar informações entre telas | 4,43 |
+| H8 Design estético e minimalista | As telas mostraram o necessário | 4,50 |
 
-Treze dos 15 participantes relataram não ter encontrado erro durante a etapa (87%). Os dois que relataram erro avaliaram a mensagem de recuperação com média 2,0 (H9). Os itens de relevância para o domínio também tiveram médias altas: 4,60 para "ajudaria a conectar pessoas e empresas da reciclagem" e 4,47 para "resolveria um problema real do meu dia a dia".
+Doze dos 14 participantes relataram não ter encontrado erro durante a etapa (86%). Os dois que relataram erro avaliaram a mensagem de recuperação com média 2,0 (H9). Os itens de relevância para o domínio também tiveram médias altas: 4,57 para "ajudaria a conectar pessoas e empresas da reciclagem" e 4,43 para "resolveria um problema real do meu dia a dia".
 
 ## 4. Interpretação dos resultados
 
-**Concluir a sessão não equivale a concluir as tarefas.** Uma sessão concluída indica que o participante chegou ao fim do fluxo e enviou o questionário. Como o participante pode pular qualquer tarefa, a eficácia registra o que ele efetivamente conseguiu fazer no aplicativo. Das 16 sessões concluídas, 11 concluíram todas as tarefas do seu roteiro e 2 concluíram parte delas. Outras 3 pularam todas as tarefas, uma delas em apenas 16 segundos. As 35 tarefas não concluídas foram todas encerradas pelo próprio participante, e nenhuma decorreu de falha na detecção.
+**Concluir a sessão não equivale a concluir as tarefas.** Uma sessão concluída indica que o participante chegou ao fim do fluxo e enviou o questionário. Como o participante pode pular qualquer tarefa, a eficácia registra o que ele efetivamente conseguiu fazer no aplicativo. Das 14 sessões concluídas, 9 concluíram todas as 8 tarefas e 2 concluíram parte delas. Outras 3 pularam todas as tarefas, uma delas em apenas 16 segundos. As 35 tarefas não concluídas foram todas encerradas pelo próprio participante, e nenhuma decorreu de falha na detecção.
 
 **A satisfação mede a percepção geral, e não o desempenho.** Os três participantes que não concluíram nenhuma tarefa atribuíram notas 5, 4 e 3 à satisfação. Isso confirma que a pergunta capta a impressão sobre o aplicativo, independente do resultado nas tarefas, e justifica tratá-la como dimensão própria no cálculo.
 
-**O perfil das dimensões difere do estudo de referência.** Na BVS, a satisfação foi a dimensão mais baixa (0,47) e a eficácia a mais alta (0,79). No Oikos ocorre o inverso. A satisfação é a mais alta (0,88) e a eficácia é a mais baixa (0,71). A eficácia é reduzida sobretudo pelas sessões em que o participante pulou todas as tarefas. Considerando apenas os 13 participantes que concluíram ao menos uma tarefa, a eficácia seria de 85 / 96 = 0,89.
+**O perfil das dimensões difere do estudo de referência.** Na BVS, a satisfação foi a dimensão mais baixa (0,47) e a eficácia a mais alta (0,79). No Oikos ocorre o inverso. A satisfação é a mais alta (0,88) e a eficácia é a mais baixa (0,69). A eficácia é reduzida sobretudo pelas sessões em que o participante pulou todas as tarefas. Considerando apenas os 11 participantes que concluíram ao menos uma tarefa, a eficácia seria de 77 / 88 = 0,88.
 
 **As tarefas de produção de conteúdo concentram a menor eficiência.** Criar uma denúncia e postar uma resolução exigem preencher formulário, anexar mídia e enviar. São também as tarefas com a menor eficácia. Um dos participantes que relataram erro descreveu falha no envio de imagem, resolvida ao reiniciar o aplicativo, o que é compatível com o tempo mais alto dessas tarefas.
 
 ## 5. Limitações
 
-1. **Tamanho e composição da amostra.** São 16 participantes, 12 deles da persona Cidadão, e nenhum da persona Coletor(a). A amostra é auto-selecionada entre usuários do aplicativo e concentra pessoas jovens, escolarizadas e experientes com aplicativos, o que tende a favorecer os resultados.
-2. **Resultados por persona.** Com exceção de Cidadão, os grupos têm um ou dois participantes, e os valores por persona são apenas descritivos.
+1. **Tamanho e composição da amostra.** São 14 participantes, 12 deles da persona Cidadão, e nenhum das personas Coletor(a) e Empresa comum. A amostra é auto-selecionada entre usuários do aplicativo e concentra pessoas jovens, escolarizadas e experientes com aplicativos, o que tende a favorecer os resultados.
+2. **Resultados por persona.** Com exceção de Cidadão, os grupos têm um participante, e os valores por persona são apenas descritivos.
 3. **Satisfação por etapa.** Com uma resposta por participante, a taxa de satisfação tem menos granularidade que a do estudo de referência, que coletou uma resposta por tarefa.
 4. **Forma da taxa de eficiência.** A fórmula de Lima, Oliveira e Santana (2013) não subtrai o menor tempo do tempo médio. Com menor tempo de 1 segundo, o efeito é desprezível neste teste.
-5. **Registro de tempo.** Cinco das 85 conclusões não tiveram tempo registrado e ficaram fora do cálculo da eficiência.
+5. **Registro de tempo.** Uma das 77 conclusões não teve tempo registrado e ficou fora do cálculo da eficiência.
 
 ## Referências
 
