@@ -81,7 +81,7 @@ export default function ProtocolPage() {
 					<h1 className="font-heading font-semibold text-2xl">Protocolo</h1>
 					<p className="text-muted-foreground text-sm">
 						Definição do instrumento: suítes, tarefas, questões e personas.
-						Sessões antigas executaram versões anteriores — os códigos de tarefa
+						Sessões antigas executaram versões anteriores. Os códigos de tarefa
 						foram renumerados entre versões, então escolha a versão que a sessão
 						analisada usou.
 					</p>

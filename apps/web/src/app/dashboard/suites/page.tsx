@@ -40,7 +40,7 @@ export default function SuitesPage() {
 	return (
 		<div className="flex flex-col gap-6">
 			<DashboardPageHeader
-				title="Registro macro — por suíte (ISO 9241-11)"
+				title="Registro macro, por suíte (ISO 9241-11)"
 				description="Uma linha por etapa, só sessões concluídas. Eficácia e eficiência vêm das tarefas da etapa; satisfação, do questionário pós-suíte. Selecione uma linha para ver o detalhamento do cálculo."
 			/>
 

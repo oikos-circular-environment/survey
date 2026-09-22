@@ -37,7 +37,7 @@ export default function OverviewPage() {
 		<div className="flex flex-col gap-6">
 			<DashboardPageHeader
 				title="Visão geral"
-				description="Pesquisa de usabilidade — protocolo oikos-walkthrough"
+				description="Pesquisa de usabilidade, protocolo oikos-walkthrough"
 			/>
 
 			{overview.data ? (

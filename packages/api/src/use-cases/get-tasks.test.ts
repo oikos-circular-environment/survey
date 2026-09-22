@@ -85,7 +85,7 @@ function inProgressTaskCheckpoint(sessionId: string): UsabilityCheckpointInput {
 	};
 }
 
-describe("getTasks — exclusão de execuções em andamento (T07)", () => {
+describe("getTasks, exclusão de execuções em andamento (T07)", () => {
 	test("tarefa sem finished_at não entra em tentativas nem eficiencia", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
@@ -185,7 +185,7 @@ describe("getTasks — exclusão de execuções em andamento (T07)", () => {
 	});
 });
 
-describe("getTasks — eficácia e tempo por tarefa (Lima et al., 2013)", () => {
+describe("getTasks, eficácia e tempo por tarefa (Lima et al., 2013)", () => {
 	test("eficácia conta participantes que concluíram; tempo médio só das conclusões", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {

@@ -24,7 +24,7 @@ for (let i = 0; i < SESSION_COUNT; i++) {
 	const factory = buildFactorySession(seeded);
 	const { sessionId } = await insertFactorySession(db, factory);
 	console.log(
-		`[${i + 1}/${SESSION_COUNT}] ${factory.session.persona} ${factory.session.status} — ${sessionId}`,
+		`[${i + 1}/${SESSION_COUNT}] ${factory.session.persona} ${factory.session.status}, ${sessionId}`,
 	);
 }
 

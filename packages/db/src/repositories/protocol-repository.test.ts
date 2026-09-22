@@ -106,7 +106,7 @@ describe("ProtocolRepository.setProtocolVersionActive", () => {
 		}
 	});
 
-	test("desativar não exige ativar outra — desliga tudo para a key", async () => {
+	test("desativar não exige ativar outra, desliga tudo para a key", async () => {
 		const ephemeral = await createEphemeralDatabase();
 		try {
 			const repository = new ProtocolRepository(ephemeral.db);

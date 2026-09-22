@@ -63,7 +63,7 @@ function partialSuiteCheckpoint(
 	};
 }
 
-describe("getOverview — recorte e cálculo global", () => {
+describe("getOverview, recorte e cálculo global", () => {
 	test("métricas usam só sessões concluídas e a eficácia vem das tarefas, não do outcome da suíte", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
@@ -121,7 +121,7 @@ describe("getOverview — recorte e cálculo global", () => {
 	});
 });
 
-describe("getPersonas — recorte por persona", () => {
+describe("getPersonas, recorte por persona", () => {
 	test("persona com tarefas parciais tem eficácia proporcional e persona sem sessões fica sem métrica", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {

@@ -29,7 +29,7 @@ const LEGACY_SYNC_PREFIX = "V9SYNC-";
 
 if (!env.DATABASE_URL.includes("localhost")) {
 	throw new Error(
-		`DATABASE_URL não aponta pra localhost (${env.DATABASE_URL}) — abortando pra não arriscar rodar isso em produção.`,
+		`DATABASE_URL não aponta pra localhost (${env.DATABASE_URL}), abortando pra não arriscar rodar isso em produção.`,
 	);
 }
 

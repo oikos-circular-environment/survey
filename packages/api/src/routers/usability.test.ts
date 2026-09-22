@@ -42,7 +42,7 @@ function callerFor(headers: Headers) {
 	return createCaller(ctx);
 }
 
-describe("router usability — borda pública (S08)", () => {
+describe("router usability, borda pública (S08)", () => {
 	beforeAll(async () => {
 		setup = await setupUsabilityTest();
 	});
@@ -207,7 +207,7 @@ describe("router usability — borda pública (S08)", () => {
 	});
 });
 
-describe("router usability — protocol() com versão inativa (S15)", () => {
+describe("router usability, protocol() com versão inativa (S15)", () => {
 	test("usability.protocol() devolve null quando nenhuma versão da key está ativa", async () => {
 		const inactiveSetup = await setupUsabilityTest();
 		try {

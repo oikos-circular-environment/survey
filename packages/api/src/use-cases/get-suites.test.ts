@@ -70,7 +70,7 @@ function inProgressSuiteCheckpoint(
 	};
 }
 
-describe("getSuites — exclusão de execuções em andamento (T07)", () => {
+describe("getSuites, exclusão de execuções em andamento (T07)", () => {
 	test("execução sem finished_at não entra em execucoes nem em tempoMedioMs (tempo das tarefas concluídas)", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {

@@ -27,7 +27,7 @@ export default function CommentsPage() {
 		<div className="flex flex-col gap-6">
 			<DashboardPageHeader
 				title="Comentários livres"
-				description="Sem agregação — o único dado textual do instrumento"
+				description="Sem agregação, o único dado textual do instrumento"
 			/>
 
 			{comments.data && comments.data.length === 0 ? (

@@ -87,7 +87,7 @@ export const HEURISTICS: readonly HeuristicDefinition[] = [
 		name: "Flexibilidade e eficiência de uso",
 		measured: false,
 		reason:
-			"Medição objetiva (tempo ativo por tarefa, já reportado nas tabelas de Eficiência) — a heurística trata de atalhos para usuários experientes, e como cada participante faz uma única sessão, não há base de comparação para avaliar isso.",
+			"Medição objetiva (tempo ativo por tarefa, já reportado nas tabelas de Eficiência). A heurística trata de atalhos para usuários experientes, e como cada participante faz uma única sessão, não há base de comparação para avaliar isso.",
 	},
 	{
 		id: "H8",
@@ -107,7 +107,7 @@ export const HEURISTICS: readonly HeuristicDefinition[] = [
 		name: "Ajuda e documentação",
 		measured: false,
 		reason:
-			"Não avaliada — o sistema não disponibiliza central de ajuda, tela de dúvidas ou documentação ao usuário na versão avaliada.",
+			"Não avaliada, o sistema não disponibiliza central de ajuda, tela de dúvidas ou documentação ao usuário na versão avaliada.",
 	},
 ] as const;
 
