@@ -8,7 +8,6 @@ import { getHeuristics } from "../use-cases/get-heuristics";
 import { getOverview } from "../use-cases/get-overview";
 import { getPersonas } from "../use-cases/get-personas";
 import { getProtocol, getProtocolByVersionId } from "../use-cases/get-protocol";
-import { getSuitePersonas } from "../use-cases/get-suite-personas";
 import { getSuites } from "../use-cases/get-suites";
 import { getTasks } from "../use-cases/get-tasks";
 import { getTesterDetail } from "../use-cases/get-tester-detail";
@@ -48,10 +47,6 @@ export const dashboardRouter = router({
 	personas: dashboardProcedure
 		.input(dateRangeInput)
 		.query(({ ctx, input }) => getPersonas(ctx.repositories, input)),
-
-	suitePersonas: dashboardProcedure
-		.input(dateRangeInput)
-		.query(({ ctx, input }) => getSuitePersonas(ctx.repositories, input)),
 
 	demographics: dashboardProcedure
 		.input(dateRangeInput)

@@ -13,17 +13,14 @@ import { useQuery } from "@tanstack/react-query";
 
 import { ClassificationBadge } from "@/components/dashboard/classification-badge";
 import { useDateRange } from "@/components/dashboard/date-range-context";
+import {
+	formatPercent,
+	formatRate,
+	formatSatisfaction,
+} from "@/components/dashboard/metric-format";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { PersonaSwatch } from "@/components/dashboard/persona-swatch";
 import { trpc } from "@/utils/trpc";
-
-function formatPercent(value: number): string {
-	return `${(value * 100).toFixed(0)}%`;
-}
-
-function formatRate(value: number): string {
-	return value.toFixed(2).replace(".", ",");
-}
 
 export default function PersonasPage() {
 	const { range } = useDateRange();
@@ -35,7 +32,7 @@ export default function PersonasPage() {
 		<div className="flex flex-col gap-6">
 			<DashboardPageHeader
 				title="Comparação entre personas"
-				description="Todas as métricas agregadas por perfil de participante"
+				description="Métricas por perfil de participante, só sessões concluídas. Eficácia e eficiência vêm das tarefas; satisfação, do questionário pós-suíte."
 			/>
 
 			<Card>
@@ -66,14 +63,18 @@ export default function PersonasPage() {
 									</TableCell>
 									<TableCell className="text-right">
 										{formatPercent(persona.eficacia)}
+										{persona.tarefasRealizadas > 0 ? (
+											<span className="ml-1 text-muted-foreground text-xs">
+												({persona.tarefasConcluidas}/{persona.tarefasRealizadas}
+												)
+											</span>
+										) : null}
 									</TableCell>
 									<TableCell className="text-right">
 										{formatRate(persona.eficiencia)}
 									</TableCell>
 									<TableCell className="text-right">
-										{persona.satisfacaoMedia > 0
-											? `${formatRate(persona.satisfacaoMedia)} / 5`
-											: "—"}
+										{formatSatisfaction(persona.satisfacaoMedia)}
 									</TableCell>
 									<TableCell className="text-right">
 										{formatRate(persona.nivelDeUsabilidade)}

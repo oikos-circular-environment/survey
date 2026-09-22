@@ -1,24 +1,21 @@
-import {
-	classificar,
-	nivelDeUsabilidade,
-	satisfacaoTaxa,
-} from "@oikos-circular-environment/survey-db/metrics/index";
 import type {
 	DateRange,
 	Repositories,
 } from "@oikos-circular-environment/survey-db/repositories/index";
 
-import { getSuites } from "./get-suites";
-import { groupBy, mean } from "./shared/aggregate";
+import { groupBy } from "./shared/aggregate";
+import {
+	calcularUsabilidade,
+	limitesDeEficiencia,
+	type UsabilityMetrics,
+} from "./shared/usability";
 
-export interface OverviewStats {
+export interface OverviewStats extends UsabilityMetrics {
+	/** Sessões da versão no período, em qualquer status. */
 	totalSessions: number;
 	porStatus: Record<string, number>;
-	eficaciaMedia: number;
-	eficienciaMedia: number;
-	satisfacaoTaxaMedia: number;
-	nivelDeUsabilidadeMedio: number;
-	classificacao: string;
+	/** Sessões concluídas: o N sobre o qual as métricas são calculadas. */
+	sessoesConcluidas: number;
 }
 
 export interface SessionsPerDay {
@@ -32,44 +29,34 @@ export interface OverviewResult {
 }
 
 /**
- * Alimenta a Visão geral: os 4 cards de estatística (total de sessões, Eficácia,
- * Eficiência, Nível de Usabilidade médios) e a série diária por persona que vira o
- * area chart.
- *
- * As médias de Eficácia/Eficiência/Nível de Usabilidade são a média NÃO PONDERADA das
- * métricas por suíte (`getSuites`) — cada suíte pesa igual independente de quantas
- * execuções teve, mesma convenção usada no card "Nível de Usabilidade" desenhado no
- * Pencil. `satisfacaoTaxaMedia` (Ts) é exposto à parte para permitir montar a fórmula
- * substituída na UI (Te/Tf/Ts + resultado), como no card do Pencil.
+ * Visão geral: contagem de sessões por status e Te/Tf/Ts/Us globais sobre todas as
+ * tarefas e respostas das sessões concluídas, como em Lima et al. (2013), sem média
+ * entre suítes. A série diária conta só sessões concluídas.
  */
 export async function getOverview(
 	repositories: Repositories,
 	range: DateRange,
 ): Promise<OverviewResult> {
-	const [sessions, suites] = await Promise.all([
-		repositories.sessions.findInRange(range),
-		getSuites(repositories, range),
-	]);
+	const protocolVersionId =
+		await repositories.protocol.getLatestProtocolVersionId();
+	const [sessions, completedSessions, taskRuns, satisfactionAnswers] =
+		await Promise.all([
+			repositories.sessions.findInRange(range, protocolVersionId),
+			repositories.sessions.findCompletedInRange(range, protocolVersionId),
+			repositories.taskRuns.findInRange(range, protocolVersionId),
+			repositories.answers.findByQuestionKey(
+				protocolVersionId,
+				"satisfaction",
+				range,
+			),
+		]);
 
 	const porStatus: Record<string, number> = {};
 	for (const session of sessions) {
 		porStatus[session.status] = (porStatus[session.status] ?? 0) + 1;
 	}
 
-	const eficaciaMedia = mean(suites.map((suite) => suite.eficacia));
-	const eficienciaMedia = mean(suites.map((suite) => suite.eficiencia));
-	const satisfacaoTaxaMedia = mean(
-		suites
-			.filter((suite) => suite.satisfacaoMedia > 0)
-			.map((suite) => satisfacaoTaxa(suite.satisfacaoMedia)),
-	);
-	const nivelDeUsabilidadeMedio = nivelDeUsabilidade({
-		te: eficaciaMedia,
-		tf: eficienciaMedia,
-		ts: satisfacaoTaxaMedia,
-	});
-
-	const sessionsByDay = groupBy(sessions, (session) =>
+	const sessionsByDay = groupBy(completedSessions, (session) =>
 		dayKey(session.startedAt),
 	);
 	const sessoesPorDia: SessionsPerDay[] = [...sessionsByDay.entries()]
@@ -86,11 +73,12 @@ export async function getOverview(
 		stats: {
 			totalSessions: sessions.length,
 			porStatus,
-			eficaciaMedia,
-			eficienciaMedia,
-			satisfacaoTaxaMedia,
-			nivelDeUsabilidadeMedio,
-			classificacao: classificar(nivelDeUsabilidadeMedio),
+			sessoesConcluidas: completedSessions.length,
+			...calcularUsabilidade(
+				taskRuns,
+				satisfactionAnswers,
+				limitesDeEficiencia(taskRuns),
+			),
 		},
 		sessoesPorDia,
 	};

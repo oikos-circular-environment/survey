@@ -1,36 +1,25 @@
-import {
-	classificar,
-	eficacia,
-	eficiencia,
-	nivelDeUsabilidade,
-	satisfacaoMedia,
-	satisfacaoTaxa,
-} from "@oikos-circular-environment/survey-db/metrics/index";
 import type {
 	DateRange,
 	Repositories,
 } from "@oikos-circular-environment/survey-db/repositories/index";
 
-import { bounds, groupBy } from "./shared/aggregate";
+import { groupBy } from "./shared/aggregate";
+import {
+	calcularUsabilidade,
+	limitesDeEficiencia,
+	type UsabilityMetrics,
+} from "./shared/usability";
 
-export interface PersonaMetrics {
+export interface PersonaMetrics extends UsabilityMetrics {
 	key: string;
 	label: string;
 	participantes: number;
-	eficacia: number;
-	eficiencia: number;
-	satisfacaoMedia: number;
-	nivelDeUsabilidade: number;
-	classificacao: string;
 }
 
 /**
- * Alimenta a tabela "Por persona" do dashboard.
- *
- * Reaproveita os mesmos limites de eficiência de nível de SUÍTE que `getSuites` usa
- * (calculados sobre todas as execuções de suíte do período) — o Tf de uma persona é a
- * média de eficiência das suítes que ela executou, então precisa estar na mesma escala
- * dos Tf's individuais de suíte, não numa escala própria por persona.
+ * Métricas por persona sobre as sessões concluídas. Te e Tf vêm das tarefas das
+ * sessões da persona, com os limites de Tf do recorte inteiro para ficarem na mesma
+ * escala das outras telas; Ts vem do questionário pós-suíte dessas sessões.
  */
 export async function getPersonas(
 	repositories: Repositories,
@@ -38,11 +27,11 @@ export async function getPersonas(
 ): Promise<PersonaMetrics[]> {
 	const protocolVersionId =
 		await repositories.protocol.getLatestProtocolVersionId();
-	const [personaDefs, sessions, suiteRuns, satisfactionAnswers] =
+	const [personaDefs, sessions, taskRuns, satisfactionAnswers] =
 		await Promise.all([
 			repositories.protocol.getPersonaDefs(protocolVersionId),
-			repositories.sessions.findInRange(range),
-			repositories.suiteRuns.findInRange(range),
+			repositories.sessions.findCompletedInRange(range, protocolVersionId),
+			repositories.taskRuns.findInRange(range, protocolVersionId),
 			repositories.answers.findByQuestionKey(
 				protocolVersionId,
 				"satisfaction",
@@ -50,46 +39,22 @@ export async function getPersonas(
 			),
 		]);
 
-	const personaBySessionId = new Map(sessions.map((s) => [s.id, s.persona]));
-	const efficiencyBounds = bounds(suiteRuns.map((run) => run.activeMs));
-
+	const efficiencyBounds = limitesDeEficiencia(taskRuns);
 	const sessionsByPersona = groupBy(sessions, (s) => s.persona);
-	const runsByPersona = groupBy(suiteRuns, (run) => run.persona);
+	const tasksByPersona = groupBy(taskRuns, (run) => run.persona);
 	const satisfactionByPersona = groupBy(
-		satisfactionAnswers.filter((answer) => answer.valueNumber !== null),
-		(answer) => personaBySessionId.get(answer.sessionId) ?? "",
+		satisfactionAnswers,
+		(answer) => answer.persona,
 	);
 
-	return personaDefs.map((persona) => {
-		const runs = runsByPersona.get(persona.key) ?? [];
-		const outcomes = runs
-			.map((run) => run.outcome)
-			.filter(
-				(outcome): outcome is "YES" | "PARTIAL" | "NO" => outcome !== null,
-			);
-
-		const te = eficacia(outcomes);
-		const tf = eficiencia(
-			runs.map((run) => run.activeMs),
+	return personaDefs.map((persona) => ({
+		key: persona.key,
+		label: persona.label,
+		participantes: (sessionsByPersona.get(persona.key) ?? []).length,
+		...calcularUsabilidade(
+			tasksByPersona.get(persona.key) ?? [],
+			satisfactionByPersona.get(persona.key) ?? [],
 			efficiencyBounds,
-		);
-		const satMedia = satisfacaoMedia(
-			(satisfactionByPersona.get(persona.key) ?? []).map(
-				(a) => a.valueNumber as number,
-			),
-		);
-		const ts = satMedia === 0 ? 0 : satisfacaoTaxa(satMedia);
-		const nivel = nivelDeUsabilidade({ te, tf, ts });
-
-		return {
-			key: persona.key,
-			label: persona.label,
-			participantes: (sessionsByPersona.get(persona.key) ?? []).length,
-			eficacia: te,
-			eficiencia: tf,
-			satisfacaoMedia: satMedia,
-			nivelDeUsabilidade: nivel,
-			classificacao: classificar(nivel),
-		};
-	});
+		),
+	}));
 }

@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { MySql2Database } from "drizzle-orm/mysql2";
 import { ulid } from "ulid";
 
@@ -16,6 +16,7 @@ import type {
 import type * as schema from "../schema/index";
 import { protocolVersions } from "../schema/protocol";
 import { type DateRange, dateRangeFilter } from "./date-range";
+import { completedSessionsOf } from "./study-scope";
 
 type Db = MySql2Database<typeof schema>;
 
@@ -56,6 +57,18 @@ export interface SessionDetailRow {
 	wallMs: number;
 	abandonReason: string | null;
 }
+
+const sessionRowColumns = {
+	id: sessions.id,
+	persona: sessions.persona,
+	status: sessions.status,
+	startedAt: sessions.startedAt,
+	ageRange: sessions.ageRange,
+	educationLevel: sessions.educationLevel,
+	chainRole: sessions.chainRole,
+	wasteContactFrequency: sessions.wasteContactFrequency,
+	appExperience: sessions.appExperience,
+};
 
 const detailColumns = {
 	id: sessions.id,
@@ -152,22 +165,36 @@ export interface AbandonSessionInput {
 export class SessionsRepository {
 	constructor(private readonly db: Db) {}
 
-	/** Sessões no período, com os campos de screener usados na Caracterização/Visão geral. */
-	async findInRange(range: DateRange): Promise<SessionRow[]> {
+	/** Sessões da versão no período, em qualquer status — só para contagem por status. */
+	async findInRange(
+		range: DateRange,
+		protocolVersionId: string,
+	): Promise<SessionRow[]> {
 		return this.db
-			.select({
-				id: sessions.id,
-				persona: sessions.persona,
-				status: sessions.status,
-				startedAt: sessions.startedAt,
-				ageRange: sessions.ageRange,
-				educationLevel: sessions.educationLevel,
-				chainRole: sessions.chainRole,
-				wasteContactFrequency: sessions.wasteContactFrequency,
-				appExperience: sessions.appExperience,
-			})
+			.select(sessionRowColumns)
 			.from(sessions)
-			.where(dateRangeFilter(sessions.startedAt, range));
+			.where(
+				and(
+					eq(sessions.protocolVersionId, protocolVersionId),
+					dateRangeFilter(sessions.startedAt, range),
+				),
+			);
+	}
+
+	/** Sessões concluídas da versão no período, com os campos de screener. */
+	async findCompletedInRange(
+		range: DateRange,
+		protocolVersionId: string,
+	): Promise<SessionRow[]> {
+		return this.db
+			.select(sessionRowColumns)
+			.from(sessions)
+			.where(
+				and(
+					completedSessionsOf(protocolVersionId),
+					dateRangeFilter(sessions.startedAt, range),
+				),
+			);
 	}
 
 	/**

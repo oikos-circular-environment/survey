@@ -39,11 +39,6 @@ const RESULTS_ITEMS = [
 	{ href: "/dashboard/suites", label: "Por suíte", icon: Table2 },
 	{ href: "/dashboard/tasks", label: "Por tarefa", icon: ListChecks },
 	{ href: "/dashboard/personas", label: "Por persona", icon: UsersRound },
-	{
-		href: "/dashboard/suite-personas",
-		label: "Suíte → personas",
-		icon: UsersRound,
-	},
 ];
 
 const MANAGEMENT_ITEMS = [

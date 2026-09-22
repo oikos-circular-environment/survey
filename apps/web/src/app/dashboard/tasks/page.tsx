@@ -22,38 +22,40 @@ import { Download } from "lucide-react";
 import * as React from "react";
 
 import { useDateRange } from "@/components/dashboard/date-range-context";
+import {
+	formatMinutes,
+	formatPercent,
+	formatRate,
+} from "@/components/dashboard/metric-format";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { trpc } from "@/utils/trpc";
 
 const PAGE_SIZE = 20;
-
-function formatPercent(value: number): string {
-	return `${(value * 100).toFixed(0)}%`;
-}
-
-function formatRate(value: number): string {
-	return value.toFixed(2).replace(".", ",");
-}
 
 interface TaskRow {
 	code: string;
 	title: string;
 	suiteCode: string;
 	tentativas: number;
-	eficacia: number;
-	eficiencia: number;
+	concluidas: number;
+	eficacia: number | null;
+	tempoMedioMs: number | null;
+	eficiencia: number | null;
 }
 
 function toCsv(rows: TaskRow[]): string {
-	const header = "Código,Título,Suíte,Tentativas,Eficácia,Eficiência";
+	const header =
+		"Código,Título,Suíte,Realizaram,Concluíram,Eficácia,Tempo médio (ms),Eficiência";
 	const lines = rows.map((r) =>
 		[
 			r.code,
 			`"${r.title.replace(/"/g, '""')}"`,
 			r.suiteCode,
 			r.tentativas,
-			r.eficacia,
-			r.eficiencia,
+			r.concluidas,
+			r.eficacia ?? "",
+			r.tempoMedioMs ?? "",
+			r.eficiencia ?? "",
 		].join(","),
 	);
 	return [header, ...lines].join("\n");
@@ -104,7 +106,7 @@ export default function TasksPage() {
 		<div className="flex flex-col gap-6">
 			<DashboardPageHeader
 				title="Tarefas"
-				description="Uma linha por tarefa, com a suíte à qual pertence. Eficácia conta só outcome YES."
+				description="Uma linha por tarefa, só sessões concluídas. Eficácia = participantes que concluíram / que realizaram; tempo médio e eficiência consideram só as conclusões."
 				actions={
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
@@ -133,8 +135,10 @@ export default function TasksPage() {
 								<TableHead>Código</TableHead>
 								<TableHead>Título</TableHead>
 								<TableHead>Suíte</TableHead>
-								<TableHead className="text-right">Tentativas</TableHead>
+								<TableHead className="text-right">Realizaram</TableHead>
+								<TableHead className="text-right">Concluíram</TableHead>
 								<TableHead className="text-right">Eficácia</TableHead>
+								<TableHead className="text-right">Tempo médio (min)</TableHead>
 								<TableHead className="text-right">Eficiência</TableHead>
 							</TableRow>
 						</TableHeader>
@@ -150,7 +154,13 @@ export default function TasksPage() {
 										{task.tentativas}
 									</TableCell>
 									<TableCell className="text-right">
+										{task.concluidas}
+									</TableCell>
+									<TableCell className="text-right">
 										{formatPercent(task.eficacia)}
+									</TableCell>
+									<TableCell className="text-right">
+										{formatMinutes(task.tempoMedioMs)}
 									</TableCell>
 									<TableCell className="text-right">
 										{formatRate(task.eficiencia)}

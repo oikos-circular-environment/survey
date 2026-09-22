@@ -7,6 +7,7 @@ import { sendUsabilityCheckpoint } from "./send-usability-checkpoint";
 import { upsertUsabilitySession } from "./upsert-usability-session";
 import {
 	buildSessionUpsertInput,
+	completeSession,
 	setupUsabilityTest,
 } from "./usability-test-helpers";
 
@@ -70,7 +71,7 @@ function inProgressSuiteCheckpoint(
 }
 
 describe("getSuites — exclusão de execuções em andamento (T07)", () => {
-	test("execução sem finished_at não entra em execucoes nem em tempoMedioMs", async () => {
+	test("execução sem finished_at não entra em execucoes nem em tempoMedioMs (tempo das tarefas concluídas)", async () => {
 		const { ephemeral, repositories } = await setupUsabilityTest();
 		try {
 			const finishedSession = buildSessionUpsertInput();
@@ -79,6 +80,7 @@ describe("getSuites — exclusão de execuções em andamento (T07)", () => {
 				repositories,
 				finishedSuiteCheckpoint(finishedSession.session_id),
 			);
+			await completeSession(repositories, finishedSession.session_id);
 
 			const inProgressSession = buildSessionUpsertInput();
 			await upsertUsabilitySession(repositories, inProgressSession);
@@ -92,7 +94,8 @@ describe("getSuites — exclusão de execuções em andamento (T07)", () => {
 			if (!s1) throw new Error("esperava linha S1");
 
 			expect(s1.execucoes).toBe(1);
-			expect(s1.tempoMedioMs).toBe(120_000);
+			expect(s1.tempoMedioMs).toBe(30_000);
+			expect(s1.satisfacaoMedia).toBe(4);
 		} finally {
 			await ephemeral.destroy();
 		}
@@ -107,6 +110,7 @@ describe("getSuites — exclusão de execuções em andamento (T07)", () => {
 				repositories,
 				finishedSuiteCheckpoint(sessionA.session_id),
 			);
+			await completeSession(repositories, sessionA.session_id);
 
 			const sessionB = buildSessionUpsertInput();
 			await upsertUsabilitySession(repositories, sessionB);
@@ -114,6 +118,7 @@ describe("getSuites — exclusão de execuções em andamento (T07)", () => {
 				repositories,
 				finishedSuiteCheckpoint(sessionB.session_id),
 			);
+			await completeSession(repositories, sessionB.session_id);
 
 			const antes = await getSuites(repositories, RANGE);
 

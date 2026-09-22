@@ -5,6 +5,7 @@ import { sessions, suiteRuns, taskRuns } from "../schema/collection";
 import type * as schema from "../schema/index";
 import { taskDefs } from "../schema/protocol";
 import { type DateRange, dateRangeFilter } from "./date-range";
+import { completedSessionsOf } from "./study-scope";
 
 type Db = MySql2Database<typeof schema>;
 
@@ -12,6 +13,8 @@ export interface TaskRunRow {
 	taskId: string;
 	suiteRunId: string;
 	suiteId: string;
+	sessionId: string;
+	persona: string;
 	outcome: "YES" | "PARTIAL" | "NO" | null;
 	activeMs: number;
 }
@@ -32,13 +35,21 @@ export interface SuiteTaskRunRow {
 export class TaskRunsRepository {
 	constructor(private readonly db: Db) {}
 
-	/** Todas as execuções de tarefa no período, com o id da suíte-mãe embutido. */
-	async findInRange(range: DateRange): Promise<TaskRunRow[]> {
+	/**
+	 * Execuções de tarefa finalizadas das sessões concluídas da versão, no período, com
+	 * suíte, sessão e persona embutidas.
+	 */
+	async findInRange(
+		range: DateRange,
+		protocolVersionId: string,
+	): Promise<TaskRunRow[]> {
 		return this.db
 			.select({
 				taskId: taskRuns.taskId,
 				suiteRunId: taskRuns.suiteRunId,
 				suiteId: suiteRuns.suiteId,
+				sessionId: suiteRuns.sessionId,
+				persona: sessions.persona,
 				outcome: taskRuns.outcome,
 				activeMs: taskRuns.activeMs,
 			})
@@ -47,6 +58,7 @@ export class TaskRunsRepository {
 			.innerJoin(sessions, eq(suiteRuns.sessionId, sessions.id))
 			.where(
 				and(
+					completedSessionsOf(protocolVersionId),
 					dateRangeFilter(sessions.startedAt, range),
 					isNotNull(taskRuns.finishedAt),
 				),

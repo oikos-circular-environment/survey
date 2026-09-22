@@ -16,7 +16,6 @@ const PAGES = [
 	{ path: "/dashboard/suites", name: "suites" },
 	{ path: "/dashboard/tasks", name: "tasks" },
 	{ path: "/dashboard/personas", name: "personas" },
-	{ path: "/dashboard/suite-personas", name: "suite-personas" },
 	{ path: "/dashboard/demographics", name: "demographics" },
 	{ path: "/dashboard/heuristics", name: "heuristics" },
 	{ path: "/dashboard/domain-items", name: "domain-items" },

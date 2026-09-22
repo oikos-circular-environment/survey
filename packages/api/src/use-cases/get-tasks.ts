@@ -1,21 +1,27 @@
-import {
-	eficacia,
-	eficiencia,
-} from "@oikos-circular-environment/survey-db/metrics/index";
 import type {
 	DateRange,
 	Repositories,
 } from "@oikos-circular-environment/survey-db/repositories/index";
 
-import { bounds, groupBy } from "./shared/aggregate";
+import { groupBy } from "./shared/aggregate";
+import {
+	calcularUsabilidade,
+	type EfficiencyBoundsMs,
+	limitesDeEficiencia,
+} from "./shared/usability";
 
 export interface TaskMetrics {
 	code: string;
 	title: string;
 	suiteCode: string;
+	/** Participantes que realizaram a tarefa (ΣTAR da tarefa). */
 	tentativas: number;
-	eficacia: number;
-	eficiencia: number;
+	/** Participantes que concluíram a tarefa (ΣTARc da tarefa). */
+	concluidas: number;
+	eficacia: number | null;
+	tempoMedioMs: number | null;
+	eficienciaBoundsMs: EfficiencyBoundsMs;
+	eficiencia: number | null;
 }
 
 export interface PaginatedTasks {
@@ -32,12 +38,9 @@ export interface GetTasksInput {
 }
 
 /**
- * Alimenta a tabela micro (por tarefa) do dashboard, paginada.
- *
- * Os limites `min`/`max` de eficiência vêm de todas as execuções de TAREFA do período —
- * uma escala própria, bem menor que a de suíte (segundos/minutos por tarefa contra
- * minutos/dezenas de minutos por suíte). Nunca reaproveitar os limites de
- * `getSuites` aqui — foi um bug real corrigido durante o design do dashboard.
+ * Tabela por tarefa, no formato da Tabela 1 de Lima et al. (2013): quantos
+ * participantes realizaram e concluíram cada tarefa, tempo médio das conclusões e Tf
+ * contra os extremos de todas as tarefas concluídas do recorte.
  */
 export async function getTasks(
 	repositories: Repositories,
@@ -47,30 +50,28 @@ export async function getTasks(
 		await repositories.protocol.getLatestProtocolVersionId();
 	const [taskDefs, taskRuns] = await Promise.all([
 		repositories.protocol.getTaskDefs(protocolVersionId),
-		repositories.taskRuns.findInRange(range),
+		repositories.taskRuns.findInRange(range, protocolVersionId),
 	]);
 
-	const efficiencyBounds = bounds(taskRuns.map((run) => run.activeMs));
+	const efficiencyBounds = limitesDeEficiencia(taskRuns);
 	const runsByTaskId = groupBy(taskRuns, (run) => run.taskId);
 
 	const items: TaskMetrics[] = taskDefs.map((task) => {
-		const runs = runsByTaskId.get(task.id) ?? [];
-		const outcomes = runs
-			.map((run) => run.outcome)
-			.filter(
-				(outcome): outcome is "YES" | "PARTIAL" | "NO" => outcome !== null,
-			);
-
+		const metrics = calcularUsabilidade(
+			runsByTaskId.get(task.id) ?? [],
+			[],
+			efficiencyBounds,
+		);
 		return {
 			code: task.code,
 			title: task.title,
 			suiteCode: task.suiteCode,
-			tentativas: runs.length,
-			eficacia: eficacia(outcomes),
-			eficiencia: eficiencia(
-				runs.map((run) => run.activeMs),
-				efficiencyBounds,
-			),
+			tentativas: metrics.tarefasRealizadas,
+			concluidas: metrics.tarefasConcluidas,
+			eficacia: metrics.eficacia,
+			tempoMedioMs: metrics.tempoMedioMs,
+			eficienciaBoundsMs: efficiencyBounds,
+			eficiencia: metrics.eficiencia,
 		};
 	});
 

@@ -1,17 +1,11 @@
 import { Badge } from "@survey/ui/components/badge";
 import { Card, CardContent, CardHeader } from "@survey/ui/components/card";
 
-function formatRate(value: number): string {
-	return value.toFixed(2).replace(".", ",");
-}
-
-function formatPercent(value: number): string {
-	return `${(value * 100).toFixed(0)}%`;
-}
-
-function formatMinutes(ms: number): string {
-	return (ms / 60000).toFixed(2).replace(".", ",");
-}
+import {
+	formatMinutes,
+	formatPercent,
+	formatRate,
+} from "@/components/dashboard/metric-format";
 
 interface FormulaCardProps {
 	label: string;
@@ -48,15 +42,18 @@ function FormulaCard({
 export interface SuiteCalculationDetail {
 	code: string;
 	title: string;
-	execucoes: number;
-	execucoesComYes: number;
-	eficacia: number;
-	tempoMedioMs: number;
+	tarefasRealizadas: number;
+	tarefasConcluidas: number;
+	eficacia: number | null;
+	tarefasCronometradas: number;
+	tempoMedioMs: number | null;
 	eficienciaBoundsMs: { min: number; max: number };
-	eficiencia: number;
-	satisfacaoMedia: number;
-	nivelDeUsabilidade: number;
-	classificacao: string;
+	eficiencia: number | null;
+	sessoesComSatisfacao: number;
+	satisfacaoMedia: number | null;
+	satisfacao: number | null;
+	nivelDeUsabilidade: number | null;
+	classificacao: string | null;
 }
 
 /**
@@ -90,13 +87,13 @@ export function CalculationDetailPanel({
 					<FormulaCard
 						label="Eficácia (Te)"
 						formula="Te = ΣTARc / ΣTAR"
-						substitution={`${suite.execucoesComYes} execuções com outcome YES / ${suite.execucoes} execuções totais`}
-						result={`Te = ${suite.execucoesComYes} / ${suite.execucoes} = ${formatRate(suite.eficacia)} → ${formatPercent(suite.eficacia)}`}
+						substitution={`${suite.tarefasConcluidas} tarefas concluídas (YES) / ${suite.tarefasRealizadas} tarefas realizadas`}
+						result={`Te = ${suite.tarefasConcluidas} / ${suite.tarefasRealizadas} = ${formatRate(suite.eficacia)} → ${formatPercent(suite.eficacia)}`}
 					/>
 					<FormulaCard
 						label="Eficiência (Tf)"
 						formula="Tf = 1 − tmed / (tmax − tmin)"
-						substitution={`tmed = ${formatMinutes(tmed)} min (${suite.code}) · tmin = ${formatMinutes(tmin)} min · tmax = ${formatMinutes(tmax)} min (extremos do período)`}
+						substitution={`tmed = ${formatMinutes(tmed)} min (${suite.tarefasCronometradas} tarefas concluídas de ${suite.code}) · tmin = ${formatMinutes(tmin)} min · tmax = ${formatMinutes(tmax)} min (extremos do período)`}
 						result={`Tf = 1 − ${formatMinutes(tmed)}/(${formatMinutes(tmax)}−${formatMinutes(tmin)}) = ${formatRate(suite.eficiencia)}`}
 					/>
 				</div>
@@ -105,27 +102,27 @@ export function CalculationDetailPanel({
 						label="Satisfação (Ts)"
 						formula="Ts = (média − 1) / 4"
 						substitution={
-							suite.satisfacaoMedia > 0
-								? `média = ${formatRate(suite.satisfacaoMedia)} (escala de concordância 1–5, resposta pós-suíte)`
+							suite.satisfacaoMedia !== null
+								? `média = ${formatRate(suite.satisfacaoMedia)} (escala 1–5, pós-suíte, ${suite.sessoesComSatisfacao} sessões)`
 								: "sem respostas de satisfação no período selecionado"
 						}
 						result={
-							suite.satisfacaoMedia > 0
-								? `Ts = (${formatRate(suite.satisfacaoMedia)} − 1) / 4 = ${formatRate((suite.satisfacaoMedia - 1) / 4)}`
-								: "Ts = 0 (sem dado)"
+							suite.satisfacaoMedia !== null
+								? `Ts = (${formatRate(suite.satisfacaoMedia)} − 1) / 4 = ${formatRate(suite.satisfacao)}`
+								: "Ts indisponível (sem dado)"
 						}
 					/>
 					<FormulaCard
 						accent
 						label="Nível de Usabilidade (Us)"
 						formula="Us = (Te + Tf + Ts) / 3"
-						substitution={`= (${formatRate(suite.eficacia)} + ${formatRate(suite.eficiencia)} + ${formatRate(suite.satisfacaoMedia > 0 ? (suite.satisfacaoMedia - 1) / 4 : 0)}) / 3`}
-						result={`= ${formatRate(suite.nivelDeUsabilidade)} → ${suite.classificacao}`}
+						substitution={`= (${formatRate(suite.eficacia)} + ${formatRate(suite.eficiencia)} + ${formatRate(suite.satisfacao)}) / 3`}
+						result={`= ${formatRate(suite.nivelDeUsabilidade)} → ${suite.classificacao ?? "sem dado"}`}
 					/>
 				</div>
 				<p className="text-muted-foreground text-xs">
-					tmin/tmax de eficiência são os extremos observados em todas as
-					execuções de suíte do período selecionado (não só desta suíte) — por
+					tmin/tmax de eficiência são o menor e o maior tempo entre todas as
+					tarefas concluídas do período selecionado (não só desta suíte), por
 					isso o mesmo intervalo aparece no cálculo de qualquer suíte.
 				</p>
 			</CardContent>
