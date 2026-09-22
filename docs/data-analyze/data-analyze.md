@@ -198,20 +198,41 @@ O aplicativo Oikos apresenta **nível ótimo de usabilidade**.
 
 As cinco personas do instrumento aparecem na tabela, inclusive as que não tiveram participantes no período. Apenas a persona Cidadão tem número de participantes suficiente para uma leitura própria, e seus resultados acompanham os do conjunto. Empresa de reciclagem e Órgão público têm um participante cada, e os valores descrevem esses casos individuais, sem permitir comparação entre grupos. O participante da persona Órgão público não concluiu nenhuma tarefa, o que leva eficácia e eficiência a zero. O nível de usabilidade de 0,25 decorre apenas da satisfação declarada.
 
-### 3.8. Indicadores complementares do questionário
+### 3.8. Heurísticas de Nielsen
 
-As médias dos itens associados às heurísticas de Nielsen (1994), em escala de 1 a 5, com 14 respostas por item, foram as seguintes:
+As heurísticas de usabilidade de Nielsen (1994) fundamentam as perguntas do questionário pós-etapa. Nielsen as concebeu como método de inspeção por especialista, e nem toda heurística admite tradução válida para uma pergunta respondida pelo próprio usuário. Por isso oito das dez são medidas pelo instrumento e duas não são, com o motivo declarado.
 
-| Heurística | Item | Média |
-|---|---|---|
-| H1 Visibilidade do status do sistema | O aplicativo deixou claro o que estava acontecendo | 4,64 |
-| H2 Correspondência com o mundo real | Os termos e as categorias fizeram sentido | 4,36 |
-| H3 Controle e liberdade do usuário | Sempre soube onde estava e como seguir | 4,29 |
-| H4 Consistência e padrões | As telas seguiram um padrão parecido | 4,64 |
-| H6 Reconhecimento em vez de memorização | Não precisei guardar informações entre telas | 4,43 |
-| H8 Design estético e minimalista | As telas mostraram o necessário | 4,50 |
+A Tabela 3 apresenta as dez heurísticas, o item do questionário que cobre cada uma e o resultado obtido com os 14 participantes. Os itens de concordância usam escala de 1 a 5, em que 1 é "discordo totalmente" e 5 é "concordo totalmente". Quanto maior a média, melhor a avaliação da heurística.
 
-Doze dos 14 participantes relataram não ter encontrado erro durante a etapa (86%). Os dois que relataram erro avaliaram a mensagem de recuperação com média 2,0 (H9). Os itens de relevância para o domínio também tiveram médias altas: 4,57 para "ajudaria a conectar pessoas e empresas da reciclagem" e 4,43 para "resolveria um problema real do meu dia a dia".
+**Tabela 3.** Cobertura e resultado das heurísticas de Nielsen (1994).
+
+| Heurística | Item do questionário | Medida | Resultado |
+|---|---|---|---|
+| H1 Visibilidade do status do sistema | "O aplicativo deixou claro o que estava acontecendo a cada passo." | Sim | 4,64 |
+| H2 Correspondência com o mundo real | "Os termos e as categorias usados nesta etapa fizeram sentido para mim." | Sim | 4,36 |
+| H3 Controle e liberdade do usuário | "Sempre soube onde eu estava e como seguir para o próximo passo." | Sim | 4,29 |
+| H4 Consistência e padrões | "As telas desta etapa seguiram um padrão parecido entre si." | Sim | 4,64 |
+| H5 Prevenção de erros | "Aconteceu algum erro nesta etapa?" (Sim ou Não) e, quando houve erro, "Quando algo deu errado, a mensagem me ajudou a entender o problema." | Sim | Prevenção: 12 de 14 etapas sem erro (85,7%). Recuperação: 2,00 (n = 2) |
+| H6 Reconhecimento em vez de memorização | "Consegui concluir as tarefas sem precisar guardar na cabeça informações de uma tela para usar em outra." | Sim | 4,43 |
+| H7 Flexibilidade e eficiência de uso | Nenhum | Não | A heurística trata de atalhos para usuários experientes. Como cada participante realiza uma única sessão, não há base de comparação para avaliá-la |
+| H8 Design estético e minimalista | "As telas mostraram o necessário, sem excesso de informação." | Sim | 4,50 |
+| H9 Ajudar a reconhecer, diagnosticar e recuperar-se de erros | "Quando algo deu errado, a mensagem me ajudou a entender o problema." | Sim | 2,00 (n = 2) |
+| H10 Ajuda e documentação | Nenhum | Não | O aplicativo não disponibiliza central de ajuda, tela de dúvidas ou documentação ao usuário na versão avaliada |
+
+A heurística H5 tem dois parâmetros, porque prevenção de erros é frequência de evento, e não grau de concordância. O primeiro parâmetro é a proporção de participantes que não encontraram erro, e quanto maior, melhor a prevenção. O segundo é condicional e só é respondido por quem encontrou erro, o que mede a qualidade da recuperação. A mesma pergunta de recuperação sustenta a H9, por isso as duas compartilham o resultado 2,00 e o mesmo número de respostas.
+
+Os resultados são altos e homogêneos nas heurísticas de concordância, entre 4,29 e 4,64, com o melhor desempenho em visibilidade do status e consistência das telas. O ponto crítico é a recuperação de erro. Os dois participantes que encontraram erro avaliaram a mensagem com 2,00 em 5, o que indica que o aplicativo comunica bem o que está acontecendo no fluxo normal, mas não explica o que fazer quando algo falha. O número de respostas é pequeno e o valor serve como indício, não como medida estável.
+
+### 3.9. Itens de relevância para o domínio
+
+Dois itens do questionário não derivam das heurísticas e medem a percepção de utilidade no contexto da economia circular, na mesma escala de 1 a 5.
+
+| Item | Média |
+|---|---|
+| "Esta etapa ajudaria a conectar melhor as pessoas e as empresas da reciclagem." | 4,57 |
+| "O que eu fiz nesta etapa resolveria um problema real do meu dia a dia." | 4,43 |
+
+As duas médias ficam acima de 4, o que indica que os participantes reconhecem utilidade prática no que fizeram, tanto para si quanto para a cadeia de reciclagem.
 
 ## 4. Interpretação dos resultados
 
