@@ -1,358 +1,227 @@
-# Análise dos dados do Teste de Usabilidade (protocolo oikos-walkthrough v11)
+# Avaliação do nível de usabilidade do aplicativo Oikos
 
-Documento de trabalho que antecede a escrita final dos resultados no Overleaf (`mestrado/overleaf/textuais/Avaliacao.tex`). Registra a metodologia de cálculo, a auditoria do dashboard do survey, as correções feitas nos dados e no código e os resultados obtidos com os dados corrigidos.
+## 1. Introdução
 
-Base de dados analisada: snapshot de produção de 17/09/2026 (`snapshots/survey_prod_20260917_155217.sql`), complementado pelos dois participantes de 18/09/2026 copiados da produção (sessões, execuções, respostas e eventos). Data do recorte: 22/09/2026.
+Este relatório apresenta a avaliação de usabilidade do aplicativo Oikos, plataforma móvel voltada ao ecossistema da economia circular de resíduos sólidos. A avaliação adota a definição da ISO 9241-11, segundo a qual usabilidade é a medida na qual um produto pode ser usado por usuários específicos para alcançar objetivos específicos com eficácia, eficiência e satisfação em um contexto específico de uso (ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS, 2002).
 
-## 1. Contexto
+A operacionalização dessas três dimensões segue a metodologia de Lima, Oliveira e Santana (2013), que a aplicaram na avaliação da Biblioteca Virtual em Saúde (BVS). A metodologia expressa eficácia, eficiência e satisfação como taxas adimensionais entre 0 e 1 e as combina em uma medida única de nível de usabilidade. O objetivo deste relatório é descrever o método empregado, orientar a interpretação dos indicadores e apresentar os resultados obtidos.
 
-O Teste de Usabilidade segue o protocolo descrito em `mestrado/reference/plans/oikos-walkthrough.md`. É autoaplicado dentro do próprio aplicativo Oikos, sem avaliador presente. O participante escolhe a persona, responde a caracterização, executa as tarefas no app real e responde o questionário pós-suíte. A conclusão de cada tarefa e o tempo ativo de execução são capturados automaticamente pelo aplicativo, a partir de sinais de sucesso (chamada de API, tela visitada ou evento de interface).
+## 2. Método
 
-O documento do protocolo ainda descreve a versão 9 (5 suítes, 20 tarefas). A versão vigente é a **11**, publicada em 31/08/2026, que reduziu o instrumento a **uma única suíte (S1, "Teste de Usabilidade") com 8 tarefas, comum a todas as personas**:
+### 2.1. Caracterização do teste
 
-| Código | Tarefa | Sinal de sucesso |
-|---|---|---|
-| T8 | Usar os filtros de Pontos de Coleta | `GET /v1/market` com raio diferente do inicial, categoria ou busca por texto |
-| T11 | Visualizar os detalhes de uma empresa | tela `/market/[companyId]` |
-| T12 | Visualizar o mapa de denúncias | `GET /v1/complaints/map` ou tela `/complaints` |
-| T13 | Usar os filtros de Denúncias | `GET /v1/complaints/map` com filtro de status, categoria ou periculosidade |
-| T16 | Criar uma denúncia | `POST /v1/complaints` **e** `POST /v1/complaints/:id/attachments` |
-| T17 | Votar em uma denúncia | `POST /v1/complaints/:id/votes` |
-| T18 | Postar uma resolução | `POST /v1/complaints/:id/resolutions` |
-| T19 | Abrir uma denúncia sua na lista | evento `complaint.opened` com `source: "list"` |
+Trata-se de um teste de usabilidade autoaplicado, executado pelo participante dentro do próprio aplicativo, no aparelho dele, sem a presença de avaliador. O participante escolhe a persona com a qual mais se identifica e responde a um questionário de caracterização. Em seguida, executa as tarefas no aplicativo real e, ao final, responde um questionário de percepção.
 
-O objetivo exibido ao participante na v11 diz expressamente que "não existe ordem certa". Esse ponto é relevante para a seção 7.3.
+A conclusão de cada tarefa não é anotada por um observador. O aplicativo a reconhece automaticamente por um sinal de sucesso associado à tarefa, que pode ser a chamada de um serviço, a abertura de uma tela ou um evento de interface. O participante pode pular uma tarefa a qualquer momento, e nesse caso ela é registrada como não concluída. O aplicativo também mede o tempo ativo de execução de cada tarefa, descontando os períodos em que a execução foi pausada.
 
-### 1.1. Conversão dos dados da v9 para a v11
+### 2.2. Tarefas
 
-Oito participantes executaram a versão 9 do protocolo, antes da publicação da v11. Por decisão metodológica, esses dados foram **convertidos para a v11 como se os participantes tivessem executado a v11 desde o início**. A conversão (script `packages/db/src/scripts/sync-v9-into-v11.ts`) é feita no próprio registro. A sessão mantém o identificador e o código de participante, passa a apontar para a v11 e recebe as seguintes transformações:
+O teste é composto por uma etapa com oito tarefas, que cobrem a consulta a pontos de coleta e o ciclo de participação em denúncias de descarte irregular. O participante é orientado a percorrer as tarefas na ordem que preferir.
 
-1. Das tarefas executadas na v9, permanecem só as 8 que existem na v11. T8, T11, T12 e T13 vinham da suíte S1 da v9. T16 a T19 vinham da suíte S6 (Cidadão). As demais tarefas da v9 (T1 a T7, T9, T10, T14, T15 e T20) são descartadas.
-2. Cada execução de tarefa mantém resultado, tempo ativo e forma de detecção originais.
-3. Tarefas da v11 que o participante nunca viu na v9 **não recebem execução**. É o caso de T16 a T19 para os dois participantes da persona Empresa comum, cujo roteiro na v9 era S1 e S2. Essas tarefas ficam fora do denominador da eficácia, em vez de contarem como sucesso ou fracasso inventado.
-4. O questionário pós-suíte da v11 recebe, para cada pergunta, a média arredondada das respostas das suítes v9 que forneceram tarefas (S1 e S6, ou só S1). Para `error_occurred`, vale "Sim" se qualquer uma das suítes teve erro. O comentário final é mantido.
-5. O tempo ativo da suíte v11 é a soma dos tempos das tarefas mantidas. O tempo total decorrido (`wall_ms`) é a soma dos tempos totais das suítes v9 contribuintes.
-6. Os eventos de telemetria das tarefas mantidas passam a ser da suíte S1, e os demais são descartados.
+| Nº | Tarefa |
+|---|---|
+| 1 | Usar os filtros de Pontos de Coleta (raio de busca, categoria ou busca por texto) |
+| 2 | Visualizar os detalhes de uma empresa |
+| 3 | Visualizar o mapa de denúncias |
+| 4 | Usar os filtros de Denúncias (status, categoria ou periculosidade) |
+| 5 | Criar uma denúncia, com localização e foto ou vídeo |
+| 6 | Votar em uma denúncia registrada por outra pessoa |
+| 7 | Postar uma resolução para uma denúncia |
+| 8 | Abrir uma denúncia própria na lista de denúncias |
 
-Uma versão anterior do script gerava cópias com prefixo `V9SYNC-` sem apagar as sessões originais. Com isso, os 8 participantes contavam duas vezes, as cópias ficavam sem tempo (0 ms) e sem respostas, e as tarefas ausentes eram preenchidas como concluídas. Essas cópias foram removidas.
+Uma tarefa é considerada concluída quando o seu sinal de sucesso é registrado na sessão do participante, ainda que a ação tenha sido realizada fora da ordem apresentada.
 
-## 2. Metodologia de referência (Lima, Oliveira e Santana, 2013)
+### 2.3. Instrumento de percepção
 
-O cálculo de usabilidade adotado parte de Lima et al. (2013), que avaliaram a Biblioteca Virtual em Saúde (BVS) com 15 participantes e 10 tarefas, operacionalizando as três dimensões da ISO 9241-11 como taxas adimensionais entre 0 e 1.
+Ao final da etapa, o participante responde um questionário de escala. A satisfação é medida pela pergunta "Como você avalia sua satisfação com esta etapa?", em escala de cinco pontos (1 Péssimo, 2 Ruim, 3 Regular, 4 Bom, 5 Ótimo). O texto de apoio orienta o participante a considerar a experiência de uso do aplicativo na etapa como um todo. Os demais itens medem a concordância com afirmações associadas às heurísticas de Nielsen (1994) e a dois itens de relevância para o domínio da reciclagem.
 
-### 2.1. Fórmulas
+### 2.4. Critério de inclusão
 
-**Eficácia (Te).** Razão entre tarefas concluídas e tarefas realizadas.
+Entram na análise apenas as sessões concluídas, isto é, aquelas em que o participante chegou ao fim do fluxo e enviou o questionário. Sessões iniciadas e não finalizadas são excluídas. Dentro das sessões concluídas, considera-se realizada toda tarefa que o participante iniciou e que teve resultado registrado, seja ele concluída ou não concluída.
+
+### 2.5. Variáveis e cálculos
+
+Seguindo Lima, Oliveira e Santana (2013), as três dimensões são tratadas como séries numéricas em níveis distintos de mensuração. A eficácia é nominal (concluída ou não concluída), a eficiência é intervalar (tempo) e a satisfação é ordinal (escala de satisfação).
+
+**Eficácia.** É a razão entre o número de tarefas concluídas e o número de tarefas realizadas.
 
 $$T_e = \frac{\sum TAR_c}{\sum TAR}$$
 
-**Eficiência (Tf).** Obtida do tempo médio das tarefas concluídas, comparado com o menor e o maior tempo observado em qualquer tarefa.
+Em que $T_e$ é a taxa de eficácia, $TAR_c$ é a quantidade de tarefas concluídas e $TAR$ é a quantidade de tarefas realizadas. Quanto mais $T_e$ se aproxima de 1, mais eficaz é o aplicativo.
+
+Por tarefa, a mesma razão corresponde ao número de participantes que concluíram a tarefa dividido pelo número de participantes que a iniciaram. Essa é a leitura correta da coluna "Nº Tarefas Concluídas" da Tabela 1 de Lima, Oliveira e Santana (2013). Na primeira tarefa daquele estudo, o valor 12 indica que 12 dos 15 participantes concluíram a tarefa, e não que a tarefa tinha 12 subtarefas.
+
+**Eficiência.** É obtida a partir do tempo médio de execução das tarefas concluídas, comparado com o menor e o maior tempo de conclusão observados no teste.
 
 $$t_{méd} = \frac{\sum t}{\sum TAR_c} \qquad T_f = 1 - \frac{t_{méd}}{t_{máx} - t_{mín}}$$
 
-**Satisfação (Ts).** Cada resposta Likert é codificada de 0 a 3 (péssimo, satisfatório, bom, ótimo). A taxa de cada usuário é a soma das suas respostas dividida pela soma máxima possível (30, com 10 tarefas), e a taxa geral é a média entre usuários.
+Em que $T_f$ é a taxa de eficiência, $t_{méd}$ é o tempo médio das conclusões, $t_{mín}$ é o menor tempo gasto para concluir qualquer tarefa e $t_{máx}$ é o maior. A relação é inversa. Quanto mais o tempo médio se aproxima do menor tempo observado, mais $T_f$ se aproxima de 1 e mais eficiente é o aplicativo. Como $t_{mín}$ e $t_{máx}$ são os mesmos para todas as tarefas, a eficiência de uma tarefa pode ser comparada diretamente com a de outra.
 
-$$T_{su} = \frac{S_u}{S_{máx}} \qquad T_s = \frac{\sum T_{su}}{U}$$
+Três decisões complementam a fórmula. Entram no tempo médio apenas as conclusões com tempo registrado. Conclusões com tempo igual a zero indicam falha de medição e são desconsideradas. Quando um grupo de participantes realizou tarefas sem concluir nenhuma, não há tempo de conclusão a medir, e a eficiência do grupo é zero.
 
-**Nível de usabilidade (Us).** Média simples das três taxas, sem pesos.
+**Satisfação.** A resposta de cada participante, de 1 a 5, é convertida para o intervalo de 0 a 1, de modo que 1 (Péssimo) corresponda a 0 e 5 (Ótimo) corresponda a 1. A taxa de satisfação é a média dessas taxas entre os participantes.
+
+$$T_{su} = \frac{S_u - 1}{4} \qquad T_s = \frac{\sum T_{su}}{U}$$
+
+Em que $T_{su}$ é a taxa de satisfação do participante, $S_u$ é a resposta dele e $U$ é o número de participantes que responderam. A conversão cumpre o mesmo papel da razão $S_u / S_{máx}$ de Lima, Oliveira e Santana (2013), que usaram escala de 0 a 3.
+
+**Nível de usabilidade.** É a média aritmética das três taxas, sem pesos diferenciados, já que as três dimensões têm a mesma importância na definição de usabilidade.
 
 $$U_s = \frac{T_e + T_f + T_s}{3}$$
 
-O intervalo de 0 a 1 é dividido em quatro faixas iguais, que também se aplicam a cada taxa isoladamente: péssimo (0 ≤ Us < 0,25), satisfatório (0,25 ≤ Us < 0,5), bom (0,5 ≤ Us < 0,75) e ótimo (0,75 ≤ Us ≤ 1).
+### 2.6. Faixas de interpretação
 
-### 2.2. Exemplo com os números do artigo
+O intervalo de 0 a 1 é dividido em quatro partes de igual amplitude, que valem tanto para o nível de usabilidade quanto para cada taxa isoladamente.
 
-A Tabela 1 do artigo lista as 10 tarefas. A coluna "Nº Tarefas Concluídas (Eficácia)" traz, em cada linha, o **número de usuários que concluíram aquela tarefa**, e não um número de subtarefas. Na tarefa 1 ("Realizar uma busca livre no site da BVS"), o valor 12 significa que 12 dos 15 participantes a concluíram. A soma da coluna dá o numerador da eficácia.
+| Faixa | Intervalo |
+|---|---|
+| Péssimo | 0 ≤ valor < 0,25 |
+| Satisfatório | 0,25 ≤ valor < 0,50 |
+| Bom | 0,50 ≤ valor < 0,75 |
+| Ótimo | 0,75 ≤ valor ≤ 1 |
 
-- Te = 119 / 150 = 0,79 (150 = 15 participantes × 10 tarefas). Nível ótimo.
-- Tf, com tmín = 1 min, tmáx = 16 min e tméd = 3,15 min: 1 − 3,15 / (16 − 1) = 0,79. Nível ótimo.
-- Ts = 0,47. Nível satisfatório.
-- Us = (0,79 + 0,78 + 0,47) / 3 = 0,68.
+### 2.7. Diferenças em relação ao estudo de referência
 
-### 2.3. Inconsistências do próprio artigo
+O cálculo segue a mesma lógica de Lima, Oliveira e Santana (2013), com diferenças que decorrem do formato do teste.
 
-A leitura detalhada do artigo mostra problemas que convém não reproduzir:
-
-1. O cabeçalho "Nº Tarefas Concluídas" sugere contagem de tarefas, mas a coluna conta usuários por tarefa (máximo 15). A média de 11,9 é de usuários por tarefa.
-2. A terceira coluna repete o cabeçalho "Tempo Médio em Minutos (Eficiência)", mas contém o escore de satisfação (soma 83).
-3. A taxa de eficiência aparece como 0,78, depois como 0,69, e o Us usa 0,78. Pela fórmula, o valor é 0,79.
-4. O Gráfico 1 é intitulado "Eficência de usabilidade", mas mostra a eficácia (79% de tarefas concluídas).
-5. O Us de 0,68 cai na faixa "bom" das próprias faixas do artigo, mas o texto conclui que a BVS tem "ótimo nível de usabilidade".
-6. A fórmula de Tf não subtrai tmín do numerador. Por isso Tf não chega a 1 mesmo quando tméd = tmín, e pode ficar negativa quando tméd > tmáx − tmín.
-
-## 3. Nossa adaptação
-
-O cálculo do Oikos é semelhante ao de Lima et al., mas não idêntico. As diferenças são:
-
-| Aspecto | Lima et al. (2013) | Oikos (v11) |
+| Aspecto | Lima, Oliveira e Santana (2013) | Este estudo |
 |---|---|---|
-| Aplicação | Laboratório, com avaliador | Autoaplicada no app de produção |
-| Conclusão da tarefa | Anotada pelo avaliador | Sinal de sucesso detectado pelo app |
-| Tarefa não concluída | Não concluiu | O participante pulou a tarefa ou saiu da etapa sem o sinal |
-| Tempo | Minutos por tarefa, cronometrados | Tempo ativo medido pelo app (pausas não contam) |
-| Satisfação | Uma resposta por tarefa, escala 0 a 3 | Uma resposta por suíte (pós-etapa), escala 1 a 5 |
-| Normalização da satisfação | Su / Smáx | (média − 1) / 4 |
-| Estrutura | 10 tarefas | 1 suíte com 8 tarefas |
+| Aplicação | Laboratório, com avaliador presente | Autoaplicada, no aparelho do participante |
+| Conclusão da tarefa | Registrada pelo avaliador | Reconhecida pelo aplicativo por sinal de sucesso |
+| Tempo | Cronometrado por tarefa | Tempo ativo medido pelo aplicativo, sem pausas |
+| Satisfação | Uma resposta por tarefa, escala de 0 a 3 | Uma resposta ao final da etapa, escala de 1 a 5 |
+| Tarefas | 10 | 8 |
 
-Três pontos precisam de explicação:
+A diferença mais relevante está na satisfação. No estudo de referência ela é medida após cada tarefa. Aqui ela é medida uma única vez, ao fim da etapa, e expressa a percepção sobre o uso do aplicativo como um todo. Por isso a satisfação não aparece na tabela de resultados por tarefa.
 
-1. **A satisfação não está vinculada à tarefa.** A pergunta `satisfaction` ("Como você avalia sua satisfação com esta etapa?") é feita uma vez, ao fim da suíte, e o texto de apoio pede que o participante pense na experiência de usar o aplicativo na etapa como um todo. Como a v11 tem uma única suíte, cada participante tem uma única resposta de satisfação, e Tsu equivale à satisfação da sessão. Por isso a tabela por tarefa (seção 6.2) não tem coluna de satisfação, diferente da Tabela 1 do artigo.
-2. **Normalização.** A escala de 1 a 5 é convertida para 0 a 1 por (x − 1) / 4, de modo que 1 (Péssimo) vale 0 e 5 (Ótimo) vale 1. Com uma resposta por participante, Ts = média das taxas por participante, que é o mesmo que ((média bruta) − 1) / 4.
-3. **Eficiência.** O Tf mantém a forma literal do artigo, 1 − tméd / (tmáx − tmín), para permitir comparação direta. tméd é a média do tempo ativo das tarefas **concluídas**, e tmín e tmáx são o menor e o maior tempo entre todas as tarefas concluídas do recorte. Tarefas concluídas com tempo registrado igual a zero ficam fora do cálculo, porque indicam falha de medição do app e não execução instantânea. São 5 casos, todos de sessões convertidas da v9 (4 de `01KZE5T1…` e 1 de `01M0D235…`). Quando um grupo realizou tarefas mas não concluiu nenhuma, não existe tempo de conclusão a medir, e o Tf vale 0. A eficiência de quem não concluiu nada é nula, e o grupo mantém um nível de usabilidade calculável.
+## 3. Resultados
 
-## 4. Critérios de inclusão
+### 3.1. Participantes
 
-Entram nas métricas apenas as sessões com status **COMPLETED** na versão 11 do protocolo. São 16 sessões, sendo 8 nativas da v11 e 8 convertidas da v9.
+Foram analisadas 16 sessões concluídas, coletadas entre 7 de agosto e 18 de setembro de 2026. Doze participantes se identificaram como Cidadão, dois como Empresa comum, um como Empresa de reciclagem e um como Órgão público. Nenhum participante escolheu a persona Coletor(a). Outras cinco sessões foram iniciadas e não finalizadas, e ficaram fora da análise.
 
-Ficam fora 5 sessões com status IN_PROGRESS, todas de participantes que se declararam Cidadão. Quatro delas não chegaram a executar nenhuma tarefa. A quinta (`01M1G0YB…`, 02/09) registrou as 8 tarefas como não concluídas e não terminou o questionário. Não há sessões ABANDONED nem DISCARDED no recorte.
+| Característica | Distribuição |
+|---|---|
+| Faixa etária | 12 de 25 a 34 anos; 1 com menos de 18; 1 de 18 a 24; 1 de 35 a 44; 1 com mais de 64 |
+| Escolaridade | 2 fundamental completo; 4 superior incompleto; 7 superior completo; 3 pós-graduação |
+| Atuação com resíduos | 10 não atuam profissionalmente; 2 pesquisam o tema; 1 cooperativa; 1 empresa de reciclagem; 1 empresa de outro setor; 1 setor público |
+| Contato com reciclagem | 3 nunca; 6 raramente; 5 ocasionalmente; 2 diariamente |
+| Experiência com aplicativos | 2 básica; 1 moderada; 4 avançada; 9 muito avançada |
 
-Dentro das sessões concluídas, uma tarefa entra no denominador (ΣTAR) quando tem execução finalizada com resultado registrado. Tarefas que o participante nunca viu (seção 1.1, item 3) não entram.
+A amostra é jovem, escolarizada e familiarizada com aplicativos. Treze dos 16 participantes declaram experiência avançada ou muito avançada.
 
-## 5. Auditoria do dashboard
+### 3.2. Resultados por tarefa
 
-Todas as telas do painel foram conferidas contra o banco de dados. Os problemas encontrados foram corrigidos no código (`packages/db/src/repositories/`, `packages/api/src/use-cases/`, `apps/web/src/app/dashboard/`). Com isso, os valores exibidos passaram a coincidir com o cálculo independente por SQL do Apêndice A.
+A Tabela 1 apresenta, para cada tarefa, quantos participantes concluíram a etapa, quantos iniciaram a tarefa e quantos a concluíram, com a eficácia, o tempo médio das conclusões e a eficiência correspondentes.
 
-### 5.1. Problemas encontrados
+**Tabela 1.** Resultados por tarefa.
 
-1. **Nenhuma consulta filtrava o status da sessão.** Sessões em andamento, abandonadas ou descartadas entravam em todas as métricas. Na tela Tarefas, por exemplo, cada tarefa mostrava 17 tentativas quando havia 16 sessões concluídas. A 17ª era a sessão em andamento que registrou 8 tarefas não concluídas.
-2. **A contagem de sessões e participantes não filtrava a versão do protocolo.** O card "Total de sessões" mostrava 29, somando as 8 sessões originais da v9 com as 8 cópias `V9SYNC-` e as 21 da v11. Na tela Personas, Cidadão aparecia com 23 participantes e Empresa comum com 4.
-3. **A eficácia da Visão geral, de Suítes e de Personas usava o resultado da suíte, e não o das tarefas.** O resultado da suíte vale YES só quando todas as tarefas foram concluídas, e PARTIAL contava como fracasso. Com uma única suíte, a "eficácia" virava a proporção de sessões com 8/8, que não é a Te de Lima. Isso explica a Empresa de reciclagem com 0% mesmo tendo concluído 7 de 8 tarefas. A tela Tarefas usava o resultado das tarefas, então as telas não eram conciliáveis.
-4. **A eficiência usava o tempo da suíte inteira** nas telas agregadas e o tempo de todas as execuções (concluídas ou não) na tela Tarefas. Os limites tmín e tmáx eram calculados sem filtro de versão, com as cópias `V9SYNC-` de 0 ms forçando tmín = 0.
-5. **O Us da Visão geral era calculado sobre médias de suítes** e rotulado como "média das suítes". Suítes sem execução entravam com Te = 0 e Tf = 0.
-6. **A satisfação ausente tinha dois tratamentos.** Em Suítes e Personas ela entrava como Ts = 0, o que derrubava o Us (Empresa de reciclagem com Us 0,19 e Órgão público com 0,33). Na Visão geral ela era excluída.
-7. **Não havia testes** para agregação, filtro de status ou filtro de versão.
-
-### 5.2. Correções
-
-1. Todas as consultas de métrica passaram a usar o mesmo recorte: sessões da versão analisada com status COMPLETED (`packages/db/src/repositories/study-scope.ts`). Isso vale para Visão geral, Suítes, Tarefas, Personas, Caracterização, Heurísticas, Itens de domínio e Comentários.
-2. A Te passou a ser ΣTARc / ΣTAR sobre as execuções de tarefa, em todas as telas.
-3. O Tf passou a usar o tempo das tarefas concluídas (tempo > 0), com tmín e tmáx do recorte inteiro, em todas as telas.
-4. A Ts passou a ser a média, entre sessões, da taxa (média − 1) / 4 de cada sessão.
-5. O Us da Visão geral passou a ser global, calculado sobre todas as tarefas e respostas do recorte.
-6. Grupo que realizou tarefas sem concluir nenhuma recebe Tf = 0, e o Us é calculado normalmente. Quando o grupo não tem dado (persona sem participantes ou sem resposta de satisfação), a métrica e o Us aparecem vazios no painel, em vez de 0 e "Péssimo".
-7. O card de sessões mostra o total da versão por status (21: 16 completas e 5 em andamento) e deixa explícito que as métricas usam as 16 concluídas.
-8. A tela Tarefas passou a seguir o formato da Tabela 1 do artigo: quantos participantes realizaram, quantos concluíram, eficácia, tempo médio das conclusões e eficiência.
-9. Testes novos em `packages/api/src/use-cases/get-overview.test.ts`, `get-tasks.test.ts` e `get-suites.test.ts` cobrem o filtro de status, a Te por tarefa quando o resultado da suíte diverge, o tempo só das conclusões e a satisfação ausente.
-
-A tela Testadores continua listando sessões de todos os status, por ser uma tela de gestão e não de métrica. As telas Protocolo e Versões do protocolo só exibem definições.
-
-### 5.3. Impacto nos números
-
-| Indicador | Dashboard antes | Depois das correções |
-|---|---|---|
-| Sessões consideradas | 29 (24 completas, 5 em andamento) | 16 completas (de 21 na v11) |
-| Eficácia (Te) | 0,59 | 0,71 |
-| Eficiência (Tf) | 0,88 | 0,80 |
-| Satisfação (Ts) | 0,82 | 0,88 |
-| Nível de usabilidade (Us) | 0,76 (ótimo) | 0,80 (ótimo) |
-
-## 6. Resultados
-
-### 6.1. Participantes
-
-As 16 sessões concluídas se distribuem entre 12 Cidadãos, 2 Empresas comuns, 1 Empresa de reciclagem e 1 Órgão público. Nenhum participante escolheu a persona Coletor(a). A coleta vai de 07/08/2026 a 18/09/2026.
-
-### 6.2. Resultados por tarefa
-
-| Tarefa | Total concluintes | Iniciaram | Concluíram (Eficácia) | Te | Tempo médio (min) | Tf |
-|---|---|---|---|---|---|---|
-| T8 Usar os filtros de Pontos de Coleta | 16 | 16 | 12 | 0,75 | 0,95 | 0,83 |
-| T11 Visualizar os detalhes de uma empresa | 16 | 16 | 12 | 0,75 | 0,36 | 0,94 |
-| T12 Visualizar o mapa de denúncias | 16 | 16 | 13 | 0,81 | 0,50 | 0,91 |
-| T13 Usar os filtros de Denúncias | 16 | 16 | 11 | 0,69 | 0,70 | 0,88 |
-| T16 Criar uma denúncia | 16 | 14 | 9 | 0,64 | 2,96 | 0,48 |
-| T17 Votar em uma denúncia | 16 | 14 | 10 | 0,71 | 0,56 | 0,90 |
-| T18 Postar uma resolução | 16 | 14 | 9 | 0,64 | 2,31 | 0,60 |
-| T19 Abrir uma denúncia sua na lista | 16 | 14 | 9 | 0,64 | 1,25 | 0,78 |
-| **Total** | **16** | **120** | **85** | **0,71** | **1,13** | **0,80** |
-
-Os 16 concluintes percorreram a suíte S1, mas T16 a T19 foram iniciadas por 14, porque os dois participantes convertidos da persona Empresa comum não passaram por elas (seção 1.1). O tempo médio total (1,13 min, ou 67,7 s) é a média das 80 conclusões cronometradas, e não a média das linhas. As tarefas de escrita (criar denúncia e postar resolução) são as mais demoradas e, por isso, as de menor Tf. Isso é esperado, porque envolvem formulário, foto e envio.
-
-### 6.3. Cálculo geral
-
-**Eficácia.** Te = 85 / 120 = **0,71**. Nível ótimo.
-
-**Eficiência.** Das 85 conclusões, 80 têm tempo registrado. tméd = 67,71 s, tmín = 1 s e tmáx = 344 s, o que dá Tf = 1 − 67,71 / (344 − 1) = **0,80**. Nível ótimo.
-
-**Satisfação.** 15 das 16 sessões responderam a pergunta de satisfação. O participante `01KZE5T1…` enviou o questionário em branco. A média bruta é 4,53 em 5, e Ts = (4,53 − 1) / 4 = **0,88**. Nível ótimo.
-
-**Nível de usabilidade.** Us = (0,71 + 0,80 + 0,88) / 3 = **0,80**. Nível ótimo.
-
-Diferente da BVS, em que a satisfação foi a dimensão mais baixa (0,47), no Oikos ela é a mais alta, e a eficácia é a mais baixa das três.
-
-### 6.4. Recorte por persona
-
-| Persona | Participantes | Concluídas / realizadas | Te | Tf | Satisfação (1 a 5) | Us | Nível |
+| Nº | Tarefa | Concluíram a etapa | Iniciaram | Concluíram | Eficácia | Tempo médio (min:s) | Eficiência |
 |---|---|---|---|---|---|---|---|
-| Coletor(a) | 0 | sem dado | sem dado | sem dado | sem dado | sem dado | sem dado |
-| Empresa de reciclagem | 1 | 8 / 8 | 1,00 | 0,87 | 5,00 | 0,96 | Ótimo |
-| Empresa comum | 2 | 8 / 8 | 1,00 | 0,88 | 5,00 | 0,96 | Ótimo |
-| Cidadão | 12 | 69 / 96 | 0,72 | 0,79 | 4,50 | 0,79 | Ótimo |
-| Órgão público | 1 | 0 / 8 | 0,00 | 0,00 | 4,00 | 0,25 | Satisfatório |
+| 1 | Usar os filtros de Pontos de Coleta | 16 | 16 | 12 | 0,75 | 0:57 | 0,83 |
+| 2 | Visualizar os detalhes de uma empresa | 16 | 16 | 12 | 0,75 | 0:21 | 0,94 |
+| 3 | Visualizar o mapa de denúncias | 16 | 16 | 13 | 0,81 | 0:30 | 0,91 |
+| 4 | Usar os filtros de Denúncias | 16 | 16 | 11 | 0,69 | 0:42 | 0,88 |
+| 5 | Criar uma denúncia | 16 | 14 | 9 | 0,64 | 2:58 | 0,48 |
+| 6 | Votar em uma denúncia | 16 | 14 | 10 | 0,71 | 0:33 | 0,90 |
+| 7 | Postar uma resolução | 16 | 14 | 9 | 0,64 | 2:18 | 0,60 |
+| 8 | Abrir uma denúncia própria na lista | 16 | 14 | 9 | 0,64 | 1:15 | 0,78 |
+| | **Total** | **16** | **120** | **85** | **0,71** | **1:08** | **0,80** |
 
-Com exceção de Cidadão, os grupos têm um ou dois participantes, e o recorte por persona serve só como descrição, sem base para comparação. O Órgão público não concluiu nenhuma tarefa e por isso tem Te = 0 e Tf = 0. O Us, (0 + 0 + 0,75) / 3 = 0,25, fica no limite inferior da faixa satisfatória e se sustenta apenas pela satisfação declarada.
+As tarefas 5 a 8 foram iniciadas por 14 participantes, e não por 16, porque não integraram o roteiro dos dois participantes da persona Empresa comum. O tempo médio total é calculado sobre as 80 conclusões com tempo registrado, e não sobre a média das linhas.
 
-## 7. Comportamento dos participantes
+A leitura da tabela deve ser feita da esquerda para a direita. Na tarefa 2, por exemplo, 16 participantes concluíram a etapa, os 16 iniciaram a tarefa e 12 a concluíram, o que resulta em eficácia de 12 / 16 = 0,75. Os participantes que concluíram levaram em média 21 segundos. Esse tempo está muito mais próximo da conclusão mais rápida do teste (1 segundo) do que da mais lenta (5 minutos e 44 segundos), e por isso a eficiência é alta, 1 − 21,4 / (344 − 1) = 0,94.
 
-### 7.1. Sessão concluída não é o mesmo que tarefa concluída
+### 3.3. Eficácia
 
-"Sessão concluída" significa que o participante chegou ao fim do fluxo e enviou o questionário. Não significa que concluiu as tarefas. O app permite pular a tarefa atual ou avançar para o questionário a qualquer momento. As 35 tarefas não concluídas das sessões concluídas foram todas encerradas manualmente pelo participante, e nenhuma falhou por detecção. Isso faz parte do comportamento observado e não é defeito da coleta.
+Os participantes concluíram 85 das 120 tarefas realizadas.
 
-| Situação | Sessões | Participantes |
+$$T_e = \frac{85}{120} = 0{,}71$$
+
+A eficácia do aplicativo situa-se na faixa **boa**, próxima do limite da faixa ótima. A tarefa com maior eficácia foi a visualização do mapa de denúncias (0,81). As menores ficaram com a criação de denúncia, a postagem de resolução e a abertura de denúncia própria na lista (0,64 cada), tarefas que exigem mais passos ou dependem de outra ação anterior.
+
+### 3.4. Eficiência
+
+O menor tempo de conclusão observado foi de 1 segundo e o maior foi de 344 segundos (5 min 44 s). O tempo médio das 80 conclusões com tempo registrado foi de 67,7 segundos (1 min 08 s).
+
+$$T_f = 1 - \frac{67{,}7}{344 - 1} = 0{,}80$$
+
+A eficiência do aplicativo situa-se na faixa **ótima**. Aplicando a mesma divisão em quatro intervalos iguais ao tempo médio, como fazem Lima, Oliveira e Santana (2013) no Gráfico 2, a eficiência seria ótima com tempo médio até cerca de 1 min 27 s, boa até 2 min 53 s, satisfatória até 4 min 18 s e péssima acima disso. O tempo médio observado, de 1 min 08 s, fica na faixa ótima.
+
+Por tarefa, a eficiência reflete a natureza da ação solicitada. As tarefas de consulta (detalhes da empresa, mapa, votação e filtros) têm tempo médio abaixo de um minuto e eficiência entre 0,83 e 0,94. As tarefas que envolvem preenchimento e envio de conteúdo são mais demoradas: criar uma denúncia, com local, foto e descrição (2 min 58 s, eficiência 0,48), e postar uma resolução (2 min 18 s, eficiência 0,60).
+
+### 3.5. Satisfação
+
+Quinze dos 16 participantes responderam à pergunta de satisfação. Nove atribuíram nota 5 (Ótimo), cinco atribuíram nota 4 (Bom) e um atribuiu nota 3 (Regular). A média das respostas foi 4,53.
+
+$$T_s = \frac{4{,}53 - 1}{4} = 0{,}88$$
+
+A satisfação situa-se na faixa **ótima** e é a dimensão mais alta das três.
+
+### 3.6. Nível de usabilidade
+
+$$U_s = \frac{0{,}71 + 0{,}80 + 0{,}88}{3} = 0{,}80$$
+
+O aplicativo Oikos apresenta **nível ótimo de usabilidade**.
+
+| Dimensão | Taxa | Faixa |
 |---|---|---|
-| Concluiu todas as tarefas disponíveis | 11 | 9 com 8/8 e 2 (Empresa comum, convertidos) com 4/4 |
-| Concluiu parte das tarefas | 2 | `01M1G1FE…` (4/8) e `01M0D8DK…` (1/8) |
-| Pulou todas as tarefas | 3 | `01M1FRS8…` (25 s), `01M20FVV…` (1,6 min) e `01M2TFRH…` (Órgão público, 16 s) |
+| Eficácia | 0,71 | Bom |
+| Eficiência | 0,80 | Ótimo |
+| Satisfação | 0,88 | Ótimo |
+| **Nível de usabilidade** | **0,80** | **Ótimo** |
 
-Os três participantes que pularam todas as tarefas ainda atribuíram satisfação 5, 3 e 4. Isso reforça que a pergunta mede a percepção geral de uso do aplicativo, e não o desempenho nas tarefas. O caso do Órgão público (0 de 8 tarefas em 16 segundos) indica que o participante percorreu o fluxo da pesquisa sem executar as tarefas no app.
+### 3.7. Resultados por persona
 
-### 7.2. Resultado da suíte divergente das tarefas
+**Tabela 2.** Resultados por persona.
 
-Na produção, duas suítes foram gravadas pelo app como "NO" apesar de terem tarefas concluídas. São `01M1G1FE…`, com 4 de 8, e `01M2TFQW…`, com 7 de 8. Pela regra do protocolo, o esperado seria PARTIAL. É uma falha do cálculo do resultado da suíte no app mobile, registrada como issue. Depois das correções, o dashboard não usa mais esse campo para a eficácia, e a divergência não afeta os números.
+| Persona | Participantes | Concluídas / realizadas | Eficácia | Eficiência | Satisfação (1 a 5) | Nível de usabilidade | Faixa |
+|---|---|---|---|---|---|---|---|
+| Cidadão | 12 | 69 / 96 | 0,72 | 0,79 | 4,50 | 0,79 | Ótimo |
+| Empresa comum | 2 | 8 / 8 | 1,00 | 0,88 | 5,00 | 0,96 | Ótimo |
+| Empresa de reciclagem | 1 | 8 / 8 | 1,00 | 0,87 | 5,00 | 0,96 | Ótimo |
+| Órgão público | 1 | 0 / 8 | 0,00 | 0,00 | 4,00 | 0,25 | Satisfatório |
+| Coletor(a) | 0 | sem dado | sem dado | sem dado | sem dado | sem dado | sem dado |
 
-### 7.3. Tarefas executadas fora da vez
+Apenas a persona Cidadão tem número de participantes suficiente para uma leitura própria, e seus resultados acompanham os do conjunto. As demais personas têm um ou dois participantes, e os valores descrevem esses casos individuais, sem permitir comparação entre grupos. O participante da persona Órgão público não concluiu nenhuma tarefa, o que leva eficácia e eficiência a zero. O nível de usabilidade de 0,25 decorre apenas da satisfação declarada.
 
-O app só observa os sinais de sucesso da tarefa ativa. Como o objetivo da v11 diz que "não existe ordem certa", o participante pode realizar a ação de uma tarefa enquanto outra está ativa, e nesse caso a conclusão não é registrada. A telemetria de todas as tarefas não concluídas foi cruzada com as regras de sucesso, e dois casos têm o sinal registrado fora da vez:
+### 3.8. Indicadores complementares do questionário
 
-1. `01M2TFQW…` (Empresa de reciclagem), T19. Às 14:49:21 o participante abriu uma denúncia pela lista (`complaint.opened`, `source: "list"`), mas a tarefa ativa era T17 (votar). Quando chegou a vez da T19, ele abriu a lista, não abriu nenhuma denúncia e avançou 50 segundos depois.
-2. `01M0D8DK…` (Cidadão, convertido da v9), T12. O participante pulou as tarefas e, depois, abriu o mapa de denúncias (`GET /v1/complaints/map` e tela `/complaints`) enquanto a tarefa ativa era T18.
+As médias dos itens associados às heurísticas de Nielsen (1994), em escala de 1 a 5, com 15 respostas por item, foram as seguintes:
 
-Por decisão metodológica, as duas tarefas foram **reclassificadas como concluídas**. O critério adotado é que a tarefa conta como concluída quando o sinal de sucesso aparece na sessão, mesmo fora da vez. A detecção continua registrada como manual (`auto_detected = false`), o que preserva a rastreabilidade. O resultado da suíte foi ajustado para YES (8/8) e PARTIAL (1/8), respectivamente. As duas mudanças existem só no banco de análise, e a produção mantém o registro original (Apêndice B).
+| Heurística | Item | Média |
+|---|---|---|
+| H1 Visibilidade do status do sistema | O aplicativo deixou claro o que estava acontecendo | 4,67 |
+| H2 Correspondência com o mundo real | Os termos e as categorias fizeram sentido | 4,33 |
+| H3 Controle e liberdade do usuário | Sempre soube onde estava e como seguir | 4,20 |
+| H4 Consistência e padrões | As telas seguiram um padrão parecido | 4,53 |
+| H6 Reconhecimento em vez de memorização | Não precisei guardar informações entre telas | 4,33 |
+| H8 Design estético e minimalista | As telas mostraram o necessário | 4,53 |
 
-Observação técnica relacionada: nas sessões em que T19 foi detectada, o evento que dispara a conclusão aparece gravado alguns milissegundos depois do fim da tarefa e marcado com a tarefa seguinte. A detecção funciona, mas a atribuição do evento à tarefa está deslocada, o que foi registrado como issue do app mobile.
+Treze dos 15 participantes relataram não ter encontrado erro durante a etapa (87%). Os dois que relataram erro avaliaram a mensagem de recuperação com média 2,0 (H9). Os itens de relevância para o domínio também tiveram médias altas: 4,60 para "ajudaria a conectar pessoas e empresas da reciclagem" e 4,47 para "resolveria um problema real do meu dia a dia".
 
-### 7.4. Erros relatados
+## 4. Interpretação dos resultados
 
-Dois participantes (`01M20FVV…` e `01M23Y5A…`) responderam que ocorreu erro na etapa, e a média da recuperação (H9) foi 2 em 5. O comentário de `01M23Y5A…` descreve o problema ("a imagem não está sendo enviada, resolvi reiniciando o app"), o que é compatível com o tempo alto e a eficiência baixa de T16.
+**Concluir a sessão não equivale a concluir as tarefas.** Uma sessão concluída indica que o participante chegou ao fim do fluxo e enviou o questionário. Como o participante pode pular qualquer tarefa, a eficácia registra o que ele efetivamente conseguiu fazer no aplicativo. Das 16 sessões concluídas, 11 concluíram todas as tarefas do seu roteiro e 2 concluíram parte delas. Outras 3 pularam todas as tarefas, uma delas em apenas 16 segundos. As 35 tarefas não concluídas foram todas encerradas pelo próprio participante, e nenhuma decorreu de falha na detecção.
 
-## 8. Demais telas do painel (valores com o recorte corrigido)
+**A satisfação mede a percepção geral, e não o desempenho.** Os três participantes que não concluíram nenhuma tarefa atribuíram notas 5, 4 e 3 à satisfação. Isso confirma que a pergunta capta a impressão sobre o aplicativo, independente do resultado nas tarefas, e justifica tratá-la como dimensão própria no cálculo.
 
-- **Heurísticas (n = 15 respostas por item, escala 1 a 5).** H1 4,67; H2 4,33; H3 4,20; H4 4,53; H6 4,33; H8 4,53. H5, prevenção de erros: 13 de 15 suítes sem erro (87%). H9, recuperação: 2,00 (n = 2). H7 e H10 não são medidas, com a justificativa do protocolo.
-- **Itens de domínio.** "Ajudaria a conectar pessoas e empresas da reciclagem": 4,60. "Resolveria um problema real do meu dia a dia": 4,47 (n = 15).
-- **Caracterização (16 participantes).** 12 têm de 25 a 34 anos; 10 com superior completo ou pós-graduação; 10 não atuam profissionalmente com resíduos; 13 declaram experiência avançada ou muito avançada com aplicativos.
-- **Comentários livres.** 10 comentários de sessões concluídas.
+**O perfil das dimensões difere do estudo de referência.** Na BVS, a satisfação foi a dimensão mais baixa (0,47) e a eficácia a mais alta (0,79). No Oikos ocorre o inverso. A satisfação é a mais alta (0,88) e a eficácia é a mais baixa (0,71). A eficácia é reduzida sobretudo pelas sessões em que o participante pulou todas as tarefas. Considerando apenas os 13 participantes que concluíram ao menos uma tarefa, a eficácia seria de 85 / 96 = 0,89.
 
-## 9. Limitações
+**As tarefas de produção de conteúdo concentram a menor eficiência.** Criar uma denúncia e postar uma resolução exigem preencher formulário, anexar mídia e enviar. São também as tarefas com a menor eficácia. Um dos participantes que relataram erro descreveu falha no envio de imagem, resolvida ao reiniciar o aplicativo, o que é compatível com o tempo mais alto dessas tarefas.
 
-1. **Amostra pequena e concentrada.** São 16 participantes, 12 deles Cidadãos, e nenhum Coletor(a). A amostra é auto-selecionada entre usuários do app. O recorte por persona é apenas descritivo.
-2. **Conversão v9 para v11.** Oito sessões foram adaptadas por regra (seção 1.1). Na v9, T8 era detectada pela mudança de raio a partir de 2 km. Na v11 o raio inicial é 10 km, e a tarefa aceita filtro ou busca. Os questionários convertidos usam médias arredondadas de duas suítes.
-3. **Reclassificações.** Duas tarefas foram reclassificadas pelo critério da seção 7.3. Sem elas, Te seria 83 / 120 = 0,69, e o Us continuaria na faixa ótima.
-4. **Forma do Tf.** A fórmula literal de Lima et al. não subtrai tmín, o que desloca levemente o valor. Com tmín = 1 s, o efeito é desprezível neste recorte.
-5. **Satisfação por suíte.** Com uma resposta por participante, a Ts tem menos granularidade que a do artigo (10 respostas por participante).
+## 5. Limitações
 
-## Referência
+1. **Tamanho e composição da amostra.** São 16 participantes, 12 deles da persona Cidadão, e nenhum da persona Coletor(a). A amostra é auto-selecionada entre usuários do aplicativo e concentra pessoas jovens, escolarizadas e experientes com aplicativos, o que tende a favorecer os resultados.
+2. **Resultados por persona.** Com exceção de Cidadão, os grupos têm um ou dois participantes, e os valores por persona são apenas descritivos.
+3. **Satisfação por etapa.** Com uma resposta por participante, a taxa de satisfação tem menos granularidade que a do estudo de referência, que coletou uma resposta por tarefa.
+4. **Forma da taxa de eficiência.** A fórmula de Lima, Oliveira e Santana (2013) não subtrai o menor tempo do tempo médio. Com menor tempo de 1 segundo, o efeito é desprezível neste teste.
+5. **Registro de tempo.** Cinco das 85 conclusões não tiveram tempo registrado e ficaram fora do cálculo da eficiência.
 
-LIMA, I. F.; OLIVEIRA, H. P. C.; SANTANA, S. R. Metodologia para avaliação do nível de usabilidade de bibliotecas digitais: um estudo na Biblioteca Virtual de Saúde. *TransInformação*, Campinas, v. 25, n. 2, p. 135-143, 2013.
+## Referências
 
-## Apêndice A. Consultas que reproduzem os números
+ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. **NBR 9241-11**: requisitos ergonômicos para trabalho de escritório com computador. Parte 11: orientações sobre usabilidade. Rio de Janeiro: ABNT, 2002.
 
-Executadas no banco local (`docker exec -i survey-mysql mysql -uuser -ppassword survey < consulta.sql`).
+LIMA, I. F.; OLIVEIRA, H. P. C.; SANTANA, S. R. Metodologia para avaliação do nível de usabilidade de bibliotecas digitais: um estudo na Biblioteca Virtual de Saúde. **TransInformação**, Campinas, v. 25, n. 2, p. 135-143, 2013.
 
-```sql
--- Geral: TAR, TARc, Te, tempos, Tf, satisfação e Ts
-WITH t AS (
-  SELECT s.id sid, s.persona, td.code, tr.outcome, tr.active_ms
-  FROM usability_task_runs tr
-  JOIN usability_task_defs td ON td.id = tr.task_id
-  JOIN usability_suite_runs sr ON sr.id = tr.suite_run_id
-  JOIN usability_sessions s ON s.id = sr.session_id
-  WHERE s.status = 'COMPLETED' AND tr.finished_at IS NOT NULL AND tr.outcome IS NOT NULL
-),
-y AS (SELECT * FROM t WHERE outcome = 'YES' AND active_ms > 0),
-b AS (SELECT MIN(active_ms) tmin, MAX(active_ms) tmax, AVG(active_ms) tmed, COUNT(*) n FROM y),
-sat AS (
-  SELECT a.session_id sid, AVG(a.value_number) v
-  FROM usability_answers a
-  JOIN usability_questions q ON q.id = a.question_id
-  JOIN usability_sessions s ON s.id = a.session_id
-  WHERE q.key = 'satisfaction' AND s.status = 'COMPLETED' AND a.value_number IS NOT NULL
-  GROUP BY a.session_id
-)
-SELECT
-  (SELECT COUNT(*) FROM t) TAR,
-  (SELECT SUM(outcome = 'YES') FROM t) TARc,
-  ROUND((SELECT SUM(outcome = 'YES') / COUNT(*) FROM t), 4) Te,
-  (SELECT n FROM b) n_tempos,
-  ROUND((SELECT tmed FROM b) / 1000, 2) tmed_s,
-  (SELECT tmin FROM b) / 1000 tmin_s,
-  (SELECT tmax FROM b) / 1000 tmax_s,
-  ROUND((SELECT 1 - tmed / (tmax - tmin) FROM b), 4) Tf,
-  (SELECT COUNT(*) FROM sat) n_sat,
-  ROUND((SELECT AVG(v) FROM sat), 4) sat_media,
-  ROUND((SELECT (AVG(v) - 1) / 4 FROM sat), 4) Ts;
-
--- Por tarefa (formato da Tabela 1)
-WITH t AS (
-  SELECT s.id sid, td.code, tr.outcome, tr.active_ms
-  FROM usability_task_runs tr
-  JOIN usability_task_defs td ON td.id = tr.task_id
-  JOIN usability_suite_runs sr ON sr.id = tr.suite_run_id
-  JOIN usability_sessions s ON s.id = sr.session_id
-  WHERE s.status = 'COMPLETED' AND tr.finished_at IS NOT NULL AND tr.outcome IS NOT NULL
-),
-b AS (SELECT MIN(active_ms) tmin, MAX(active_ms) tmax FROM t WHERE outcome = 'YES' AND active_ms > 0)
-SELECT code, COUNT(*) realizaram, SUM(outcome = 'YES') concluiram,
-  ROUND(SUM(outcome = 'YES') / COUNT(*), 4) te,
-  ROUND(AVG(CASE WHEN outcome = 'YES' AND active_ms > 0 THEN active_ms END) / 60000, 2) tmed_min,
-  ROUND(1 - AVG(CASE WHEN outcome = 'YES' AND active_ms > 0 THEN active_ms END)
-    / ((SELECT tmax FROM b) - (SELECT tmin FROM b)), 4) tf
-FROM t GROUP BY code
-ORDER BY FIELD(code, 'T8', 'T11', 'T12', 'T13', 'T16', 'T17', 'T18', 'T19');
-
--- Por persona
-WITH t AS (
-  SELECT s.id sid, s.persona, tr.outcome, tr.active_ms
-  FROM usability_task_runs tr
-  JOIN usability_suite_runs sr ON sr.id = tr.suite_run_id
-  JOIN usability_sessions s ON s.id = sr.session_id
-  WHERE s.status = 'COMPLETED' AND tr.finished_at IS NOT NULL AND tr.outcome IS NOT NULL
-),
-b AS (SELECT MIN(active_ms) tmin, MAX(active_ms) tmax FROM t WHERE outcome = 'YES' AND active_ms > 0),
-sat AS (
-  SELECT s.persona, a.session_id sid, AVG(a.value_number) v
-  FROM usability_answers a
-  JOIN usability_questions q ON q.id = a.question_id
-  JOIN usability_sessions s ON s.id = a.session_id
-  WHERE q.key = 'satisfaction' AND s.status = 'COMPLETED' AND a.value_number IS NOT NULL
-  GROUP BY s.persona, a.session_id
-)
-SELECT t.persona, COUNT(DISTINCT t.sid) n, COUNT(*) tar, SUM(outcome = 'YES') tarc,
-  ROUND(SUM(outcome = 'YES') / COUNT(*), 4) te,
-  ROUND(1 - AVG(CASE WHEN outcome = 'YES' AND active_ms > 0 THEN active_ms END)
-    / ((SELECT tmax FROM b) - (SELECT tmin FROM b)), 4) tf,
-  (SELECT ROUND(AVG(v), 4) FROM sat WHERE sat.persona = t.persona) sat_media
-FROM t GROUP BY t.persona;
-```
-
-## Apêndice B. Preparação do banco de análise
-
-1. Recriar o banco local a partir do snapshot de produção (`snapshots/survey_prod_20260917_155217.sql`).
-2. Copiar da produção, só leitura, as sessões, execuções, respostas e eventos dos participantes `01M2TFQW…` e `01M2TFRH…` (18/09/2026).
-3. Rodar `bun run db:sync-v9-v11` em `packages/db`, que converte as 8 sessões da v9 e remove cópias `V9SYNC-` antigas. Um snapshot local anterior à conversão está em `snapshots/survey_local_pre_v11_convert_20260922_114324.sql`.
-4. Aplicar as reclassificações da seção 7.3:
-
-```sql
-UPDATE usability_task_runs tr
-JOIN usability_task_defs td ON td.id = tr.task_id AND td.code = 'T19'
-JOIN usability_suite_runs sr ON sr.id = tr.suite_run_id
-JOIN usability_sessions s ON s.id = sr.session_id
-SET tr.outcome = 'YES'
-WHERE s.participant_code = '01M2TFQW0VQP1STS1ZG8M6HMQC';
-
-UPDATE usability_suite_runs sr
-JOIN usability_sessions s ON s.id = sr.session_id
-SET sr.outcome = 'YES'
-WHERE s.participant_code = '01M2TFQW0VQP1STS1ZG8M6HMQC';
-
-UPDATE usability_task_runs tr
-JOIN usability_task_defs td ON td.id = tr.task_id AND td.code = 'T12'
-JOIN usability_suite_runs sr ON sr.id = tr.suite_run_id
-JOIN usability_sessions s ON s.id = sr.session_id
-SET tr.outcome = 'YES'
-WHERE s.participant_code = '01M0D8DK71AVW9T1087AT55Q7M';
-
-UPDATE usability_suite_runs sr
-JOIN usability_sessions s ON s.id = sr.session_id
-SET sr.outcome = 'PARTIAL'
-WHERE s.participant_code = '01M0D8DK71AVW9T1087AT55Q7M';
-```
+NIELSEN, J. **10 Usability Heuristics for User Interface Design**. Nielsen Norman Group, 1994. Disponível em: https://www.nngroup.com/articles/ten-usability-heuristics/.
