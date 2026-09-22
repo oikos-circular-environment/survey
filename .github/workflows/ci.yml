@@ -41,6 +41,7 @@ jobs:
       TEST_DATABASE_URL: mysql://user:password@127.0.0.1:3306/survey
       CORS_ORIGIN: http://localhost:3001
       CLIENT_API_KEY: ci-client-key
+      NEXT_PUBLIC_CLIENT_API_KEY: ci-client-key
       BETTER_AUTH_SECRET: ci-better-auth-secret
 
     steps:
