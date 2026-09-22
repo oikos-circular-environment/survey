@@ -3,7 +3,6 @@ import type {
 	Repositories,
 } from "@oikos-circular-environment/survey-db/repositories/index";
 
-import { groupBy } from "./shared/aggregate";
 import {
 	calcularUsabilidade,
 	limitesDeEficiencia,
@@ -18,20 +17,21 @@ export interface OverviewStats extends UsabilityMetrics {
 	sessoesConcluidas: number;
 }
 
-export interface SessionsPerDay {
-	date: string;
-	porPersona: Record<string, number>;
+export interface CompletedSessionStart {
+	persona: string;
+	/** ISO 8601; o agrupamento por dia acontece no navegador, no fuso de quem vê. */
+	startedAt: string;
 }
 
 export interface OverviewResult {
 	stats: OverviewStats;
-	sessoesPorDia: SessionsPerDay[];
+	sessoesConcluidasInicio: CompletedSessionStart[];
 }
 
 /**
  * Visão geral: contagem de sessões por status e Te/Tf/Ts/Us globais sobre todas as
  * tarefas e respostas das sessões concluídas, como em Lima et al. (2013), sem média
- * entre suítes. A série diária conta só sessões concluídas.
+ * entre suítes. O gráfico diário recebe o início de cada sessão concluída.
  */
 export async function getOverview(
 	repositories: Repositories,
@@ -56,18 +56,10 @@ export async function getOverview(
 		porStatus[session.status] = (porStatus[session.status] ?? 0) + 1;
 	}
 
-	const sessionsByDay = groupBy(completedSessions, (session) =>
-		dayKey(session.startedAt),
-	);
-	const sessoesPorDia: SessionsPerDay[] = [...sessionsByDay.entries()]
-		.sort(([a], [b]) => a.localeCompare(b))
-		.map(([date, daySessions]) => {
-			const porPersona: Record<string, number> = {};
-			for (const session of daySessions) {
-				porPersona[session.persona] = (porPersona[session.persona] ?? 0) + 1;
-			}
-			return { date, porPersona };
-		});
+	const sessoesConcluidasInicio = completedSessions.map((session) => ({
+		persona: session.persona,
+		startedAt: session.startedAt.toISOString(),
+	}));
 
 	return {
 		stats: {
@@ -80,10 +72,6 @@ export async function getOverview(
 				limitesDeEficiencia(taskRuns),
 			),
 		},
-		sessoesPorDia,
+		sessoesConcluidasInicio,
 	};
-}
-
-function dayKey(date: Date): string {
-	return date.toISOString().slice(0, 10);
 }

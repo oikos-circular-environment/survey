@@ -15,9 +15,9 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@survey/ui/components/chart";
-import { format } from "date-fns";
+import { addDays, format, parseISO, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
 	PERSONA_COLORS,
@@ -25,10 +25,12 @@ import {
 	PERSONA_ORDER,
 } from "./persona-labels";
 
-interface SessionsPerDay {
-	date: string;
-	porPersona: Record<string, number>;
+interface SessionStart {
+	persona: string;
+	startedAt: string;
 }
+
+const DAY_KEY = "yyyy-MM-dd";
 
 const chartConfig = PERSONA_ORDER.reduce((config, key) => {
 	config[key] = {
@@ -38,20 +40,50 @@ const chartConfig = PERSONA_ORDER.reduce((config, key) => {
 	return config;
 }, {} as ChartConfig) satisfies ChartConfig;
 
-export function SessionsAreaChart({ data }: { data: SessionsPerDay[] }) {
-	const chartData = data.map((day) => ({
-		date: day.date,
-		...Object.fromEntries(
-			PERSONA_ORDER.map((key) => [key, day.porPersona[key] ?? 0]),
-		),
-	}));
+/**
+ * Uma linha por dia corrido, no fuso do navegador, do primeiro ao último dia com
+ * sessão. Dias sem sessão entram com zero para a curva não sugerir sessões que não
+ * aconteceram entre duas datas distantes.
+ */
+function sessionsPerDay(sessions: SessionStart[]) {
+	if (sessions.length === 0) return [];
+
+	const counts = new Map<string, Record<string, number>>();
+	const days = sessions.map((session) =>
+		startOfDay(new Date(session.startedAt)),
+	);
+	for (const [index, session] of sessions.entries()) {
+		const key = format(days[index] as Date, DAY_KEY);
+		const byPersona = counts.get(key) ?? {};
+		byPersona[session.persona] = (byPersona[session.persona] ?? 0) + 1;
+		counts.set(key, byPersona);
+	}
+
+	const first = new Date(Math.min(...days.map((day) => day.getTime())));
+	const last = new Date(Math.max(...days.map((day) => day.getTime())));
+	const rows = [];
+	for (let day = first; day <= last; day = addDays(day, 1)) {
+		const key = format(day, DAY_KEY);
+		const byPersona = counts.get(key) ?? {};
+		rows.push({
+			date: key,
+			...Object.fromEntries(
+				PERSONA_ORDER.map((persona) => [persona, byPersona[persona] ?? 0]),
+			),
+		});
+	}
+	return rows;
+}
+
+export function SessionsAreaChart({ sessions }: { sessions: SessionStart[] }) {
+	const chartData = sessionsPerDay(sessions);
 
 	return (
 		<Card>
 			<CardHeader>
 				<CardTitle>Sessões ao longo do tempo</CardTitle>
 				<CardDescription>
-					Total de sessões por dia, no período selecionado
+					Sessões concluídas por dia e por persona, no período selecionado
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
@@ -59,7 +91,7 @@ export function SessionsAreaChart({ data }: { data: SessionsPerDay[] }) {
 					config={chartConfig}
 					className="aspect-auto h-[280px] w-full"
 				>
-					<AreaChart data={chartData} margin={{ left: 12, right: 12 }}>
+					<AreaChart data={chartData} margin={{ left: 0, right: 12 }}>
 						<defs>
 							{PERSONA_ORDER.map((key) => (
 								<linearGradient
@@ -73,12 +105,12 @@ export function SessionsAreaChart({ data }: { data: SessionsPerDay[] }) {
 									<stop
 										offset="5%"
 										stopColor={`var(--color-${key})`}
-										stopOpacity={0.7}
+										stopOpacity={0.35}
 									/>
 									<stop
 										offset="95%"
 										stopColor={`var(--color-${key})`}
-										stopOpacity={0.05}
+										stopOpacity={0.02}
 									/>
 								</linearGradient>
 							))}
@@ -91,15 +123,22 @@ export function SessionsAreaChart({ data }: { data: SessionsPerDay[] }) {
 							tickMargin={8}
 							minTickGap={32}
 							tickFormatter={(value: string) =>
-								format(new Date(value), "d MMM", { locale: ptBR })
+								format(parseISO(value), "d MMM", { locale: ptBR })
 							}
+						/>
+						<YAxis
+							allowDecimals={false}
+							domain={[0, "auto"]}
+							tickLine={false}
+							axisLine={false}
+							width={32}
 						/>
 						<ChartTooltip
 							content={
 								<ChartTooltipContent
 									labelFormatter={(value) =>
 										typeof value === "string"
-											? format(new Date(value), "d 'de' MMMM, yyyy", {
+											? format(parseISO(value), "d 'de' MMMM, yyyy", {
 													locale: ptBR,
 												})
 											: value
@@ -111,10 +150,12 @@ export function SessionsAreaChart({ data }: { data: SessionsPerDay[] }) {
 							<Area
 								key={key}
 								dataKey={key}
-								type="monotone"
+								type="linear"
 								fill={`url(#fill-${key})`}
 								stroke={`var(--color-${key})`}
-								stackId="personas"
+								strokeWidth={2}
+								dot={false}
+								activeDot={{ r: 4 }}
 							/>
 						))}
 						<ChartLegend content={<ChartLegendContent />} />

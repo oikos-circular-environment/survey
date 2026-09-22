@@ -125,7 +125,7 @@ export default function OverviewPage() {
 						</CardContent>
 					</Card>
 
-					<SessionsAreaChart data={overview.data.sessoesPorDia} />
+					<SessionsAreaChart sessions={overview.data.sessoesConcluidasInicio} />
 				</>
 			) : (
 				<p className="text-muted-foreground text-sm">Carregando métricas…</p>
