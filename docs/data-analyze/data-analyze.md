@@ -18,16 +18,16 @@ A conclusão de cada tarefa não é anotada por um observador. O aplicativo a re
 
 O teste é composto por uma etapa com oito tarefas, que cobrem a consulta a pontos de coleta e o ciclo de participação em denúncias de descarte irregular. O participante é orientado a percorrer as tarefas na ordem que preferir.
 
-| Nº | Tarefa |
+| Código | Tarefa |
 |---|---|
-| 1 | Usar os filtros de Pontos de Coleta (raio de busca, categoria ou busca por texto) |
-| 2 | Visualizar os detalhes de uma empresa |
-| 3 | Visualizar o mapa de denúncias |
-| 4 | Usar os filtros de Denúncias (status, categoria ou periculosidade) |
-| 5 | Criar uma denúncia, com localização e foto ou vídeo |
-| 6 | Votar em uma denúncia registrada por outra pessoa |
-| 7 | Postar uma resolução para uma denúncia |
-| 8 | Abrir uma denúncia própria na lista de denúncias |
+| T8 | Usar os filtros de Pontos de Coleta (raio de busca, categoria ou busca por texto) |
+| T11 | Visualizar os detalhes de uma empresa |
+| T12 | Visualizar o mapa de denúncias |
+| T13 | Usar os filtros de Denúncias (status, categoria ou periculosidade) |
+| T16 | Criar uma denúncia, com localização e foto ou vídeo |
+| T17 | Votar em uma denúncia registrada por outra pessoa |
+| T18 | Postar uma resolução para uma denúncia |
+| T19 | Abrir uma denúncia própria na lista de denúncias |
 
 Uma tarefa é considerada concluída quando o seu sinal de sucesso é registrado na sessão do participante, ainda que a ação tenha sido realizada fora da ordem apresentada.
 
@@ -49,7 +49,7 @@ $$T_e = \frac{\sum TAR_c}{\sum TAR}$$
 
 Em que $T_e$ é a taxa de eficácia, $TAR_c$ é a quantidade de tarefas concluídas e $TAR$ é a quantidade de tarefas realizadas. Quanto mais $T_e$ se aproxima de 1, mais eficaz é o aplicativo.
 
-Por tarefa, a mesma razão corresponde ao número de participantes que concluíram a tarefa dividido pelo número de participantes que a iniciaram. Essa é a leitura correta da coluna "Nº Tarefas Concluídas" da Tabela 1 de Lima, Oliveira e Santana (2013). Na primeira tarefa daquele estudo, o valor 12 indica que 12 dos 15 participantes concluíram a tarefa, e não que a tarefa tinha 12 subtarefas.
+Por tarefa, a mesma razão corresponde ao número de participantes que concluíram a tarefa dividido pelo número de participantes que a iniciaram.
 
 **Eficiência.** É obtida a partir do tempo médio de execução das tarefas concluídas, comparado com o menor e o maior tempo de conclusão observados no teste.
 
@@ -112,25 +112,38 @@ A amostra é jovem, escolarizada e familiarizada com aplicativos. Treze dos 16 p
 
 ### 3.2. Resultados por tarefa
 
-A Tabela 1 apresenta, para cada tarefa, quantos participantes concluíram a etapa, quantos iniciaram a tarefa e quantos a concluíram, com a eficácia, o tempo médio das conclusões e a eficiência correspondentes.
+Os resultados por tarefa são expostos na Tabela 1. As colunas seguem uma sequência de afunilamento, do total de participantes até o desempenho de quem concluiu a tarefa.
+
+| Coluna | O que representa |
+|---|---|
+| Código e Título | Identificação da tarefa |
+| Suíte | Etapa do teste à qual a tarefa pertence |
+| Total concluintes | Participantes que concluíram a etapa |
+| Iniciaram | Dos concluintes, quantos iniciaram a tarefa ($\sum TAR$ da tarefa) |
+| Concluíram | Dos que iniciaram, quantos tiveram o sinal de sucesso registrado ($\sum TAR_c$ da tarefa) |
+| Eficácia | Concluíram dividido por iniciaram ($T_e$ da tarefa) |
+| Eficiência | Posição do tempo médio da tarefa entre a conclusão mais rápida e a mais lenta do teste ($T_f$ da tarefa) |
+| Tempo médio | Média do tempo ativo das conclusões, em minutos e segundos ($t_{méd}$ da tarefa) |
+
+A eficiência vem antes do tempo médio porque é calculada a partir dele, e o tempo médio fica ao lado como valor de apoio para a leitura.
 
 **Tabela 1.** Resultados por tarefa.
 
-| Nº | Tarefa | Concluíram a etapa | Iniciaram | Concluíram | Eficácia | Tempo médio (min:s) | Eficiência |
-|---|---|---|---|---|---|---|---|
-| 1 | Usar os filtros de Pontos de Coleta | 16 | 16 | 12 | 0,75 | 0:57 | 0,83 |
-| 2 | Visualizar os detalhes de uma empresa | 16 | 16 | 12 | 0,75 | 0:21 | 0,94 |
-| 3 | Visualizar o mapa de denúncias | 16 | 16 | 13 | 0,81 | 0:30 | 0,91 |
-| 4 | Usar os filtros de Denúncias | 16 | 16 | 11 | 0,69 | 0:42 | 0,88 |
-| 5 | Criar uma denúncia | 16 | 14 | 9 | 0,64 | 2:58 | 0,48 |
-| 6 | Votar em uma denúncia | 16 | 14 | 10 | 0,71 | 0:33 | 0,90 |
-| 7 | Postar uma resolução | 16 | 14 | 9 | 0,64 | 2:18 | 0,60 |
-| 8 | Abrir uma denúncia própria na lista | 16 | 14 | 9 | 0,64 | 1:15 | 0,78 |
-| | **Total** | **16** | **120** | **85** | **0,71** | **1:08** | **0,80** |
+| Código | Título | Suíte | Total concluintes | Iniciaram | Concluíram | Eficácia | Eficiência | Tempo médio |
+|---|---|---|---|---|---|---|---|---|
+| T8 | Usar os filtros de Pontos de Coleta | S1 | 16 | 16 | 12 | 75% | 0,83 | 0:57 |
+| T11 | Visualizar os detalhes de uma empresa | S1 | 16 | 16 | 12 | 75% | 0,94 | 0:21 |
+| T12 | Visualizar o mapa de denúncias | S1 | 16 | 16 | 13 | 81% | 0,91 | 0:30 |
+| T13 | Usar os filtros de Denúncias | S1 | 16 | 16 | 11 | 69% | 0,88 | 0:42 |
+| T16 | Criar uma denúncia | S1 | 16 | 14 | 9 | 64% | 0,48 | 2:58 |
+| T17 | Votar em uma denúncia | S1 | 16 | 14 | 10 | 71% | 0,90 | 0:33 |
+| T18 | Postar uma resolução | S1 | 16 | 14 | 9 | 64% | 0,60 | 2:18 |
+| T19 | Abrir uma denúncia sua na lista | S1 | 16 | 14 | 9 | 64% | 0,78 | 1:15 |
+| | **Total** | | **16** | **120** | **85** | **71%** | **0,80** | **1:08** |
 
-As tarefas 5 a 8 foram iniciadas por 14 participantes, e não por 16, porque não integraram o roteiro dos dois participantes da persona Empresa comum. O tempo médio total é calculado sobre as 80 conclusões com tempo registrado, e não sobre a média das linhas.
+As tarefas T16 a T19 foram iniciadas por 14 participantes, e não por 16, porque não integraram o roteiro dos dois participantes da persona Empresa comum. O tempo médio total é calculado sobre as 80 conclusões com tempo registrado, e não sobre a média das linhas.
 
-A leitura da tabela deve ser feita da esquerda para a direita. Na tarefa 2, por exemplo, 16 participantes concluíram a etapa, os 16 iniciaram a tarefa e 12 a concluíram, o que resulta em eficácia de 12 / 16 = 0,75. Os participantes que concluíram levaram em média 21 segundos. Esse tempo está muito mais próximo da conclusão mais rápida do teste (1 segundo) do que da mais lenta (5 minutos e 44 segundos), e por isso a eficiência é alta, 1 − 21,4 / (344 − 1) = 0,94.
+A leitura da tabela deve ser feita da esquerda para a direita. Na tarefa T11, por exemplo, 16 participantes concluíram a etapa, os 16 iniciaram a tarefa e 12 a concluíram, o que resulta em eficácia de 12 / 16 = 0,75. Os participantes que concluíram levaram em média 21 segundos. Esse tempo está muito mais próximo da conclusão mais rápida do teste (1 segundo) do que da mais lenta (5 minutos e 44 segundos), e por isso a eficiência é alta, 1 − 21,4 / (344 − 1) = 0,94.
 
 ### 3.3. Eficácia
 
@@ -138,7 +151,7 @@ Os participantes concluíram 85 das 120 tarefas realizadas.
 
 $$T_e = \frac{85}{120} = 0{,}71$$
 
-A eficácia do aplicativo situa-se na faixa **boa**, próxima do limite da faixa ótima. A tarefa com maior eficácia foi a visualização do mapa de denúncias (0,81). As menores ficaram com a criação de denúncia, a postagem de resolução e a abertura de denúncia própria na lista (0,64 cada), tarefas que exigem mais passos ou dependem de outra ação anterior.
+A eficácia do aplicativo situa-se na faixa **boa**, próxima do limite da faixa ótima. A tarefa com maior eficácia foi a visualização do mapa de denúncias (T12, 81%). As menores ficaram com a criação de denúncia (T16), a postagem de resolução (T18) e a abertura de denúncia própria na lista (T19), com 64% cada, tarefas que exigem mais passos ou dependem de outra ação anterior.
 
 ### 3.4. Eficiência
 
@@ -148,7 +161,7 @@ $$T_f = 1 - \frac{67{,}7}{344 - 1} = 0{,}80$$
 
 A eficiência do aplicativo situa-se na faixa **ótima**. Aplicando a mesma divisão em quatro intervalos iguais ao tempo médio, como fazem Lima, Oliveira e Santana (2013) no Gráfico 2, a eficiência seria ótima com tempo médio até cerca de 1 min 27 s, boa até 2 min 53 s, satisfatória até 4 min 18 s e péssima acima disso. O tempo médio observado, de 1 min 08 s, fica na faixa ótima.
 
-Por tarefa, a eficiência reflete a natureza da ação solicitada. As tarefas de consulta (detalhes da empresa, mapa, votação e filtros) têm tempo médio abaixo de um minuto e eficiência entre 0,83 e 0,94. As tarefas que envolvem preenchimento e envio de conteúdo são mais demoradas: criar uma denúncia, com local, foto e descrição (2 min 58 s, eficiência 0,48), e postar uma resolução (2 min 18 s, eficiência 0,60).
+Por tarefa, a eficiência reflete a natureza da ação solicitada. As tarefas de consulta (T8, T11, T12, T13 e T17) têm tempo médio abaixo de um minuto e eficiência entre 0,83 e 0,94. As tarefas que envolvem preenchimento e envio de conteúdo são mais demoradas: criar uma denúncia, com local, foto e descrição (T16, 2:58, eficiência 0,48), e postar uma resolução (T18, 2:18, eficiência 0,60).
 
 ### 3.5. Satisfação
 
