@@ -153,4 +153,32 @@ describe("getPersonas — recorte por persona", () => {
 			await ephemeral.destroy();
 		}
 	});
+
+	test("persona que realizou tarefas sem concluir nenhuma tem Tf = 0 e Us calculado", async () => {
+		const { ephemeral, repositories } = await setupUsabilityTest();
+		try {
+			const session = buildSessionUpsertInput({ persona: "GOVERNMENT" });
+			await upsertUsabilitySession(repositories, session);
+			const checkpoint = partialSuiteCheckpoint(session.session_id, 5);
+			checkpoint.tasks = checkpoint.tasks.map((task) => ({
+				...task,
+				outcome: "NO",
+				auto_detected: false,
+			}));
+			await sendUsabilityCheckpoint(repositories, checkpoint);
+			await completeSession(repositories, session.session_id);
+
+			const personas = await getPersonas(repositories, RANGE);
+			const government = personas.find((p) => p.key === "GOVERNMENT");
+			if (!government) throw new Error("esperava GOVERNMENT");
+
+			expect(government.eficacia).toBe(0);
+			expect(government.eficiencia).toBe(0);
+			expect(government.satisfacao).toBe(1);
+			expect(government.nivelDeUsabilidade).toBeCloseTo(1 / 3);
+			expect(government.classificacao).toBe("Satisfatório");
+		} finally {
+			await ephemeral.destroy();
+		}
+	});
 });

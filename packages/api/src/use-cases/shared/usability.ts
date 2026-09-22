@@ -63,8 +63,9 @@ export function limitesDeEficiencia(tasks: TaskSample[]): EfficiencyBoundsMs {
 /**
  * Te, Tf, Ts e Us de um grupo de tarefas e respostas de satisfação. Te = ΣTARc/ΣTAR;
  * Tf = 1 − tméd/(tmáx − tmín) com os limites do recorte inteiro; Ts = média, entre
- * sessões, da taxa (média − 1)/4 de cada sessão. Sem dado, a métrica fica nula e o Us
- * também, em vez de virar zero.
+ * sessões, da taxa (média − 1)/4 de cada sessão. Grupo que realizou tarefas sem
+ * concluir nenhuma tem Tf = 0; sem tarefa realizada ou sem resposta, a métrica fica nula
+ * e o Us também.
  */
 export function calcularUsabilidade(
 	tasks: TaskSample[],
@@ -77,7 +78,13 @@ export function calcularUsabilidade(
 	const te = outcomes.length > 0 ? eficacia(outcomes) : null;
 
 	const tempos = temposDeTarefasConcluidas(tasks);
-	const tf = tempos.length > 0 ? eficiencia(tempos, efficiencyBounds) : null;
+	const nenhumaConcluida = outcomes.length > 0 && !outcomes.includes("YES");
+	const tf =
+		tempos.length > 0
+			? eficiencia(tempos, efficiencyBounds)
+			: nenhumaConcluida
+				? 0
+				: null;
 
 	const valuesBySession = groupBy(
 		satisfaction.filter((answer) => answer.valueNumber !== null),

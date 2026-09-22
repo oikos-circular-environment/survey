@@ -98,7 +98,7 @@ Três pontos precisam de explicação:
 
 1. **A satisfação não está vinculada à tarefa.** A pergunta `satisfaction` ("Como você avalia sua satisfação com esta etapa?") é feita uma vez, ao fim da suíte, e o texto de apoio pede que o participante pense na experiência de usar o aplicativo na etapa como um todo. Como a v11 tem uma única suíte, cada participante tem uma única resposta de satisfação, e Tsu equivale à satisfação da sessão. Por isso a tabela por tarefa (seção 6.2) não tem coluna de satisfação, diferente da Tabela 1 do artigo.
 2. **Normalização.** A escala de 1 a 5 é convertida para 0 a 1 por (x − 1) / 4, de modo que 1 (Péssimo) vale 0 e 5 (Ótimo) vale 1. Com uma resposta por participante, Ts = média das taxas por participante, que é o mesmo que ((média bruta) − 1) / 4.
-3. **Eficiência.** O Tf mantém a forma literal do artigo, 1 − tméd / (tmáx − tmín), para permitir comparação direta. tméd é a média do tempo ativo das tarefas **concluídas**, e tmín e tmáx são o menor e o maior tempo entre todas as tarefas concluídas do recorte. Tarefas concluídas com tempo registrado igual a zero ficam fora do cálculo, porque indicam falha de medição do app e não execução instantânea. São 5 casos, todos de sessões convertidas da v9 (4 de `01KZE5T1…` e 1 de `01M0D235…`).
+3. **Eficiência.** O Tf mantém a forma literal do artigo, 1 − tméd / (tmáx − tmín), para permitir comparação direta. tméd é a média do tempo ativo das tarefas **concluídas**, e tmín e tmáx são o menor e o maior tempo entre todas as tarefas concluídas do recorte. Tarefas concluídas com tempo registrado igual a zero ficam fora do cálculo, porque indicam falha de medição do app e não execução instantânea. São 5 casos, todos de sessões convertidas da v9 (4 de `01KZE5T1…` e 1 de `01M0D235…`). Quando um grupo realizou tarefas mas não concluiu nenhuma, não existe tempo de conclusão a medir, e o Tf vale 0. A eficiência de quem não concluiu nada é nula, e o grupo mantém um nível de usabilidade calculável.
 
 ## 4. Critérios de inclusão
 
@@ -129,7 +129,7 @@ Todas as telas do painel foram conferidas contra o banco de dados. Os problemas 
 3. O Tf passou a usar o tempo das tarefas concluídas (tempo > 0), com tmín e tmáx do recorte inteiro, em todas as telas.
 4. A Ts passou a ser a média, entre sessões, da taxa (média − 1) / 4 de cada sessão.
 5. O Us da Visão geral passou a ser global, calculado sobre todas as tarefas e respostas do recorte.
-6. Quando um grupo não tem dado (persona sem participantes, grupo sem tarefa concluída cronometrada ou sem resposta de satisfação), a métrica e o Us aparecem vazios no painel, em vez de 0 e "Péssimo".
+6. Grupo que realizou tarefas sem concluir nenhuma recebe Tf = 0, e o Us é calculado normalmente. Quando o grupo não tem dado (persona sem participantes ou sem resposta de satisfação), a métrica e o Us aparecem vazios no painel, em vez de 0 e "Péssimo".
 7. O card de sessões mostra o total da versão por status (21: 16 completas e 5 em andamento) e deixa explícito que as métricas usam as 16 concluídas.
 8. A tela Tarefas passou a seguir o formato da Tabela 1 do artigo: quantos participantes realizaram, quantos concluíram, eficácia, tempo médio das conclusões e eficiência.
 9. Testes novos em `packages/api/src/use-cases/get-overview.test.ts`, `get-tasks.test.ts` e `get-suites.test.ts` cobrem o filtro de status, a Te por tarefa quando o resultado da suíte diverge, o tempo só das conclusões e a satisfação ausente.
@@ -188,9 +188,9 @@ Diferente da BVS, em que a satisfação foi a dimensão mais baixa (0,47), no Oi
 | Empresa de reciclagem | 1 | 8 / 8 | 1,00 | 0,87 | 5,00 | 0,96 | Ótimo |
 | Empresa comum | 2 | 8 / 8 | 1,00 | 0,88 | 5,00 | 0,96 | Ótimo |
 | Cidadão | 12 | 69 / 96 | 0,72 | 0,79 | 4,50 | 0,79 | Ótimo |
-| Órgão público | 1 | 0 / 8 | 0,00 | sem dado | 4,00 | sem dado | sem dado |
+| Órgão público | 1 | 0 / 8 | 0,00 | 0,00 | 4,00 | 0,25 | Satisfatório |
 
-Com exceção de Cidadão, os grupos têm um ou dois participantes, e o recorte por persona serve só como descrição, sem base para comparação. O Órgão público não tem Tf nem Us porque não concluiu nenhuma tarefa, e não há tempo de conclusão para medir.
+Com exceção de Cidadão, os grupos têm um ou dois participantes, e o recorte por persona serve só como descrição, sem base para comparação. O Órgão público não concluiu nenhuma tarefa e por isso tem Te = 0 e Tf = 0. O Us, (0 + 0 + 0,75) / 3 = 0,25, fica no limite inferior da faixa satisfatória e se sustenta apenas pela satisfação declarada.
 
 ## 7. Comportamento dos participantes
 

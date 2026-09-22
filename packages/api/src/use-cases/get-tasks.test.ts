@@ -213,7 +213,7 @@ describe("getTasks — eficácia e tempo por tarefa (Lima et al., 2013)", () => 
 			expect(t13.concluidas).toBe(0);
 			expect(t13.eficacia).toBe(0);
 			expect(t13.tempoMedioMs).toBeNull();
-			expect(t13.eficiencia).toBeNull();
+			expect(t13.eficiencia).toBe(0);
 		} finally {
 			await ephemeral.destroy();
 		}
