@@ -20,6 +20,10 @@ export function formatMs(ms: number | null): string {
 	return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
+export function formatSeconds(ms: number | null): string {
+	return ms === null ? EMPTY : `${(ms / 1000).toFixed(1).replace(".", ",")} s`;
+}
+
 export function formatSatisfaction(value: number | null): string {
 	return value === null ? EMPTY : `${formatRate(value)} / 5`;
 }

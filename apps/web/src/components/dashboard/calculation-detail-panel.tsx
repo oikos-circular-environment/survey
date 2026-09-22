@@ -15,7 +15,7 @@ interface FormulaCardProps {
 	accent?: boolean;
 }
 
-function FormulaCard({
+export function FormulaCard({
 	label,
 	formula,
 	substitution,

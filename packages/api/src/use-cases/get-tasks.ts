@@ -20,6 +20,8 @@ export interface TaskMetrics {
 	tentativas: number;
 	/** Participantes que concluíram a tarefa (ΣTARc da tarefa). */
 	concluidas: number;
+	/** Conclusões com tempo ativo medido, base do tempo médio. */
+	cronometradas: number;
 	eficacia: number | null;
 	tempoMedioMs: number | null;
 	eficienciaBoundsMs: EfficiencyBoundsMs;
@@ -73,6 +75,7 @@ export async function getTasks(
 			totalConcluintes: (suiteRunsBySuiteId.get(task.suiteId) ?? []).length,
 			tentativas: metrics.tarefasRealizadas,
 			concluidas: metrics.tarefasConcluidas,
+			cronometradas: metrics.tarefasCronometradas,
 			eficacia: metrics.eficacia,
 			tempoMedioMs: metrics.tempoMedioMs,
 			eficienciaBoundsMs: efficiencyBounds,
