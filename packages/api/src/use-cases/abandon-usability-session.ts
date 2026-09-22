@@ -29,7 +29,7 @@ export async function abandonUsabilitySession(
 		throw new TRPCError({
 			code: "CONFLICT",
 			message:
-				"Sessão já concluída — não é possível desistir de uma participação encerrada.",
+				"Sessão já concluída, não é possível desistir de uma participação encerrada.",
 		});
 	}
 

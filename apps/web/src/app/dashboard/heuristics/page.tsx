@@ -19,7 +19,7 @@ function HeuristicCard({ heuristic }: { heuristic: HeuristicResult }) {
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between">
 				<h3 className="font-semibold text-sm">
-					{heuristic.id} — {heuristic.name}
+					{heuristic.id}, {heuristic.name}
 				</h3>
 				<Badge variant={heuristic.measured ? "default" : "secondary"}>
 					{heuristic.measured ? "Medida" : "Não medida"}

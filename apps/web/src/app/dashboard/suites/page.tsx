@@ -17,23 +17,14 @@ import * as React from "react";
 import { CalculationDetailPanel } from "@/components/dashboard/calculation-detail-panel";
 import { ClassificationBadge } from "@/components/dashboard/classification-badge";
 import { useDateRange } from "@/components/dashboard/date-range-context";
+import {
+	formatMs,
+	formatPercent,
+	formatRate,
+	formatSatisfaction,
+} from "@/components/dashboard/metric-format";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { trpc } from "@/utils/trpc";
-
-function formatMs(ms: number): string {
-	const totalSeconds = Math.round(ms / 1000);
-	const minutes = Math.floor(totalSeconds / 60);
-	const seconds = totalSeconds % 60;
-	return `${minutes}:${String(seconds).padStart(2, "0")}`;
-}
-
-function formatPercent(value: number): string {
-	return `${(value * 100).toFixed(0)}%`;
-}
-
-function formatRate(value: number): string {
-	return value.toFixed(2).replace(".", ",");
-}
 
 export default function SuitesPage() {
 	const { range } = useDateRange();
@@ -49,8 +40,8 @@ export default function SuitesPage() {
 	return (
 		<div className="flex flex-col gap-6">
 			<DashboardPageHeader
-				title="Registro macro — por suíte (ISO 9241-11)"
-				description="Uma linha por etapa. Eficácia conta só outcome YES — PARTIAL entra como não concluído. Selecione uma linha para ver o detalhamento do cálculo."
+				title="Registro macro, por suíte (ISO 9241-11)"
+				description="Uma linha por etapa, só sessões concluídas. Eficácia e eficiência vêm das tarefas da etapa; satisfação, do questionário pós-suíte. Selecione uma linha para ver o detalhamento do cálculo."
 			/>
 
 			<Card>
@@ -104,9 +95,7 @@ export default function SuitesPage() {
 										{formatMs(suite.tempoMedioMs)}
 									</TableCell>
 									<TableCell className="text-right">
-										{suite.satisfacaoMedia > 0
-											? `${formatRate(suite.satisfacaoMedia)} / 5`
-											: "—"}
+										{formatSatisfaction(suite.satisfacaoMedia)}
 									</TableCell>
 									<TableCell className="text-right">
 										{formatRate(suite.nivelDeUsabilidade)}

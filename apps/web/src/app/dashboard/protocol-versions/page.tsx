@@ -56,7 +56,7 @@ export default function ProtocolVersionsPage() {
 					Liga ou desliga a última versão de cada chave para novos
 					participantes. Desligá-la esconde o convite no aplicativo; sessões já
 					em andamento não são afetadas. Versões substituídas não voltam a
-					circular — publicar uma versão nova a entrega automaticamente.
+					circular. Publicar uma versão nova a entrega automaticamente.
 				</p>
 			</div>
 

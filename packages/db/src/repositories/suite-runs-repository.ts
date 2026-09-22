@@ -4,6 +4,7 @@ import type { MySql2Database } from "drizzle-orm/mysql2";
 import { sessions, suiteRuns } from "../schema/collection";
 import type * as schema from "../schema/index";
 import { type DateRange, dateRangeFilter } from "./date-range";
+import { completedSessionsOf } from "./study-scope";
 
 type Db = MySql2Database<typeof schema>;
 
@@ -30,8 +31,11 @@ export interface SuiteRunOfSessionRow {
 export class SuiteRunsRepository {
 	constructor(private readonly db: Db) {}
 
-	/** Todas as execuções de suíte no período, com a persona da sessão embutida. */
-	async findInRange(range: DateRange): Promise<SuiteRunRow[]> {
+	/** Execuções de suíte finalizadas das sessões concluídas da versão, no período. */
+	async findInRange(
+		range: DateRange,
+		protocolVersionId: string,
+	): Promise<SuiteRunRow[]> {
 		return this.db
 			.select({
 				suiteId: suiteRuns.suiteId,
@@ -44,6 +48,7 @@ export class SuiteRunsRepository {
 			.innerJoin(sessions, eq(suiteRuns.sessionId, sessions.id))
 			.where(
 				and(
+					completedSessionsOf(protocolVersionId),
 					dateRangeFilter(sessions.startedAt, range),
 					isNotNull(suiteRuns.finishedAt),
 				),

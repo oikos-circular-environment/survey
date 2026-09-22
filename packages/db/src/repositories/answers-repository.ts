@@ -8,6 +8,7 @@ import { answers, sessions, suiteRuns } from "../schema/collection";
 import type * as schema from "../schema/index";
 import { questions } from "../schema/protocol";
 import { type DateRange, dateRangeFilter } from "./date-range";
+import { completedSessionsOf } from "./study-scope";
 
 type Db = MySql2Database<typeof schema>;
 
@@ -19,6 +20,7 @@ export interface FinalAnswerInput {
 
 export interface AnswerRow {
 	sessionId: string;
+	persona: string;
 	suiteRunId: string | null;
 	suiteId: string | null;
 	valueNumber: number | null;
@@ -47,7 +49,8 @@ export class AnswersRepository {
 	constructor(private readonly db: Db) {}
 
 	/**
-	 * Respostas para uma `questions.key` específica, no período. `suiteId` vem de um
+	 * Respostas para uma `questions.key` específica, das sessões concluídas da versão, no
+	 * período. `suiteId` vem de um
 	 * join opcional (esquerdo, via `suiteRunId`) — nulo para perguntas de escopo
 	 * `FINAL` (`suiteRunId` é sempre nulo nelas) ou quando a suíte de origem não é
 	 * relevante para quem consome.
@@ -60,6 +63,7 @@ export class AnswersRepository {
 		return this.db
 			.select({
 				sessionId: answers.sessionId,
+				persona: sessions.persona,
 				suiteRunId: answers.suiteRunId,
 				suiteId: suiteRuns.suiteId,
 				valueNumber: answers.valueNumber,
@@ -73,6 +77,7 @@ export class AnswersRepository {
 				and(
 					eq(questions.protocolVersionId, protocolVersionId),
 					eq(questions.key, key),
+					completedSessionsOf(protocolVersionId),
 					dateRangeFilter(sessions.startedAt, range),
 				),
 			);
@@ -102,6 +107,7 @@ export class AnswersRepository {
 				and(
 					eq(questions.protocolVersionId, protocolVersionId),
 					eq(questions.key, "free_comment"),
+					completedSessionsOf(protocolVersionId),
 					dateRangeFilter(sessions.startedAt, range),
 				),
 			);

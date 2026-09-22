@@ -42,7 +42,7 @@ function callerFor(headers: Headers) {
  * (S08 estendido) e sessão de administrador do Better Auth. Nenhuma das duas substitui
  * a outra.
  */
-describe("router dashboard — chave de cliente + sessão de admin (S09/S10/A9)", () => {
+describe("router dashboard, chave de cliente + sessão de admin (S09/S10/A9)", () => {
 	test("chave de cliente válida e sessão de admin válida: acesso permitido", async () => {
 		const sessionHeaders = await createAdminSessionHeaders(setup.auth);
 		const headers = new Headers(sessionHeaders);
@@ -91,7 +91,7 @@ describe("router dashboard — chave de cliente + sessão de admin (S09/S10/A9)"
 	});
 });
 
-describe("router dashboard — protocol", () => {
+describe("router dashboard, protocol", () => {
 	async function adminCaller() {
 		const sessionHeaders = await createAdminSessionHeaders(setup.auth);
 		const headers = new Headers(sessionHeaders);
@@ -122,7 +122,7 @@ describe("router dashboard — protocol", () => {
 	});
 });
 
-describe("router dashboard — protocolVersions.list/setActive (S15)", () => {
+describe("router dashboard, protocolVersions.list/setActive (S15)", () => {
 	async function adminCaller() {
 		const sessionHeaders = await createAdminSessionHeaders(setup.auth);
 		const headers = new Headers(sessionHeaders);
@@ -219,7 +219,7 @@ describe("router dashboard — protocolVersions.list/setActive (S15)", () => {
 	});
 });
 
-describe("router dashboard — testers.list/delete", () => {
+describe("router dashboard, testers.list/delete", () => {
 	async function adminCaller() {
 		const sessionHeaders = await createAdminSessionHeaders(setup.auth);
 		const headers = new Headers(sessionHeaders);

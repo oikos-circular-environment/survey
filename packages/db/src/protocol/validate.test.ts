@@ -85,13 +85,13 @@ function minimalProtocol(): Protocol {
 	};
 }
 
-describe("collectProtocolIssues — protocolo mínimo válido", () => {
+describe("collectProtocolIssues, protocolo mínimo válido", () => {
 	test("não reporta nenhum problema", () => {
 		expect(collectProtocolIssues(minimalProtocol())).toEqual([]);
 	});
 });
 
-describe("collectProtocolIssues — códigos repetidos", () => {
+describe("collectProtocolIssues, códigos repetidos", () => {
 	test("DUPLICATE_TASK_CODE", () => {
 		const protocol = minimalProtocol();
 		protocol.tasks.push({ ...protocol.tasks[0]! });
@@ -117,7 +117,7 @@ describe("collectProtocolIssues — códigos repetidos", () => {
 	});
 });
 
-describe("collectProtocolIssues — referências suíte/tarefa e persona/suíte", () => {
+describe("collectProtocolIssues, referências suíte/tarefa e persona/suíte", () => {
 	test("SUITE_TASK_CODE_UNDEFINED", () => {
 		const protocol = minimalProtocol();
 		protocol.suites[0]!.task_codes = ["T99" as unknown as TaskCode];
@@ -148,7 +148,7 @@ describe("collectProtocolIssues — referências suíte/tarefa e persona/suíte"
 	});
 });
 
-describe("collectProtocolIssues — forma das opções", () => {
+describe("collectProtocolIssues, forma das opções", () => {
 	test("OPTIONS_EMPTY", () => {
 		const protocol = minimalProtocol();
 		const question = protocol.questions[0]! as Question & {
@@ -200,7 +200,7 @@ describe("collectProtocolIssues — forma das opções", () => {
 	});
 });
 
-describe("collectProtocolIssues — depends_on", () => {
+describe("collectProtocolIssues, depends_on", () => {
 	test("DEPENDS_ON_QUESTION_UNDEFINED", () => {
 		const protocol = minimalProtocol();
 		const dependent = protocol.questions.find((q) => q.key === "dependent")!;

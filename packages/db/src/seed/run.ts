@@ -10,7 +10,7 @@ const result = await seedProtocol(db, protocol);
 console.log(
 	result.status === "created"
 		? `Versão ${protocol.version} de "${protocol.key}" publicada (${result.protocolVersionId}).`
-		: `Versão ${protocol.version} de "${protocol.key}" já publicada — nada a fazer.`,
+		: `Versão ${protocol.version} de "${protocol.key}" já publicada, nada a fazer.`,
 );
 
 process.exit(0);
