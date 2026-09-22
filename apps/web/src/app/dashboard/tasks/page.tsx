@@ -36,6 +36,7 @@ interface TaskRow {
 	code: string;
 	title: string;
 	suiteCode: string;
+	totalConcluintes: number;
 	tentativas: number;
 	concluidas: number;
 	eficacia: number | null;
@@ -45,12 +46,13 @@ interface TaskRow {
 
 function toCsv(rows: TaskRow[]): string {
 	const header =
-		"Código,Título,Suíte,Realizaram,Concluíram,Eficácia,Tempo médio (ms),Eficiência";
+		"Código,Título,Suíte,Total concluintes,Iniciaram,Concluíram,Eficácia,Tempo médio (ms),Eficiência";
 	const lines = rows.map((r) =>
 		[
 			r.code,
 			`"${r.title.replace(/"/g, '""')}"`,
 			r.suiteCode,
+			r.totalConcluintes,
 			r.tentativas,
 			r.concluidas,
 			r.eficacia ?? "",
@@ -135,7 +137,8 @@ export default function TasksPage() {
 								<TableHead>Código</TableHead>
 								<TableHead>Título</TableHead>
 								<TableHead>Suíte</TableHead>
-								<TableHead className="text-right">Realizaram</TableHead>
+								<TableHead className="text-right">Total concluintes</TableHead>
+								<TableHead className="text-right">Iniciaram</TableHead>
 								<TableHead className="text-right">Concluíram</TableHead>
 								<TableHead className="text-right">Eficácia</TableHead>
 								<TableHead className="text-right">Tempo médio (min)</TableHead>
@@ -149,6 +152,9 @@ export default function TasksPage() {
 									<TableCell className="font-medium">{task.title}</TableCell>
 									<TableCell>
 										<Badge variant="outline">{task.suiteCode}</Badge>
+									</TableCell>
+									<TableCell className="text-right">
+										{task.totalConcluintes}
 									</TableCell>
 									<TableCell className="text-right">
 										{task.tentativas}

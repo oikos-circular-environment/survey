@@ -14,7 +14,9 @@ export interface TaskMetrics {
 	code: string;
 	title: string;
 	suiteCode: string;
-	/** Participantes que realizaram a tarefa (ΣTAR da tarefa). */
+	/** Testadores que concluíram a suíte da tarefa. */
+	totalConcluintes: number;
+	/** Participantes que iniciaram a tarefa (ΣTAR da tarefa). */
 	tentativas: number;
 	/** Participantes que concluíram a tarefa (ΣTARc da tarefa). */
 	concluidas: number;
@@ -48,13 +50,15 @@ export async function getTasks(
 ): Promise<PaginatedTasks> {
 	const protocolVersionId =
 		await repositories.protocol.getLatestProtocolVersionId();
-	const [taskDefs, taskRuns] = await Promise.all([
+	const [taskDefs, suiteRuns, taskRuns] = await Promise.all([
 		repositories.protocol.getTaskDefs(protocolVersionId),
+		repositories.suiteRuns.findInRange(range, protocolVersionId),
 		repositories.taskRuns.findInRange(range, protocolVersionId),
 	]);
 
 	const efficiencyBounds = limitesDeEficiencia(taskRuns);
 	const runsByTaskId = groupBy(taskRuns, (run) => run.taskId);
+	const suiteRunsBySuiteId = groupBy(suiteRuns, (run) => run.suiteId);
 
 	const items: TaskMetrics[] = taskDefs.map((task) => {
 		const metrics = calcularUsabilidade(
@@ -66,6 +70,7 @@ export async function getTasks(
 			code: task.code,
 			title: task.title,
 			suiteCode: task.suiteCode,
+			totalConcluintes: (suiteRunsBySuiteId.get(task.suiteId) ?? []).length,
 			tentativas: metrics.tarefasRealizadas,
 			concluidas: metrics.tarefasConcluidas,
 			eficacia: metrics.eficacia,

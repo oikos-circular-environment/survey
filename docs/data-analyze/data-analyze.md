@@ -154,19 +154,19 @@ As 16 sessões concluídas se distribuem entre 12 Cidadãos, 2 Empresas comuns, 
 
 ### 6.2. Resultados por tarefa
 
-| Tarefa | Realizaram | Concluíram (Eficácia) | Te | Tempo médio (min) | Tf |
-|---|---|---|---|---|---|
-| T8 Usar os filtros de Pontos de Coleta | 16 | 12 | 0,75 | 0,95 | 0,83 |
-| T11 Visualizar os detalhes de uma empresa | 16 | 12 | 0,75 | 0,36 | 0,94 |
-| T12 Visualizar o mapa de denúncias | 16 | 13 | 0,81 | 0,50 | 0,91 |
-| T13 Usar os filtros de Denúncias | 16 | 11 | 0,69 | 0,70 | 0,88 |
-| T16 Criar uma denúncia | 14 | 9 | 0,64 | 2,96 | 0,48 |
-| T17 Votar em uma denúncia | 14 | 10 | 0,71 | 0,56 | 0,90 |
-| T18 Postar uma resolução | 14 | 9 | 0,64 | 2,31 | 0,60 |
-| T19 Abrir uma denúncia sua na lista | 14 | 9 | 0,64 | 1,25 | 0,78 |
-| **Total** | **120** | **85** | **0,71** | **1,13** | **0,80** |
+| Tarefa | Total concluintes | Iniciaram | Concluíram (Eficácia) | Te | Tempo médio (min) | Tf |
+|---|---|---|---|---|---|---|
+| T8 Usar os filtros de Pontos de Coleta | 16 | 16 | 12 | 0,75 | 0,95 | 0,83 |
+| T11 Visualizar os detalhes de uma empresa | 16 | 16 | 12 | 0,75 | 0,36 | 0,94 |
+| T12 Visualizar o mapa de denúncias | 16 | 16 | 13 | 0,81 | 0,50 | 0,91 |
+| T13 Usar os filtros de Denúncias | 16 | 16 | 11 | 0,69 | 0,70 | 0,88 |
+| T16 Criar uma denúncia | 16 | 14 | 9 | 0,64 | 2,96 | 0,48 |
+| T17 Votar em uma denúncia | 16 | 14 | 10 | 0,71 | 0,56 | 0,90 |
+| T18 Postar uma resolução | 16 | 14 | 9 | 0,64 | 2,31 | 0,60 |
+| T19 Abrir uma denúncia sua na lista | 16 | 14 | 9 | 0,64 | 1,25 | 0,78 |
+| **Total** | **16** | **120** | **85** | **0,71** | **1,13** | **0,80** |
 
-As tarefas T16 a T19 têm 14 realizações porque os dois participantes convertidos da persona Empresa comum não passaram por elas (seção 1.1). O tempo médio total (1,13 min, ou 67,7 s) é a média das 80 conclusões cronometradas, e não a média das linhas. As tarefas de escrita (criar denúncia e postar resolução) são as mais demoradas e, por isso, as de menor Tf. Isso é esperado, porque envolvem formulário, foto e envio.
+Os 16 concluintes percorreram a suíte S1, mas T16 a T19 foram iniciadas por 14, porque os dois participantes convertidos da persona Empresa comum não passaram por elas (seção 1.1). O tempo médio total (1,13 min, ou 67,7 s) é a média das 80 conclusões cronometradas, e não a média das linhas. As tarefas de escrita (criar denúncia e postar resolução) são as mais demoradas e, por isso, as de menor Tf. Isso é esperado, porque envolvem formulário, foto e envio.
 
 ### 6.3. Cálculo geral
 
