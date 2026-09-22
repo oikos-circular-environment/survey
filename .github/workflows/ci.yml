@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - development
+      - production
+  push:
+    branches:
+      - development
+      - production
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, tipos e testes
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: survey
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      # O harness de teste cria um banco por suíte; a aplicação lê DATABASE_URL.
+      DATABASE_URL: mysql://user:password@127.0.0.1:3306/survey
+      TEST_DATABASE_URL: mysql://user:password@127.0.0.1:3306/survey
+      CORS_ORIGIN: http://localhost:3001
+      CLIENT_API_KEY: ci-client-key
+      BETTER_AUTH_SECRET: ci-better-auth-secret
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Mesma concessão de docker/mysql/init: sem ela o harness não cria os bancos
+      # efêmeros `survey_test_<uuid>` e nenhum teste de banco roda.
+      - name: Grant test database privileges
+        working-directory: packages/db
+        run: |
+          bun -e '
+            const mysql = require("mysql2/promise");
+            const connection = await mysql.createConnection({
+              host: "127.0.0.1",
+              port: 3306,
+              user: "root",
+              password: "root",
+            });
+            await connection.query("GRANT ALL PRIVILEGES ON `survey\\_test\\_%`.* TO \"user\"@\"%\"");
+            await connection.query("FLUSH PRIVILEGES");
+            await connection.end();
+          '
+
+      - name: Lint e formatação
+        run: bunx biome ci .
+
+      - name: Checagem de tipos
+        run: bun run check-types
+
+      - name: Testes
+        run: bun run test
