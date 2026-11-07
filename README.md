@@ -175,3 +175,15 @@ Contribuições são bem-vindas. O fluxo é o mesmo em todos os repositórios do
 Os hooks do Lefthook rodam o Biome no `pre-commit` e bloqueiam push direto em `development` e `production`. Não pule os hooks com `--no-verify`.
 
 Mudanças no protocolo (tarefas, perguntas, critérios de sucesso) alteram o que está sendo medido. Elas precisam de uma nova versão do protocolo e não devem ser misturadas com correções de código no mesmo pull request.
+
+## Licença
+
+O código é disponibilizado sob a [PolyForm Noncommercial 1.0.0](LICENSE). Você pode estudar, usar, modificar e redistribuir o Oikos para fins não comerciais: uso pessoal, pesquisa, ensino e uso por instituições de ensino, organizações beneficentes, de pesquisa ou de proteção ambiental e órgãos públicos. Ao redistribuir, mantenha o arquivo `LICENSE` com o aviso de copyright.
+
+Uso comercial, como vender o software, oferecê-lo como serviço pago ou usá-lo como base de um produto, exige uma licença comercial à parte com o titular. Para tratar disso, escreva para christian.cesar@oikos.company.
+
+Por restringir o uso comercial, esta licença não é open source na definição da OSI. O código é aberto para leitura, estudo e uso não comercial.
+
+Ao enviar uma contribuição, você concorda que ela seja distribuída sob esta mesma licença e possa ser incluída nas licenças comerciais do projeto, com o crédito de autoria preservado.
+
+O Oikos é registrado no INPI como programa de computador, processo BR 51 2026 008392-3.
