@@ -1,0 +1,15 @@
+# Caches locais de build: regeneráveis e grandes o bastante para estourar o limite de
+# upload da Vercel.
+.turbo
+**/.turbo
+.next
+**/.next
+
+# Artefatos e material de apoio que não fazem parte do build.
+graphify-out
+snapshots
+pencil
+docs
+.agents
+.claude
+.opencode
