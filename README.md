@@ -131,13 +131,14 @@ bun install
 bun run db:start
 ```
 
-Crie `apps/web/.env.local` com as variáveis abaixo:
+Copie `apps/web/.env.example` para `apps/web/.env.local` e preencha as variáveis abaixo:
 
 | Variável | Uso |
 |---|---|
 | `DATABASE_URL` | conexão MySQL, por exemplo `mysql://user:password@localhost:3306/survey` |
 | `BETTER_AUTH_SECRET` | segredo da sessão; use um valor aleatório longo, como a saída de `openssl rand -base64 32` |
 | `BETTER_AUTH_URL` | URL pública do painel, por exemplo `http://localhost:3001` |
+| `BETTER_AUTH_TRUSTED_ORIGINS` | opcional; origens extras aceitas pelo login, separadas por vírgula. Em dev não precisa, `localhost:3001` já é aceito |
 | `CORS_ORIGIN` | origem permitida, normalmente a mesma do painel |
 | `CLIENT_API_KEY` e `NEXT_PUBLIC_CLIENT_API_KEY` | chave de cliente da API tRPC, com o mesmo valor nas duas |
 | `ADMIN_SEED_EMAIL` e `ADMIN_SEED_PASSWORD` | conta do pesquisador criada pelo seed |
