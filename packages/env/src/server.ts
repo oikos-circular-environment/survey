@@ -16,6 +16,8 @@ export const env = createEnv({
 		CLIENT_API_KEY: z.string().min(1),
 		// assina cookie/token de sessão do Better Auth (S09/A9)
 		BETTER_AUTH_SECRET: z.string().min(1),
+		BETTER_AUTH_URL: z.url().optional(),
+		BETTER_AUTH_TRUSTED_ORIGINS: z.string().min(1).optional(),
 	},
 	runtimeEnv: process.env,
 	skipValidation: !!process.env.SKIP_ENV_VALIDATION,
