@@ -1,162 +1,177 @@
-# survey
+<p align="center">
+  <img src=".github/assets/logo.png" width="96" alt="Logo do Oikos">
+</p>
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines Next.js, Self, TRPC, and more.
+<h1 align="center">Oikos Survey</h1>
 
-## Features
+<p align="center">
+  <a href="https://github.com/oikos-circular-environment/survey/actions/workflows/ci.yml"><img src="https://github.com/oikos-circular-environment/survey/actions/workflows/ci.yml/badge.svg?branch=development" alt="CI"></a>
+  <img src="https://img.shields.io/badge/bun-1.3-3F6B2A?logo=bun&logoColor=white" alt="Bun 1.3">
+  <img src="https://img.shields.io/badge/next.js-16-3F6B2A?logo=nextdotjs&logoColor=white" alt="Next.js 16">
+  <img src="https://img.shields.io/badge/tRPC-11-3F6B2A?logo=trpc&logoColor=white" alt="tRPC 11">
+  <img src="https://img.shields.io/badge/ISO-9241--11-3F6B2A" alt="ISO 9241-11">
+</p>
 
-- **TypeScript** - For type safety and improved developer experience
-- **Next.js** - Full-stack React framework
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
-- **tRPC** - End-to-end type-safe APIs
-- **Drizzle** - TypeScript-first ORM
-- **MySQL** - Database engine
-- **Biome** - Linting and formatting
-- **Turborepo** - Optimized monorepo build system
+<p align="center">
+  <strong>Instrumento e painel do teste de usabilidade do aplicativo Oikos.<br>
+  Mede eficácia, eficiência e satisfação de quem usa o app, tarefa por tarefa.</strong>
+</p>
 
-## Getting Started
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/survey-hero-dark.jpg">
+    <img src=".github/assets/survey-hero-light.jpg" alt="Visão geral do painel com eficácia, eficiência, satisfação e nível de usabilidade" width="100%">
+  </picture>
+  <br>
+  <sub>Painel com dados fictícios gerados por <code>db:seed:demo</code>. Os números não são resultados da pesquisa.</sub>
+</p>
 
-First, install the dependencies:
+## Sobre o Oikos
+
+O Oikos é uma plataforma de economia circular de resíduos sólidos. Ela conecta quem gera resíduo (moradores, empresas e órgãos públicos) a quem transforma esse resíduo em recurso: cooperativas, recicladoras, ecopontos e coletores.
+
+O produto tem três frentes:
+
+- **Pontos de coleta e mercado.** Mapa de empresas e ecopontos com os resíduos que cada um aceita, horários de funcionamento e preço pago por quilo.
+- **Denúncias ambientais.** Registro de descarte irregular com foto, vídeo e localização. A comunidade vota se a denúncia foi resolvida e a moderação acompanha o andamento.
+- **Modo pesquisa.** Teste de usabilidade aplicado dentro do próprio aplicativo, usado na avaliação da dissertação de mestrado que originou o projeto.
+
+Este repositório é o modo pesquisa: define o protocolo do teste, recebe os dados das sessões feitas no app e calcula os indicadores no painel do pesquisador.
+
+## Como a avaliação funciona
+
+O teste é autoaplicado. O participante executa as tarefas no próprio aparelho, dentro do app, sem um avaliador ao lado. A sessão passa por consentimento, caracterização do participante, escolha da persona (o papel dele na cadeia de resíduos), execução das tarefas e um questionário ao final de cada etapa. O app registra quando cada tarefa começa e quando o sinal de sucesso aparece.
+
+A usabilidade segue a definição da ISO 9241-11, operacionalizada pelo método de Lima, Oliveira e Santana (2013):
+
+| Indicador | Cálculo |
+|---|---|
+| Eficácia (Te) | tarefas concluídas ÷ tarefas iniciadas |
+| Eficiência (Tf) | 1 − tempo médio ÷ (tempo máximo − tempo mínimo) |
+| Satisfação (Ts) | (média da escala de satisfação − 1) ÷ 4 |
+| Nível de usabilidade (Us) | (Te + Tf + Ts) ÷ 3 |
+
+O nível de usabilidade é lido em faixas de 0,25: péssimo, satisfatório, bom e ótimo. O painel também cruza os resultados por suíte, por tarefa e por persona, e reúne as respostas sobre heurísticas de Nielsen, itens do domínio de resíduos e comentários livres.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/survey-tasks-dark.jpg">
+    <img src=".github/assets/survey-tasks-light.jpg" alt="Tabela de resultados por tarefa com eficácia, eficiência e tempo médio" width="100%">
+  </picture>
+  <br>
+  <sub>Resultados por tarefa, também com dados fictícios.</sub>
+</p>
+
+O protocolo é versionado. Cada versão publicada fixa as suítes, tarefas e perguntas, e o app sempre executa a versão ativa. Isso mantém comparáveis as sessões coletadas sob o mesmo protocolo.
+
+## Ecossistema
+
+| Repositório | Papel | Stack principal |
+|---|---|---|
+| [api](https://github.com/oikos-circular-environment/api) | API REST, regras de negócio, autenticação, filas e armazenamento | Fastify, Prisma, PostgreSQL, Redis, MinIO |
+| [web](https://github.com/oikos-circular-environment/web) | Site institucional e painel web para organizações e moderação | Next.js, Tailwind CSS, MapLibre |
+| [mobile](https://github.com/oikos-circular-environment/mobile) | Aplicativo iOS e Android | Expo, React Native |
+| **survey** (este) | Instrumento e painel do teste de usabilidade | Next.js, tRPC, Drizzle, MySQL |
+| devops (privado) | Infraestrutura, deploy e observabilidade | Terraform, Docker Compose, Nginx, Grafana |
+
+## Arquitetura
+
+```mermaid
+flowchart LR
+  subgraph Clientes
+    M["mobile<br/>Expo / React Native"]
+    W["web<br/>Next.js"]
+  end
+  M -- "REST (oikos-sdk)" --> A["api<br/>Fastify"]
+  W -- "REST (oikos-sdk)" --> A
+  A --> P[("PostgreSQL")]
+  A --> R[("Redis<br/>BullMQ")]
+  A --> S[("MinIO<br/>S3")]
+  A --> E["Resend<br/>e-mail"]
+  M -- "tRPC (survey-api)" --> SV["survey<br/>Next.js + tRPC"]
+  SV --> MY[("MySQL")]
+  PQ["Pesquisador"] --> SV
+```
+
+O survey é independente da API do Oikos. Tem banco próprio e autenticação própria, e o app fala com ele por tRPC usando o pacote `@oikos-circular-environment/survey-api`, publicado a partir deste repositório. As chamadas do app são autorizadas por chave de cliente. O painel é restrito à conta do pesquisador.
+
+## Stack
+
+| Área | Tecnologia |
+|---|---|
+| Monorepo | Bun 1.3 e Turborepo |
+| Aplicação | Next.js 16 com React 19 |
+| API | tRPC 11 |
+| Banco de dados | MySQL 8.4 com Drizzle ORM |
+| Autenticação | Better Auth |
+| Interface | Tailwind CSS 4 e shadcn/ui |
+| Testes | `bun test` |
+| Qualidade | Biome e Lefthook |
+
+## Estrutura
+
+```
+apps/
+  web/              painel do pesquisador e rota /api/trpc
+packages/
+  api/              routers tRPC (publicado como @oikos-circular-environment/survey-api)
+  db/               schema, migrations e seeds do Drizzle (publicado como @oikos-circular-environment/survey-db)
+  env/              validação das variáveis de ambiente
+  ui/               componentes shadcn compartilhados
+  config/           configuração compartilhada de TypeScript
+docs/               CI/CD, operação do banco de produção e relatório da avaliação
+```
+
+## Rodando localmente
+
+Pré-requisitos: Bun 1.3 e Docker.
 
 ```bash
 bun install
-```
-
-## Database Setup
-
-This project uses MySQL with Drizzle ORM.
-
-1. Start the local MySQL container:
-
-```bash
 bun run db:start
 ```
 
-2. Make sure `apps/web/.env.local` has your `DATABASE_URL`.
+Crie `apps/web/.env.local` com as variáveis abaixo:
 
-3. Apply the versioned migrations:
+| Variável | Uso |
+|---|---|
+| `DATABASE_URL` | conexão MySQL, por exemplo `mysql://user:password@localhost:3306/survey` |
+| `BETTER_AUTH_SECRET` | segredo da sessão; use um valor aleatório longo, como a saída de `openssl rand -base64 32` |
+| `BETTER_AUTH_URL` | URL pública do painel, por exemplo `http://localhost:3001` |
+| `CORS_ORIGIN` | origem permitida, normalmente a mesma do painel |
+| `CLIENT_API_KEY` e `NEXT_PUBLIC_CLIENT_API_KEY` | chave de cliente da API tRPC, com o mesmo valor nas duas |
+| `ADMIN_SEED_EMAIL` e `ADMIN_SEED_PASSWORD` | conta do pesquisador criada pelo seed |
+
+Depois aplique as migrations, popule o banco e suba o painel:
 
 ```bash
 bun run db:migrate
+bun run db:seed        # protocolo, suítes, tarefas e perguntas
+bun run db:seed:demo   # sessões fictícias para ver o painel com dados
+bun run db:seed:auth   # conta do pesquisador
+bun run dev:web
 ```
 
-Schema changes go through generated migration files, not `db:push`. After editing
-anything under `packages/db/src/schema`, run `bun run db:generate` and commit the
-resulting file in `packages/db/src/migrations`. That file is what runs in production,
-and it is reviewed in the pull request like any other code.
+O painel fica em `http://localhost:3001`.
 
-Then, run the development server:
+## Testes e qualidade
 
 ```bash
-bun run dev
+bun run test         # testes de todos os pacotes
+bun run check-types  # TypeScript
+bun run check        # Biome
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the fullstack application.
+## Colaboração
 
-To make the local server reachable from the mobile app (physical devices, emulators, and
-the `development` EAS build all fail to resolve `localhost` consistently across OSes), run
-the Cloudflare tunnel that exposes it at `local-survey.oikos.company`:
+Contribuições são bem-vindas. O fluxo é o mesmo em todos os repositórios do Oikos:
 
-```bash
-bun run tunnel
-```
+1. **Comece por uma issue.** Descreva o problema ou a proposta antes de abrir código.
+2. **Crie a branch a partir de `development`**, com o nome `<número-da-issue>-<descrição-curta>`, por exemplo `142-exportar-por-persona`. Quem não faz parte da organização trabalha a partir de um fork.
+3. **Faça commits pequenos** no padrão [Conventional Commits](https://www.conventionalcommits.org/pt-br/), como `feat(dashboard): ...` ou `fix(protocol): ...`.
+4. **Abra o pull request para `development`.** A descrição tem duas seções: `## Contexto` e `## O que foi feito`. O que ficou pendente vira uma nova issue.
+5. **`production` só recebe código vindo de `development`**, também por pull request.
 
-Requires `cloudflared` installed and authenticated (`cloudflared tunnel login`) with access
-to the `oikos.company` zone. The tunnel (`oikos-local-dev`) and DNS record already exist,
-so this command only connects.
+Os hooks do Lefthook rodam o Biome no `pre-commit` e bloqueiam push direto em `development` e `production`. Não pule os hooks com `--no-verify`.
 
-## Testing
-
-```bash
-bun run test
-```
-
-Each test suite creates its own throwaway database (`survey_test_<uuid>`), applies the
-migrations to it, and drops it when the suite ends. That is why a broken migration fails
-every test instead of hiding until deploy.
-
-Creating those databases needs a privilege the application user does not get by default,
-so `docker/mysql/init` grants it on the `survey_test_%` prefix. Init scripts only run when
-the MySQL volume is first created. If the grant is missing, recreate it:
-
-```bash
-docker compose down -v && bun run db:start
-```
-
-In CI, point `TEST_DATABASE_URL` at a user allowed to create and drop databases. Without
-it the harness falls back to `DATABASE_URL`.
-
-## UI Customization
-
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
-
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
-
-### Add more shared components
-
-Run this from the project root to add more primitives to the shared UI package:
-
-```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
-```
-
-Import shared components like this:
-
-```tsx
-import { Button } from "@survey/ui/components/button";
-```
-
-### Add app-specific blocks
-
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
-
-## Deployment
-
-### Docker Compose
-
-- Target: web + server
-- Config: `docker-compose.yml` (app Dockerfiles live in `apps/*/Dockerfile`)
-- Build images: bun run docker:build
-- Start: bun run docker:up
-- Logs: bun run docker:logs
-- Stop: bun run docker:down
-
-Environment variables are read from each app's `.env` file (baked into web builds for public variables) and overridden in `docker-compose.yml` for container networking.
-
-For more details, see the guide on [Deploying with Docker Compose](https://www.better-t-stack.dev/docs/guides/docker).
-
-## Git Hooks and Formatting
-
-- Run checks: `bun run check`
-
-## Project Structure
-
-```
-survey/
-├── apps/
-│   └── web/         # Fullstack application (Next.js)
-├── packages/
-│   ├── ui/          # Shared shadcn/ui components and styles
-│   ├── api/         # API layer / business logic
-│   └── db/          # Database schema & queries
-```
-
-## Available Scripts
-
-- `bun run dev`: Start all applications in development mode
-- `bun run build`: Build all applications
-- `bun run dev:web`: Start only the web application
-- `bun run check-types`: Check TypeScript types across all apps
-- `bun run test`: Run the test suites (needs the MySQL container running)
-- `bun run db:generate`: Generate a migration file from the current schema
-- `bun run db:migrate`: Apply pending migrations
-- `bun run db:push`: Apply the schema without a migration file, for scratch databases only
-- `bun run db:studio`: Open database studio UI
-- `bun run check`: Run Biome formatting and linting
-- `bun run tunnel`: Expose the local dev server at `local-survey.oikos.company` via Cloudflare
-- `bun run docker:build`: Build the Docker Compose images
-- `bun run docker:up`: Build and start the Docker Compose stack
-- `bun run docker:logs`: Tail logs from the Docker Compose stack
-- `bun run docker:down`: Stop the Docker Compose stack
+Mudanças no protocolo (tarefas, perguntas, critérios de sucesso) alteram o que está sendo medido. Elas precisam de uma nova versão do protocolo e não devem ser misturadas com correções de código no mesmo pull request.
